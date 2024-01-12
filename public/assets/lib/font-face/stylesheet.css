@@ -1,0 +1,162 @@
+@font-face {
+    font-family: 'Salma Alfasans';
+    src: url('SalmaAlfasans-BoldItalic.woff') format('woff'),
+        url('SalmaAlfasans-BoldItalic.ttf') format('truetype');
+    font-weight: bold;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Salma Alfasans';
+    src: url('SalmaAlfasans-Bold.woff') format('woff'),
+        url('SalmaAlfasans-Bold.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Salma Alfasans';
+    src: url('SalmaAlfasans-Black.woff') format('woff'),
+        url('SalmaAlfasans-Black.ttf') format('truetype');
+    font-weight: 900;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Salma Alfasans';
+    src: url('SalmaAlfasans-BlackItalic.woff') format('woff'),
+        url('SalmaAlfasans-BlackItalic.ttf') format('truetype');
+    font-weight: 900;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Salma Alfasans';
+    src: url('SalmaAlfasans-ExtLtIta.woff') format('woff'),
+        url('SalmaAlfasans-ExtLtIta.ttf') format('truetype');
+    font-weight: normal;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Salma Alfasans';
+    src: url('SalmaAlfasans-Italic.woff') format('woff'),
+        url('SalmaAlfasans-Italic.ttf') format('truetype');
+    font-weight: normal;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Salma Alfasans';
+    src: url('SalmaAlfasans-ExtraBold.woff') format('woff'),
+        url('SalmaAlfasans-ExtraBold.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Salma Alfasans';
+    src: url('SalmaAlfasans-ExtraLight.woff') format('woff'),
+        url('SalmaAlfasans-ExtraLight.ttf') format('truetype');
+    font-weight: 200;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Salma Alfasans';
+    src: url('SalmaAlfasans-ExtraBoldItalic.woff') format('woff'),
+        url('SalmaAlfasans-ExtraBoldItalic.ttf') format('truetype');
+    font-weight: bold;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Salma Alfasans';
+    src: url('SalmaAlfasans-MediumItalic.woff') format('woff'),
+        url('SalmaAlfasans-MediumItalic.ttf') format('truetype');
+    font-weight: 500;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Salma Alfasans';
+    src: url('SalmaAlfasans-Regular.woff') format('woff'),
+        url('SalmaAlfasans-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Salma Alfasans';
+    src: url('SalmaAlfasans-Medium.woff') format('woff'),
+        url('SalmaAlfasans-Medium.ttf') format('truetype');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Salma Alfasans';
+    src: url('SalmaAlfasans-Light.woff') format('woff'),
+        url('SalmaAlfasans-Light.ttf') format('truetype');
+    font-weight: 300;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Salma Alfasans';
+    src: url('SalmaAlfasans-LightItalic.woff') format('woff'),
+        url('SalmaAlfasans-LightItalic.ttf') format('truetype');
+    font-weight: 300;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Salma Alfasans';
+    src: url('SalmaAlfasans-SemiBold.woff') format('woff'),
+        url('SalmaAlfasans-SemiBold.ttf') format('truetype');
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Salma Alfasans';
+    src: url('SalmaAlfasans-ThinItalic.woff') format('woff'),
+        url('SalmaAlfasans-ThinItalic.ttf') format('truetype');
+    font-weight: 100;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Salma Alfasans';
+    src: url('SalmaAlfasans-Thin.woff') format('woff'),
+        url('SalmaAlfasans-Thin.ttf') format('truetype');
+    font-weight: 100;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Salma Alfasans';
+    src: url('SalmaAlfasans-SemiBoldItalic.woff') format('woff'),
+        url('SalmaAlfasans-SemiBoldItalic.ttf') format('truetype');
+    font-weight: 600;
+    font-style: italic;
+    font-display: swap;
+}
+

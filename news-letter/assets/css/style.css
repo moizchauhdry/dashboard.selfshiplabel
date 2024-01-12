@@ -1,0 +1,377 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@200;300;400;600;700;800;900&display=swap');
+
+/* CUSTOM CSS VARIABLES */
+:root {
+  --bg: #eff2f4;
+	--primary: #0c1e74;
+	--secondary: #48b0ea;
+	--white: #ffffff;
+	--black: #000000;
+	--link-color: #3a90d0;
+}
+
+/* GLOBAL STYLE */
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+	outline: none;
+}
+h1, h2, h3, h4, h5, h6, p {
+	margin: 0;
+	padding: 0;
+}
+ul {
+  list-style-type: none;
+  padding: 0;
+  margin-bottom: 0;
+}
+a {
+	text-decoration: none;
+  color: var(--secondary);
+  font-size: 14px;
+  font-weight: 400;
+}
+a:hover {
+  color: var(--secondary);
+}
+p {
+  font-size: 14px;
+  font-weight: 400;
+}
+
+body {
+	background-color: var(--bg);
+  color: var(--white);
+	font-family: 'Nunito', sans-serif;
+  line-height: 25px;
+}
+
+/* CUSTOM CLASSES */
+.heading-body {
+  background-color: var(--primary);
+  padding: 0 20px 10px;
+  border-radius: 10px;
+}
+.link-heading {
+  display: block;
+  color: var(--white);
+  font-size: 20px;
+  font-weight: 700;
+  background-color: var(--secondary);
+  padding: 10px;
+  border-radius: 10px;
+  position: relative;
+  top: -20px;
+}
+.link-heading:hover {
+  color: var(--white);
+}
+.heading {
+  color: var(--white);
+  font-size: 20px;
+  font-weight: 700;
+  background-color: var(--secondary);
+  padding: 10px;
+  border-radius: 10px;
+  text-align: center;
+  position: relative;
+  top: -20px;
+}
+.link-btn {
+  display: inline-block;
+  background-color: var(--link-color);
+  color: white;
+  font-size: 16px;
+  padding: 10px;
+  border-radius: 10px;
+  margin: 30px 0 10px;
+}
+.link-btn:hover {
+  color: var(--white);
+}
+.padd {
+  padding-top: 60px;
+}
+
+/* HEADER/HERO STYLE */
+.header-top-content,
+.header-bottom-content {
+  background-color: var(--primary);
+  padding: 0 60px 4px;
+}
+.header-top-content .learn,
+.header-top-content .unsub {
+  color: var(--white);
+  font-weight: 600;
+  font-size: 16px;
+}
+.header-top-content .learn {
+  margin-left: 5px;
+}
+.header-top-content a:hover {
+  text-decoration: underline;
+}
+.header-middle-content {
+  background-color: var(--secondary);
+  padding: 20px 60px;
+}
+.portfolio-btn a {
+  display: block;
+  color: var(--white);
+  background-color: var(--primary);
+  text-transform: uppercase;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 800;
+  padding: 6px 18px;
+  border: 1px solid var(--white);
+}
+.header-bottom-content p {
+  font-size: 14px;
+  font-weight: 700;
+}
+.header-bottom-content p:nth-child(2) {
+  margin-left: 100px;
+  font-weight: 400;
+}
+.header-bottom-content strong {
+  text-transform: uppercase;
+  font-weight: 900!important;
+}
+.header-bottom-content p:nth-child(3) {
+  margin-left: 20px;
+  font-weight: 400;
+}
+.header-bottom-content span {
+  opacity: .5;
+}
+.social-links a .icon {
+  fill: var(--white);
+  margin-left: 10px;
+}
+
+/* GOLD COMPANY STYLE */
+.gold-company-meta p {
+  font-weight: 600;
+}
+
+/* TOP STORIES STYLE */
+.stories-list li a {
+  display: inline-block;
+  color: var(--white);
+  margin-bottom: 10px;
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 2px;
+}
+.stories-list,
+.quick-links-list {
+  padding: 0 10px;
+}
+.quick-links-list li a {
+  display: inline-block;
+  color: var(--white);
+  margin-bottom: 10px;
+}
+.quick-links-list a:hover {
+  text-decoration: underline;
+}
+
+/* IMPERIUM STYLE */
+.investment-meta p {
+  margin-bottom: 10px;
+}
+
+/* YOUR WATCHLIST STYLE */
+.your-watchlist-meta a {
+  color: var(--white);
+}
+.your-watchlist-meta h1 a {
+  font-size: 20px;
+  font-weight: 700;
+}
+.your-watchlist-meta a:hover {
+  text-decoration: underline;
+}
+.watchlist-heading img {
+  max-width: 60px;
+  display: block;
+}
+.watchlist-heading h2 {
+  margin-left: 10px;
+  font-size: 24px;
+  font-weight: 400;
+  display: inline-block;
+}
+.watchlist-heading p {
+  font-size: 15px;
+  font-weight: 300;
+  padding-top: 10px;
+}
+.watchlist-heading strong {
+  color: #249824;
+  font-weight: 700;
+}
+.watchlist-heading .links {
+  color: var(--secondary);
+  font-weight: 400;
+}
+.portfolio-list {
+  padding-left: 20px; 
+}
+.portfolio-list strong,
+.analysts-list strong {
+  font-weight: 700;
+  font-size: 15px;
+}
+.portfolio-list li {
+  list-style-type: disclosure-closed;
+  margin-bottom: 12px;
+}
+.portfolio-list li p a,
+.analysts-list li p a {
+  color: var(--secondary);
+}
+.analysts-list li {
+  margin-bottom: 12px;
+}
+.analysts-list li:last-child {
+  margin-bottom: 0;
+}
+/* ANALYSTS UPGRADES STYLE */
+.analysts-list li a:hover {
+  text-decoration: underline;
+}
+
+/* MORE CALENDERS STYLE */
+.more-calenders-meta a {
+  color: var(--secondary);
+  margin-right: 8px;
+}
+.more-calenders-meta a:hover {
+  text-decoration: underline;
+}
+.more-calenders-meta a:last-child {
+  margin-right: 0;
+}
+
+/* RESOURCES STYLE */
+.resources-meta .resources-btn {
+  display: block;
+  background-color: var(--secondary);
+  color: var(--white);
+  text-align: center;
+  font-size: 16px;
+  font-weight: 800;
+  border-radius: 4px;
+  text-transform: uppercase;
+  padding: 8px 0;
+  margin: 40px 0 10px;
+}
+.resources-meta .portfolio,
+.resources-meta .join-now {
+  margin-top: 65px;
+}
+
+/* FOOTER */
+.footer {
+  background-color: var(--primary);
+  padding: 25px 0 12px;
+}
+.footer h3 {
+  font-size: 24px;
+  font-weight: 600;
+}
+.footer p {
+  padding-top: 30px;
+  font-size: 15px;
+}
+.footer a:hover {
+  text-decoration: underline;
+}
+
+/* MEDIA QUERIES */
+@media (max-width: 1024px) {
+  .header-top-content {
+    padding: 0 20px 4px;
+    flex-direction: column;  
+  }
+  .head-right-link {
+    margin-left: initial!important;
+  }
+}
+
+@media (max-width: 768px) {
+  .header-top-content p {
+    text-align: center;
+    line-height: 20px;
+    margin: 10px 0 20px;
+  }
+  .header-top-content .learn {
+    margin-left: 0;
+  }
+  .header-middle-content {
+    padding: 20px;
+  }
+  .header-bottom-content {
+    padding: 0 20px 4px;
+  }
+  .header-bottom-content p:nth-child(2) {
+    margin-left: 80px;
+  }
+  .padd {
+    padding-top: 40px;
+  }
+  .quick-links {
+    margin-top: 40px;
+  }
+  .your-watchlist-meta .heading {
+    line-height: 28px;
+  }
+  .link-heading {
+    font-size: 18px;
+  }
+  .link-btn {
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .resources-meta {
+    margin-bottom: 40px;
+    height: auto!important;
+  }
+  .footer {
+    margin-top: 0!important;
+  }
+}
+
+@media (max-width: 576px) {
+  .header-middle-content,
+  .header-bottom-content {
+    flex-direction: column;
+  }
+  .portfolio-btn {
+    margin-top: 20px;
+  }
+  .header-bottom-content {
+    padding: 8px 20px;
+  }
+  .header-bottom-content p:nth-child(2) {
+    margin-left: 0;
+  } 
+  .social-links {
+    margin-left: 0!important;
+  }
+  .link-heading,
+  .heading {
+    font-size: 16px;
+  }
+  .your-watchlist-meta h1 a {
+    font-size: 16px;
+  }
+  .watchlist-heading h2 {
+    font-size: 20px;
+  }
+  .footer h3 {
+    font-size: 18px;
+    text-align: center;
+}

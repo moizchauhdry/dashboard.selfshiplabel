@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="c250522b-261c-45c7-a856-a06fbdde73a3" name="ftp.shippingxps.com" url="http://ftp.shippingxps.com">
+        <fileTransfer host="ftp.shippingxps.com" port="21">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+      <webServer id="863915dd-8cb7-4192-a562-d615b9749d23" name="Shipping Main" url="http://ftp.shippingxps.com">
+        <fileTransfer host="ftp.shippingxps.com" port="21">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>

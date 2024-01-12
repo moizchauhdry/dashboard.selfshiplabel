@@ -1,0 +1,12 @@
+ALTER TABLE `orders` ADD `tracking_number_out` VARCHAR(96) NULL DEFAULT NULL AFTER `tracking_number`;
+ALTER TABLE `orders` CHANGE `tracking_number_in` `tracking_number_in` VARCHAR(96) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL;
+
+ALTER TABLE `orders` ADD `order_type` ENUM('order','package') NOT NULL DEFAULT 'order' AFTER `order_id`;
+
+ALTER TABLE `order_items` ADD `batteries` VARCHAR(64) NULL DEFAULT NULL AFTER `image`;
+
+ALTER TABLE `orders` ADD `address_book_id` INT NULL DEFAULT NULL AFTER `notes`;
+
+ALTER TABLE `order_items` ADD `origin_country` INT NULL DEFAULT NULL AFTER `image`;
+
+ALTER TABLE `order_items` ADD `unit_price` INT NOT NULL DEFAULT '0' AFTER `quantity`;

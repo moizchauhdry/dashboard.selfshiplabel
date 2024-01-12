@@ -1,0 +1,26 @@
+
+#Sidebar{
+	border: 1px solid #ececec;
+	margin-top: 10px;
+	margin-left: 10px;
+}
+
+#sidebarMenu{
+	border: 1px solid #ececec;
+	height: 300px;
+}
+#sidebarMenu li{
+	border-bottom: 1px solid #ececec;	   
+}
+
+.sidebar {
+	top: 0;
+	bottom: 0;
+	left: 0;
+	z-index: 100; /* Behind the navbar */
+	box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);*/
+}
+
+.mt-10{
+	margin-top: 10px;
+}

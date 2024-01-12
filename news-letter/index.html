@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<style>
+		.align-items-center {
+			align-items: center!important;
+		}
+		.d-flex {
+			display: flex!important;
+		}
+		.ms-auto {
+    margin-left: auto!important;
+}
+.justify-content-between {
+    justify-content: space-between!important;
+}
+body {
+    margin: 0;
+    font-family: var(--bs-font-sans-serif);
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #212529;
+    background-color: #fff;
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+}
+.container,
+.container-fluid,
+.container-xxl,
+.container-xl,
+.container-lg,
+.container-md,
+.container-sm {
+  width: 100%;
+  padding-right: var(--bs-gutter-x, 0.75rem);
+  padding-left: var(--bs-gutter-x, 0.75rem);
+  margin-right: auto;
+  margin-left: auto;
+}
+
+@media (min-width: 576px) {
+  .container-sm, .container {
+    max-width: 540px;
+  }
+}
+@media (min-width: 768px) {
+  .container-md, .container-sm, .container {
+    max-width: 720px;
+  }
+}
+@media (min-width: 992px) {
+  .container-lg, .container-md, .container-sm, .container {
+    max-width: 960px;
+  }
+}
+@media (min-width: 1200px) {
+  .container-xl, .container-lg, .container-md, .container-sm, .container {
+    max-width: 1140px;
+  }
+}
+@media (min-width: 1400px) {
+  .container-xxl, .container-xl, .container-lg, .container-md, .container-sm, .container {
+    max-width: 1320px;
+  }
+}
+.text-center {
+    text-align: center!important;
+}
+.row{--bs-gutter-x:1.5rem;--bs-gutter-y:0;display:flex;flex-wrap:wrap;margin-top:calc(var(--bs-gutter-y) * -1);margin-right:calc(var(--bs-gutter-x)/ -2);margin-left:calc(var(--bs-gutter-x)/ -2)}.row>*{flex-shrink:0;width:100%;max-width:100%;padding-right:calc(var(--bs-gutter-x)/ 2);padding-left:calc(var(--bs-gutter-x)/ 2);margin-top:var(--bs-gutter-y)}.col{flex:1 0 0%}.row-cols-auto>*{flex:0 0 auto;width:auto}.row-cols-1>*{flex:0 0 auto;width:100%}.row-cols-2>*{flex:0 0 auto;width:50%}.row-cols-3>*{flex:0 0 auto;width:33.3333333333%}.row-cols-4>*{flex:0 0 auto;width:25%}.row-cols-5>*{flex:0 0 auto;width:20%}.row-cols-6>*{flex:0 0 auto;width:16.6666666667%}.col-auto{flex:0 0 auto;width:auto}.col-1{flex:0 0 auto;width:8.3333333333%}.col-2{flex:0 0 auto;width:16.6666666667%}.col-3{flex:0 0 auto;width:25%}.col-4{flex:0 0 auto;width:33.3333333333%}.col-5{flex:0 0 auto;width:41.6666666667%}.col-6{flex:0 0 auto;width:50%}.col-7{flex:0 0 auto;width:58.3333333333%}.col-8{flex:0 0 auto;width:66.6666666667%}.col-9{flex:0 0 auto;width:75%}.col-10{flex:0 0 auto;width:83.3333333333%}.col-11{flex:0 0 auto;width:91.6666666667%}.col-12{flex:0 0 auto;width:100%}.offset-1{margin-left:8.3333333333%}.offset-2{margin-left:16.6666666667%}.offset-3{margin-left:25%}.offset-4{margin-left:33.3333333333%}.offset-5{margin-left:41.6666666667%}.offset-6{margin-left:50%}.offset-7{margin-left:58.3333333333%}.offset-8{margin-left:66.6666666667%}.offset-9{margin-left:75%}.offset-10{margin-left:83.3333333333%}.offset-11{margin-left:91.6666666667%}.g-0,.gx-0{--bs-gutter-x:0}.g-0,.gy-0{--bs-gutter-y:0}.g-1,.gx-1{--bs-gutter-x:0.25rem}.g-1,.gy-1{--bs-gutter-y:0.25rem}.g-2,.gx-2{--bs-gutter-x:0.5rem}.g-2,.gy-2{--bs-gutter-y:0.5rem}.g-3,.gx-3{--bs-gutter-x:1rem}.g-3,.gy-3{--bs-gutter-y:1rem}.g-4,.gx-4{--bs-gutter-x:1.5rem}.g-4,.gy-4{--bs-gutter-y:1.5rem}.g-5,.gx-5{--bs-gutter-x:3rem}.g-5,.gy-5{--bs-gutter-y:3rem}@media (min-width:576px){.col-sm{flex:1 0 0%}.row-cols-sm-auto>*{flex:0 0 auto;width:auto}.row-cols-sm-1>*{flex:0 0 auto;width:100%}.row-cols-sm-2>*{flex:0 0 auto;width:50%}.row-cols-sm-3>*{flex:0 0 auto;width:33.3333333333%}.row-cols-sm-4>*{flex:0 0 auto;width:25%}.row-cols-sm-5>*{flex:0 0 auto;width:20%}.row-cols-sm-6>*{flex:0 0 auto;width:16.6666666667%}.col-sm-auto{flex:0 0 auto;width:auto}.col-sm-1{flex:0 0 auto;width:8.3333333333%}.col-sm-2{flex:0 0 auto;width:16.6666666667%}.col-sm-3{flex:0 0 auto;width:25%}.col-sm-4{flex:0 0 auto;width:33.3333333333%}.col-sm-5{flex:0 0 auto;width:41.6666666667%}.col-sm-6{flex:0 0 auto;width:50%}.col-sm-7{flex:0 0 auto;width:58.3333333333%}.col-sm-8{flex:0 0 auto;width:66.6666666667%}.col-sm-9{flex:0 0 auto;width:75%}.col-sm-10{flex:0 0 auto;width:83.3333333333%}.col-sm-11{flex:0 0 auto;width:91.6666666667%}.col-sm-12{flex:0 0 auto;width:100%}.offset-sm-0{margin-left:0}.offset-sm-1{margin-left:8.3333333333%}.offset-sm-2{margin-left:16.6666666667%}.offset-sm-3{margin-left:25%}.offset-sm-4{margin-left:33.3333333333%}.offset-sm-5{margin-left:41.6666666667%}.offset-sm-6{margin-left:50%}.offset-sm-7{margin-left:58.3333333333%}.offset-sm-8{margin-left:66.6666666667%}.offset-sm-9{margin-left:75%}.offset-sm-10{margin-left:83.3333333333%}.offset-sm-11{margin-left:91.6666666667%}.g-sm-0,.gx-sm-0{--bs-gutter-x:0}.g-sm-0,.gy-sm-0{--bs-gutter-y:0}.g-sm-1,.gx-sm-1{--bs-gutter-x:0.25rem}.g-sm-1,.gy-sm-1{--bs-gutter-y:0.25rem}.g-sm-2,.gx-sm-2{--bs-gutter-x:0.5rem}.g-sm-2,.gy-sm-2{--bs-gutter-y:0.5rem}.g-sm-3,.gx-sm-3{--bs-gutter-x:1rem}.g-sm-3,.gy-sm-3{--bs-gutter-y:1rem}.g-sm-4,.gx-sm-4{--bs-gutter-x:1.5rem}.g-sm-4,.gy-sm-4{--bs-gutter-y:1.5rem}.g-sm-5,.gx-sm-5{--bs-gutter-x:3rem}.g-sm-5,.gy-sm-5{--bs-gutter-y:3rem}}@media (min-width:768px){.col-md{flex:1 0 0%}.row-cols-md-auto>*{flex:0 0 auto;width:auto}.row-cols-md-1>*{flex:0 0 auto;width:100%}.row-cols-md-2>*{flex:0 0 auto;width:50%}.row-cols-md-3>*{flex:0 0 auto;width:33.3333333333%}.row-cols-md-4>*{flex:0 0 auto;width:25%}.row-cols-md-5>*{flex:0 0 auto;width:20%}.row-cols-md-6>*{flex:0 0 auto;width:16.6666666667%}.col-md-auto{flex:0 0 auto;width:auto}.col-md-1{flex:0 0 auto;width:8.3333333333%}.col-md-2{flex:0 0 auto;width:16.6666666667%}.col-md-3{flex:0 0 auto;width:25%}.col-md-4{flex:0 0 auto;width:33.3333333333%}.col-md-5{flex:0 0 auto;width:41.6666666667%}.col-md-6{flex:0 0 auto;width:50%}.col-md-7{flex:0 0 auto;width:58.3333333333%}.col-md-8{flex:0 0 auto;width:66.6666666667%}.col-md-9{flex:0 0 auto;width:75%}.col-md-10{flex:0 0 auto;width:83.3333333333%}.col-md-11{flex:0 0 auto;width:91.6666666667%}.col-md-12{flex:0 0 auto;width:100%}.offset-md-0{margin-left:0}.offset-md-1{margin-left:8.3333333333%}.offset-md-2{margin-left:16.6666666667%}.offset-md-3{margin-left:25%}.offset-md-4{margin-left:33.3333333333%}.offset-md-5{margin-left:41.6666666667%}.offset-md-6{margin-left:50%}.offset-md-7{margin-left:58.3333333333%}.offset-md-8{margin-left:66.6666666667%}.offset-md-9{margin-left:75%}.offset-md-10{margin-left:83.3333333333%}.offset-md-11{margin-left:91.6666666667%}.g-md-0,.gx-md-0{--bs-gutter-x:0}.g-md-0,.gy-md-0{--bs-gutter-y:0}.g-md-1,.gx-md-1{--bs-gutter-x:0.25rem}.g-md-1,.gy-md-1{--bs-gutter-y:0.25rem}.g-md-2,.gx-md-2{--bs-gutter-x:0.5rem}.g-md-2,.gy-md-2{--bs-gutter-y:0.5rem}.g-md-3,.gx-md-3{--bs-gutter-x:1rem}.g-md-3,.gy-md-3{--bs-gutter-y:1rem}.g-md-4,.gx-md-4{--bs-gutter-x:1.5rem}.g-md-4,.gy-md-4{--bs-gutter-y:1.5rem}.g-md-5,.gx-md-5{--bs-gutter-x:3rem}.g-md-5,.gy-md-5{--bs-gutter-y:3rem}}@media (min-width:992px){.col-lg{flex:1 0 0%}.row-cols-lg-auto>*{flex:0 0 auto;width:auto}.row-cols-lg-1>*{flex:0 0 auto;width:100%}.row-cols-lg-2>*{flex:0 0 auto;width:50%}.row-cols-lg-3>*{flex:0 0 auto;width:33.3333333333%}.row-cols-lg-4>*{flex:0 0 auto;width:25%}.row-cols-lg-5>*{flex:0 0 auto;width:20%}.row-cols-lg-6>*{flex:0 0 auto;width:16.6666666667%}.col-lg-auto{flex:0 0 auto;width:auto}.col-lg-1{flex:0 0 auto;width:8.3333333333%}.col-lg-2{flex:0 0 auto;width:16.6666666667%}.col-lg-3{flex:0 0 auto;width:25%}.col-lg-4{flex:0 0 auto;width:33.3333333333%}.col-lg-5{flex:0 0 auto;width:41.6666666667%}.col-lg-6{flex:0 0 auto;width:50%}.col-lg-7{flex:0 0 auto;width:58.3333333333%}.col-lg-8{flex:0 0 auto;width:66.6666666667%}.col-lg-9{flex:0 0 auto;width:75%}.col-lg-10{flex:0 0 auto;width:83.3333333333%}.col-lg-11{flex:0 0 auto;width:91.6666666667%}.col-lg-12{flex:0 0 auto;width:100%}.offset-lg-0{margin-left:0}.offset-lg-1{margin-left:8.3333333333%}.offset-lg-2{margin-left:16.6666666667%}.offset-lg-3{margin-left:25%}.offset-lg-4{margin-left:33.3333333333%}.offset-lg-5{margin-left:41.6666666667%}.offset-lg-6{margin-left:50%}.offset-lg-7{margin-left:58.3333333333%}.offset-lg-8{margin-left:66.6666666667%}.offset-lg-9{margin-left:75%}.offset-lg-10{margin-left:83.3333333333%}.offset-lg-11{margin-left:91.6666666667%}.g-lg-0,.gx-lg-0{--bs-gutter-x:0}.g-lg-0,.gy-lg-0{--bs-gutter-y:0}.g-lg-1,.gx-lg-1{--bs-gutter-x:0.25rem}.g-lg-1,.gy-lg-1{--bs-gutter-y:0.25rem}.g-lg-2,.gx-lg-2{--bs-gutter-x:0.5rem}.g-lg-2,.gy-lg-2{--bs-gutter-y:0.5rem}.g-lg-3,.gx-lg-3{--bs-gutter-x:1rem}.g-lg-3,.gy-lg-3{--bs-gutter-y:1rem}.g-lg-4,.gx-lg-4{--bs-gutter-x:1.5rem}.g-lg-4,.gy-lg-4{--bs-gutter-y:1.5rem}.g-lg-5,.gx-lg-5{--bs-gutter-x:3rem}.g-lg-5,.gy-lg-5{--bs-gutter-y:3rem}}@media (min-width:1200px){.col-xl{flex:1 0 0%}.row-cols-xl-auto>*{flex:0 0 auto;width:auto}.row-cols-xl-1>*{flex:0 0 auto;width:100%}.row-cols-xl-2>*{flex:0 0 auto;width:50%}.row-cols-xl-3>*{flex:0 0 auto;width:33.3333333333%}.row-cols-xl-4>*{flex:0 0 auto;width:25%}.row-cols-xl-5>*{flex:0 0 auto;width:20%}.row-cols-xl-6>*{flex:0 0 auto;width:16.6666666667%}.col-xl-auto{flex:0 0 auto;width:auto}.col-xl-1{flex:0 0 auto;width:8.3333333333%}.col-xl-2{flex:0 0 auto;width:16.6666666667%}.col-xl-3{flex:0 0 auto;width:25%}.col-xl-4{flex:0 0 auto;width:33.3333333333%}.col-xl-5{flex:0 0 auto;width:41.6666666667%}.col-xl-6{flex:0 0 auto;width:50%}.col-xl-7{flex:0 0 auto;width:58.3333333333%}.col-xl-8{flex:0 0 auto;width:66.6666666667%}.col-xl-9{flex:0 0 auto;width:75%}.col-xl-10{flex:0 0 auto;width:83.3333333333%}.col-xl-11{flex:0 0 auto;width:91.6666666667%}.col-xl-12{flex:0 0 auto;width:100%}.offset-xl-0{margin-left:0}.offset-xl-1{margin-left:8.3333333333%}.offset-xl-2{margin-left:16.6666666667%}.offset-xl-3{margin-left:25%}.offset-xl-4{margin-left:33.3333333333%}.offset-xl-5{margin-left:41.6666666667%}.offset-xl-6{margin-left:50%}.offset-xl-7{margin-left:58.3333333333%}.offset-xl-8{margin-left:66.6666666667%}.offset-xl-9{margin-left:75%}.offset-xl-10{margin-left:83.3333333333%}.offset-xl-11{margin-left:91.6666666667%}.g-xl-0,.gx-xl-0{--bs-gutter-x:0}.g-xl-0,.gy-xl-0{--bs-gutter-y:0}.g-xl-1,.gx-xl-1{--bs-gutter-x:0.25rem}.g-xl-1,.gy-xl-1{--bs-gutter-y:0.25rem}.g-xl-2,.gx-xl-2{--bs-gutter-x:0.5rem}.g-xl-2,.gy-xl-2{--bs-gutter-y:0.5rem}.g-xl-3,.gx-xl-3{--bs-gutter-x:1rem}.g-xl-3,.gy-xl-3{--bs-gutter-y:1rem}.g-xl-4,.gx-xl-4{--bs-gutter-x:1.5rem}.g-xl-4,.gy-xl-4{--bs-gutter-y:1.5rem}.g-xl-5,.gx-xl-5{--bs-gutter-x:3rem}.g-xl-5,.gy-xl-5{--bs-gutter-y:3rem}}@media (min-width:1400px){.col-xxl{flex:1 0 0%}.row-cols-xxl-auto>*{flex:0 0 auto;width:auto}.row-cols-xxl-1>*{flex:0 0 auto;width:100%}.row-cols-xxl-2>*{flex:0 0 auto;width:50%}.row-cols-xxl-3>*{flex:0 0 auto;width:33.3333333333%}.row-cols-xxl-4>*{flex:0 0 auto;width:25%}.row-cols-xxl-5>*{flex:0 0 auto;width:20%}.row-cols-xxl-6>*{flex:0 0 auto;width:16.6666666667%}.col-xxl-auto{flex:0 0 auto;width:auto}.col-xxl-1{flex:0 0 auto;width:8.3333333333%}.col-xxl-2{flex:0 0 auto;width:16.6666666667%}.col-xxl-3{flex:0 0 auto;width:25%}.col-xxl-4{flex:0 0 auto;width:33.3333333333%}.col-xxl-5{flex:0 0 auto;width:41.6666666667%}.col-xxl-6{flex:0 0 auto;width:50%}.col-xxl-7{flex:0 0 auto;width:58.3333333333%}.col-xxl-8{flex:0 0 auto;width:66.6666666667%}.col-xxl-9{flex:0 0 auto;width:75%}.col-xxl-10{flex:0 0 auto;width:83.3333333333%}.col-xxl-11{flex:0 0 auto;width:91.6666666667%}.col-xxl-12{flex:0 0 auto;width:100%}.offset-xxl-0{margin-left:0}.offset-xxl-1{margin-left:8.3333333333%}.offset-xxl-2{margin-left:16.6666666667%}.offset-xxl-3{margin-left:25%}.offset-xxl-4{margin-left:33.3333333333%}.offset-xxl-5{margin-left:41.6666666667%}.offset-xxl-6{margin-left:50%}.offset-xxl-7{margin-left:58.3333333333%}.offset-xxl-8{margin-left:66.6666666667%}.offset-xxl-9{margin-left:75%}.offset-xxl-10{margin-left:83.3333333333%}.offset-xxl-11{margin-left:91.6666666667%}.g-xxl-0,.gx-xxl-0{--bs-gutter-x:0}.g-xxl-0,.gy-xxl-0{--bs-gutter-y:0}.g-xxl-1,.gx-xxl-1{--bs-gutter-x:0.25rem}.g-xxl-1,.gy-xxl-1{--bs-gutter-y:0.25rem}.g-xxl-2,.gx-xxl-2{--bs-gutter-x:0.5rem}.g-xxl-2,.gy-xxl-2{--bs-gutter-y:0.5rem}.g-xxl-3,.gx-xxl-3{--bs-gutter-x:1rem}.g-xxl-3,.gy-xxl-3{--bs-gutter-y:1rem}.g-xxl-4,.gx-xxl-4{--bs-gutter-x:1.5rem}.g-xxl-4,.gy-xxl-4{--bs-gutter-y:1.5rem}.g-xxl-5,.gx-xxl-5{--bs-gutter-x:3rem}.g-xxl-5,.gy-xxl-5{--bs-gutter-y:3rem}}
+	</style>
+    <link rel="stylesheet" type="text/css" href="http://ec2-3-134-87-12.us-east-2.compute.amazonaws.com/news-letter/assets/css/style.css" />
+	<title>Summit Stocks</title>
+</head>
+<body>
+	<!-- HEADER/HERO -->
+	<header class="header">
+		<div class="header-top-content d-flex align-items-center">
+			<p>Add Summit Stocks to your address book or safe-sender list to make sure that your newsletter gets delivered to your inbox every time.</p>
+			<a href="#" class="learn">Click here to learn how.</a>
+			<div class="head-right-link ms-auto">
+				<a href="#" class="unsub" title="Unsubscribe">Unsubscribe</a>
+			</div>
+		</div>
+		<div class="header-middle-content d-flex justify-content-between align-items-center">
+			<a href="" class="logo" title="">
+				<img class="img-fluid" src="http://ec2-3-134-87-12.us-east-2.compute.amazonaws.com/news-letter/assets/images/Logo.png" alt="logo">
+			</a>
+			<div class="portfolio-btn">
+				<a href="">View my portfolio</a>
+			</div>
+		</div>
+		<div class="header-bottom-content d-flex align-items-center">
+			<p>May 11th, 2021</p>
+			<p><strong>s&p 500:</strong> 4,188.130 <span>0.00</span></p>
+			<p><strong>dow:</strong> 34,312.46 <span>0.00</span></p>
+			<div class="social-links ms-auto">
+				<a href="#" title="facebook">
+					<svg class="icon icon-facebook" width="20" height="20">
+	                	<use href="http://ec2-3-134-87-12.us-east-2.compute.amazonaws.com/news-letter/assets/images/sprite.svg#facebook"></use>
+	            	</svg>
+				</a>
+				<a href="#" title="twitter">
+					<svg class="icon icon-twitter" width="20" height="20">
+	                	<use href="http://ec2-3-134-87-12.us-east-2.compute.amazonaws.com/news-letter/assets/images/sprite.svg#twitter"></use>
+	            	</svg>
+				</a>
+				<a href="#" title="st"></a>
+			</div>
+		</div>
+	</header>
+	<!-- END HEADER/HERO -->
+
+	<!-- GOLD COMPANY -->
+	<div class="gold-company padd">
+		<div class="container">
+			<div class="gold-company-meta heading-body text-center">
+				<a href="#" class="link-heading">This gold company is one to watch out for (ad)</a>
+				<p>This might be the biggest kept secret in finance, find out why industry experts are getting excited about this gold miner.</p>
+				<a href="#" class="link-btn">Learn More about this gold miner</a>
+			</div>
+		</div>
+	</div>
+	<!-- END GOLD COMPANY -->
+
+	<!-- TOP STORIES -->
+	<section class="top-stories padd">
+		<div class="container">
+			<div class="row">
+				<div class="col-md-8">
+					<div class="top-stories-meta heading-body">
+						<h1 class="heading">Today's Top Stories</h1>
+						<ul class="stories-list">
+							<li>
+								<a href="#">HanesBrands Delivers Solid Earnings Report and Plans for Improvement</a>
+							</li>
+							<li>
+								<a href="#">How major US stock indexes fared Tuesday</a>
+							</li>
+							<li>
+								<a href="#">This Plant-based Small-cap Is Rocking 2021 (ad)</a>
+							</li>
+							<li>
+								<a href="#">Roblox Turns in Stunning Earnings Report</a>
+							</li>
+							<li>
+								<a href="#">Ferro, 3D Systems rise; Yum, Novavax fall</a>
+							</li>
+							<li>
+								<a href="#">Roblox Moves Up On Strong User Growth</a>
+							</li>
+							<li>
+								<a href="#">Leigh Perkins, who took Orvis beyond fly fishing, dies at 93</a>
+							</li>
+							<li>
+								<a href="#">This is how America’s downfall begins (ad)</a>
+							</li>
+							<li>
+								<a href="#">Wendy’s Needs More Clarity Than an Earnings Report Can Provide</a>
+							</li>
+							<li>
+								<a href="#">Whitmer threatens profit seizure if pipeline keeps operating</a>
+							</li>
+							<li>
+								<a href="#">Is Peloton’s (NASDAQ: PTON) Selling Overdone?</a>
+							</li>
+							<li>
+								<a href="#">Stocks pull back on Wall Street as inflation concerns grow</a>
+							</li>
+						</ul>
+					</div>
+				</div>
+				<div class="col-md-4">
+					<div class="quick-links heading-body">
+						<h1 class="heading">Quick Links</h1>
+						<ul class="quick-links-list">
+							<li>
+								<a href="#">Today's Summit Stocks Minute</a>
+							</li>
+							<li>
+								<a href="#">My Summit Stocks </a>
+							</li>
+							<li>
+								<a href="#">Account Settings</a>
+							</li>
+							<li>
+								<a href="#">Analyst Ratings</a>
+							</li>
+							<li>
+								<a href="#">Company Profiles</a>
+							</li>
+							<li>
+								<a href="#">Dividend Declarations</a>
+							</li>
+							<li>
+								<a href="#">Earnings Announcements</a>
+							</li>
+							<li>
+								<a href="#">Headlines </a>
+							</li>
+							<li>
+								<a href="#">Insider Trades</a>
+							</li>
+							<li>
+								<a href="#">Insider Buying Stocks</a>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+	<!-- END TOP STORIES -->
+
+	<!-- IMPERIUM -->
+	<section class="imperium padd">
+		<div class="container">
+			<div class="investment-meta heading-body">
+				<a href="#" class="link-heading text-center">"IMPERIUM": The #1 Investment of the 2020s (ad)</a>
+				<p>Could the technology behind this odd-looking machine really be the most transformative innovation in history?</p>
+				<p>Experts are screaming "YES"!</p>
+				<p>Elon Musk calls it "amazing..."</p>
+				<p>It's a technology I call "Imperium."</p>
+				<p>And it's about to spark the biggest investment mega trend in history...</p>
+				<a href="#" class="link-btn" title="call to action">Call to action</a>
+			</div>
+		</div>
+	</section>
+	<!-- END IMPERIUM -->
+
+	<!-- YOUR WATCHLIST -->
+	<section class="your-watchlist padd">
+		<div class="container">
+			<div class="your-watchlist-meta heading-body">
+				<h1 class="heading">Your Watchlist (<a href="#">Manage Your Watchlist and Monitor Your Portfolio</a>)</h1>
+				<div class="watchlist-heading">
+					<a href="#" class="d-flex align-items-center">
+						<img src="http://ec2-3-134-87-12.us-east-2.compute.amazonaws.com/news-letter/assets/images/armour-logo.png" alt="">
+						<h2>Under Armour, Inc. (UAA)</h2>
+					</a>
+					<p>Current price: $22.17 , Change: <strong>$0.17</strong>, <a href="#" class="links">Summit Stocks Profile, <a href="#" class="links">MSN Money,</a> <a href="#" class="links">Yahoo Finance</a> </a></p>
+				</div>
+				<ul class="portfolio-list mt-4">
+					<li>
+						<p><strong>Under Armour: </strong> (NYSE:UAA) had its price target raised by analysts at Morgan Stanley (<i class="fas fa-star"></i> <i class="fas fa-star"></i> <i class="fas fa-star"></i> <i class="fas fa-star-half-alt"></i> <i class="far fa-star"></i>) from $23.00 to $24.00. They now have an "equal weight" rating on the stock.This represents a 4.3% upside from the current price of $23.02.</p>
+					</li>
+					<li>
+						<p><strong>Under Armour: </strong> (NYSE:UAA) had its price target raised by analysts at Morgan Stanley (<i class="fas fa-star"></i> <i class="fas fa-star"></i> <i class="fas fa-star"></i> <i class="fas fa-star-half-alt"></i> <i class="far fa-star"></i>) from $23.00 to $24.00. They now have an "equal weight" rating on the stock.This represents a 4.3% upside from the current price of $23.02.</p>
+					</li>
+					<li>
+						<p><strong>Under Armour: </strong> (NYSE:UAA) had its price target raised by analysts at Morgan Stanley (<i class="fas fa-star"></i> <i class="fas fa-star"></i> <i class="fas fa-star"></i> <i class="fas fa-star-half-alt"></i> <i class="far fa-star"></i>) from $23.00 to $24.00. They now have an "equal weight" rating on the stock.This represents a 4.3% upside from the current price of $23.02.</p>
+					</li>
+					<li>
+						<p><strong>Under Armour: </strong> (NYSE:UAA) had its price target raised by analysts at Morgan Stanley (<i class="fas fa-star"></i> <i class="fas fa-star"></i> <i class="fas fa-star"></i> <i class="fas fa-star-half-alt"></i> <i class="far fa-star"></i>) from $23.00 to $24.00. They now have an "equal weight" rating on the stock.This represents a 4.3% upside from the current price of $23.02.</p>
+					</li>
+					<li>
+						<p><strong>Under Armour: </strong> (NYSE:UAA) had its price target raised by analysts at Morgan Stanley (<i class="fas fa-star"></i> <i class="fas fa-star"></i> <i class="fas fa-star"></i> <i class="fas fa-star-half-alt"></i> <i class="far fa-star"></i>) from $23.00 to $24.00. They now have an "equal weight" rating on the stock.This represents a 4.3% upside from the current price of $23.02.</p>
+					</li>
+					<li>
+						<p><strong>(5/11)</strong><a href="#"> Under ArmourInc. (NYSE:UAA) Stock: Up 242.24% Since Low, This Stock Is Just Getting Warmed Up <a href="#">(stocksregister.com)</a></a></p>
+					</li>
+					<li>
+						<p><strong>(5/11)</strong><a href="#"> Under Armour (NYSE:UAA) Upgraded by Barclays to Overweight <a href="#">(Summit Stocks.com)</a></a></p>
+					</li>
+					<li>
+						<p><strong>(5/11)</strong><a href="#">  Oppenheimer Comments on Under Armour, Inc.'s Q2 2021 Earnings (NYSE:UAA) <a href="#"> (americanbankingnews.com)</a></a></p>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</section>
+	<!-- END YOUR WATCHLIST -->
+
+	<!-- ANALYSTS UPGRADES -->
+	<section class="analysts-upgrades padd">
+		<div class="container">
+			<div class="analysts-meta heading-body">
+				<h1 class="heading">Analysts' Upgrades</h1>
+				<ul class="analysts-list">
+					<li>
+						<p><strong>Amadeus IT Group: </strong> <a href="#">(OTCMKTS:AMADY)</a> was upgraded by analysts at HSBC Holdings plc from a "reduce" rating to a "hold" rating.The current price is $71.75. <a href="#">Read More.</a></p>
+					</li>
+					<li>
+						<p><strong>AssetMark Financial: </strong> <a href="#">(NYSE:AMK)</a> was upgraded by analysts at Raymond James from an "outperform" rating to a "strong-buy" rating. They now have a $34.00 price target on the stock, up previously from $33.00.This represents a 42.4% upside from the current price of $23.88. <a href="#">Read More.</a></p>
+					</li>
+					<li>
+						<p><strong>AssetMark Financial: </strong> <a href="#">(NYSE:AMK)</a> was upgraded by analysts at Raymond James from an "outperform" rating to a "strong-buy" rating. They now have a $34.00 price target on the stock, up previously from $33.00.This represents a 42.4% upside from the current price of $23.88. <a href="#">Read More.</a></p>
+					</li>
+					<li>
+						<p><strong>AssetMark Financial: </strong> <a href="#">(NYSE:AMK)</a> was upgraded by analysts at Raymond James from an "outperform" rating to a "strong-buy" rating. They now have a $34.00 price target on the stock, up previously from $33.00.This represents a 42.4% upside from the current price of $23.88. <a href="#">Read More.</a></p>
+					</li>
+					<li>
+						<p><strong>AssetMark Financial: </strong> <a href="#">(NYSE:AMK)</a> was upgraded by analysts at Raymond James from an "outperform" rating to a "strong-buy" rating. They now have a $34.00 price target on the stock, up previously from $33.00.This represents a 42.4% upside from the current price of $23.88. <a href="#">Read More.</a></p>
+					</li>
+					<li>
+						<p><strong>AssetMark Financial: </strong> <a href="#">(NYSE:AMK)</a> was upgraded by analysts at Raymond James from an "outperform" rating to a "strong-buy" rating. They now have a $34.00 price target on the stock, up previously from $33.00.This represents a 42.4% upside from the current price of $23.88. <a href="#">Read More.</a></p>
+					</li>
+					<li>
+						<p><strong>AssetMark Financial: </strong> <a href="#">(NYSE:AMK)</a> was upgraded by analysts at Raymond James from an "outperform" rating to a "strong-buy" rating. They now have a $34.00 price target on the stock, up previously from $33.00.This represents a 42.4% upside from the current price of $23.88. <a href="#">Read More.</a></p>
+					</li>
+					<li>
+						<p><strong>AssetMark Financial: </strong> <a href="#">(NYSE:AMK)</a> was upgraded by analysts at Raymond James from an "outperform" rating to a "strong-buy" rating. They now have a $34.00 price target on the stock, up previously from $33.00.This represents a 42.4% upside from the current price of $23.88. <a href="#">Read More.</a></p>
+					</li>
+					<li>
+						<p><strong>AssetMark Financial: </strong> <a href="#">(NYSE:AMK)</a> was upgraded by analysts at Raymond James from an "outperform" rating to a "strong-buy" rating. They now have a $34.00 price target on the stock, up previously from $33.00.This represents a 42.4% upside from the current price of $23.88. <a href="#">Read More.</a></p>
+					</li>
+					<li>
+						<p><strong>AssetMark Financial: </strong> <a href="#">(NYSE:AMK)</a> was upgraded by analysts at Raymond James from an "outperform" rating to a "strong-buy" rating. They now have a $34.00 price target on the stock, up previously from $33.00.This represents a 42.4% upside from the current price of $23.88. <a href="#">Read More.</a></p>
+					</li>
+					<li>
+						<p><strong>AssetMark Financial: </strong> <a href="#">(NYSE:AMK)</a> was upgraded by analysts at Raymond James from an "outperform" rating to a "strong-buy" rating. They now have a $34.00 price target on the stock, up previously from $33.00.This represents a 42.4% upside from the current price of $23.88. <a href="#">Read More.</a></p>
+					</li>
+					<li class="text-center"><a href="#" class="link-btn">View today's most recent analysts' upgrades at Summit Stocks.com</a></li>
+				</ul>
+			</div>
+		</div>
+	</section>
+	<!-- END ANALYSTS UPGRADES -->
+
+	<!-- PLANET BASE BOOM -->
+	<section class="planet-base-boom padd">
+		<div class="container">
+			<div class="planet-base-meta heading-body text-center">
+				<a href="#" class="link-heading">The Best Company to Watch in the Plant Based Boom (ad)</a>
+				<p>This may be the hottest under the radar company making HUGE moves this year!</p>
+				<a href="#" class="link-btn">Continue Reading</a>
+			</div>
+		</div>
+	</section>
+	<!-- END PLANET BASE BOOM -->
+
+	<!-- ANALYSTS DOWNGRADES -->
+	<section class="analysts-downgrades padd">
+		<div class="container">
+			<div class="analysts-meta heading-body">
+				<h1 class="heading">Analysts' Upgrades</h1>
+				<ul class="analysts-list">
+					<li>
+						<p><strong>Aurora Cannabis: </strong> <a href="#">(NYSE:ACB)</a> was downgraded by analysts at CIBC from a "neutral" rating to a "sector underperform" rating. They now have a $9.00 price target on the stock, down previously from $15.00.This represents a 10.0% upside from the current price of $8.18. <a href="#">Read More.</a></p>
+					</li>
+					<li>
+						<p><strong>Aurora Cannabis: </strong> <a href="#">(NYSE:ACB)</a> was downgraded by analysts at CIBC from a "neutral" rating to a "sector underperform" rating. They now have a $9.00 price target on the stock, down previously from $15.00.This represents a 10.0% upside from the current price of $8.18. <a href="#">Read More.</a></p>
+					</li>
+					<li>
+						<p><strong>Aurora Cannabis: </strong> <a href="#">(NYSE:ACB)</a> was downgraded by analysts at CIBC from a "neutral" rating to a "sector underperform" rating. They now have a $9.00 price target on the stock, down previously from $15.00.This represents a 10.0% upside from the current price of $8.18. <a href="#">Read More.</a></p>
+					</li>
+					<li>
+						<p><strong>Aurora Cannabis: </strong> <a href="#">(NYSE:ACB)</a> was downgraded by analysts at CIBC from a "neutral" rating to a "sector underperform" rating. They now have a $9.00 price target on the stock, down previously from $15.00.This represents a 10.0% upside from the current price of $8.18. <a href="#">Read More.</a></p>
+					</li>
+					<li>
+						<p><strong>Aurora Cannabis: </strong> <a href="#">(NYSE:ACB)</a> was downgraded by analysts at CIBC from a "neutral" rating to a "sector underperform" rating. They now have a $9.00 price target on the stock, down previously from $15.00.This represents a 10.0% upside from the current price of $8.18. <a href="#">Read More.</a></p>
+					</li>
+					<li>
+						<p><strong>Aurora Cannabis: </strong> <a href="#">(NYSE:ACB)</a> was downgraded by analysts at CIBC from a "neutral" rating to a "sector underperform" rating. They now have a $9.00 price target on the stock, down previously from $15.00.This represents a 10.0% upside from the current price of $8.18. <a href="#">Read More.</a></p>
+					</li>
+					<li>
+						<p><strong>Aurora Cannabis: </strong> <a href="#">(NYSE:ACB)</a> was downgraded by analysts at CIBC from a "neutral" rating to a "sector underperform" rating. They now have a $9.00 price target on the stock, down previously from $15.00.This represents a 10.0% upside from the current price of $8.18. <a href="#">Read More.</a></p>
+					</li>
+					<li>
+						<p><strong>Aurora Cannabis: </strong> <a href="#">(NYSE:ACB)</a> was downgraded by analysts at CIBC from a "neutral" rating to a "sector underperform" rating. They now have a $9.00 price target on the stock, down previously from $15.00.This represents a 10.0% upside from the current price of $8.18. <a href="#">Read More.</a></p>
+					</li>
+					<li>
+						<p><strong>Aurora Cannabis: </strong> <a href="#">(NYSE:ACB)</a> was downgraded by analysts at CIBC from a "neutral" rating to a "sector underperform" rating. They now have a $9.00 price target on the stock, down previously from $15.00.This represents a 10.0% upside from the current price of $8.18. <a href="#">Read More.</a></p>
+					</li>
+					<li>
+						<p><strong>Aurora Cannabis: </strong> <a href="#">(NYSE:ACB)</a> was downgraded by analysts at CIBC from a "neutral" rating to a "sector underperform" rating. They now have a $9.00 price target on the stock, down previously from $15.00.This represents a 10.0% upside from the current price of $8.18. <a href="#">Read More.</a></p>
+					</li>
+					<li>
+						<p><strong>Aurora Cannabis: </strong> <a href="#">(NYSE:ACB)</a> was downgraded by analysts at CIBC from a "neutral" rating to a "sector underperform" rating. They now have a $9.00 price target on the stock, down previously from $15.00.This represents a 10.0% upside from the current price of $8.18. <a href="#">Read More.</a></p>
+					</li>
+					<li>
+						<p><strong>Aurora Cannabis: </strong> <a href="#">(NYSE:ACB)</a> was downgraded by analysts at CIBC from a "neutral" rating to a "sector underperform" rating. They now have a $9.00 price target on the stock, down previously from $15.00.This represents a 10.0% upside from the current price of $8.18. <a href="#">Read More.</a></p>
+					</li>
+					<li>
+						<p><strong>Aurora Cannabis: </strong> <a href="#">(NYSE:ACB)</a> was downgraded by analysts at CIBC from a "neutral" rating to a "sector underperform" rating. They now have a $9.00 price target on the stock, down previously from $15.00.This represents a 10.0% upside from the current price of $8.18. <a href="#">Read More.</a></p>
+					</li>
+					<li>
+						<p><strong>Aurora Cannabis: </strong> <a href="#">(NYSE:ACB)</a> was downgraded by analysts at CIBC from a "neutral" rating to a "sector underperform" rating. They now have a $9.00 price target on the stock, down previously from $15.00.This represents a 10.0% upside from the current price of $8.18. <a href="#">Read More.</a></p>
+					</li>
+					<li>
+						<p><strong>Aurora Cannabis: </strong> <a href="#">(NYSE:ACB)</a> was downgraded by analysts at CIBC from a "neutral" rating to a "sector underperform" rating. They now have a $9.00 price target on the stock, down previously from $15.00.This represents a 10.0% upside from the current price of $8.18. <a href="#">Read More.</a></p>
+					</li>
+					<li class="text-center"><a href="#" class="link-btn">View today's most recent analysts' upgrades at Summit Stocks.com</a></li>
+				</ul>
+			</div> 
+		</div>
+	</section>
+	<!-- END ANALYSTS DOWNGRADES -->
+
+	<!-- JEFF BEZOS -->
+	<section class="jeff-bezos padd">
+		<div class="container">
+			<div class="jeff-bezos-meta heading-body text-center">
+				<a href="#" class="link-heading">What do Jeff Bezos, Goldman Sachs and a Big Pharma giant have in common? (ad)</a>
+				<p>They have already invested billions into this stock. Why? Because on August 23, 2018, this small biotech won a patent for a treatment that could help as many as 50 million people...and save the U.S. as much as $20 TRILLION. And our research shows that anyone who gets in today could turn every $1,000 into $1.1 million.</p>
+				<a href="#" class="link-btn">Learn more here</a>
+			</div>
+		</div>
+	</section>
+	<!-- END JEFF BEZOS -->
+
+	<!-- ANALYSTS NEW COVERAGE -->
+	<section class="analysts-coverage padd">
+		<div class="container">
+			<div class="analysts-meta heading-body">
+				<h1 class="heading">Analysts' New Coverage</h1>
+				<ul class="analysts-list">
+					<li>
+						<p><strong>Acies Acquisition: </strong> <a href="#">(NASDAQ:ACAC)</a> is now covered by analysts at Northland Securities. They set an "outperform" rating and a $15.00 price target on the stock.This represents a 50.8% upside from the current price of $9.95. <a href="#">Read More.</a></p>
+					</li>
+					<li>
+						<p><strong>Acies Acquisition: </strong> <a href="#">(NASDAQ:ACAC)</a> is now covered by analysts at Northland Securities. They set an "outperform" rating and a $15.00 price target on the stock.This represents a 50.8% upside from the current price of $9.95. <a href="#">Read More.</a></p>
+					</li>
+					<li>
+						<p><strong>Acies Acquisition: </strong> <a href="#">(NASDAQ:ACAC)</a> is now covered by analysts at Northland Securities. They set an "outperform" rating and a $15.00 price target on the stock.This represents a 50.8% upside from the current price of $9.95. <a href="#">Read More.</a></p>
+					</li>
+					<li>
+						<p><strong>Acies Acquisition: </strong> <a href="#">(NASDAQ:ACAC)</a> is now covered by analysts at Northland Securities. They set an "outperform" rating and a $15.00 price target on the stock.This represents a 50.8% upside from the current price of $9.95. <a href="#">Read More.</a></p>
+					</li>
+					<li>
+						<p><strong>Acies Acquisition: </strong> <a href="#">(NASDAQ:ACAC)</a> is now covered by analysts at Northland Securities. They set an "outperform" rating and a $15.00 price target on the stock.This represents a 50.8% upside from the current price of $9.95. <a href="#">Read More.</a></p>
+					</li>
+					<li>
+						<p><strong>Acies Acquisition: </strong> <a href="#">(NASDAQ:ACAC)</a> is now covered by analysts at Northland Securities. They set an "outperform" rating and a $15.00 price target on the stock.This represents a 50.8% upside from the current price of $9.95. <a href="#">Read More.</a></p>
+					</li>
+					<li>
+						<p><strong>Acies Acquisition: </strong> <a href="#">(NASDAQ:ACAC)</a> is now covered by analysts at Northland Securities. They set an "outperform" rating and a $15.00 price target on the stock.This represents a 50.8% upside from the current price of $9.95. <a href="#">Read More.</a></p>
+					</li>
+					<li>
+						<p><strong>Acies Acquisition: </strong> <a href="#">(NASDAQ:ACAC)</a> is now covered by analysts at Northland Securities. They set an "outperform" rating and a $15.00 price target on the stock.This represents a 50.8% upside from the current price of $9.95. <a href="#">Read More.</a></p>
+					</li>
+					<li>
+						<p><strong>Acies Acquisition: </strong> <a href="#">(NASDAQ:ACAC)</a> is now covered by analysts at Northland Securities. They set an "outperform" rating and a $15.00 price target on the stock.This represents a 50.8% upside from the current price of $9.95. <a href="#">Read More.</a></p>
+					</li>
+					<li>
+						<p><strong>Acies Acquisition: </strong> <a href="#">(NASDAQ:ACAC)</a> is now covered by analysts at Northland Securities. They set an "outperform" rating and a $15.00 price target on the stock.This represents a 50.8% upside from the current price of $9.95. <a href="#">Read More.</a></p>
+					</li>
+					<li>
+						<p><strong>Acies Acquisition: </strong> <a href="#">(NASDAQ:ACAC)</a> is now covered by analysts at Northland Securities. They set an "outperform" rating and a $15.00 price target on the stock.This represents a 50.8% upside from the current price of $9.95. <a href="#">Read More.</a></p>
+					</li>
+					<li>
+						<p><strong>Acies Acquisition: </strong> <a href="#">(NASDAQ:ACAC)</a> is now covered by analysts at Northland Securities. They set an "outperform" rating and a $15.00 price target on the stock.This represents a 50.8% upside from the current price of $9.95. <a href="#">Read More.</a></p>
+					</li>
+					<li>
+						<p><strong>Acies Acquisition: </strong> <a href="#">(NASDAQ:ACAC)</a> is now covered by analysts at Northland Securities. They set an "outperform" rating and a $15.00 price target on the stock.This represents a 50.8% upside from the current price of $9.95. <a href="#">Read More.</a></p>
+					</li>
+					<li>
+						<p><strong>Acies Acquisition: </strong> <a href="#">(NASDAQ:ACAC)</a> is now covered by analysts at Northland Securities. They set an "outperform" rating and a $15.00 price target on the stock.This represents a 50.8% upside from the current price of $9.95. <a href="#">Read More.</a></p>
+					</li>
+					<li>
+						<p><strong>Acies Acquisition: </strong> <a href="#">(NASDAQ:ACAC)</a> is now covered by analysts at Northland Securities. They set an "outperform" rating and a $15.00 price target on the stock.This represents a 50.8% upside from the current price of $9.95. <a href="#">Read More.</a></p>
+					</li>
+					<li class="text-center"><a href="#" class="link-btn">View today's most recent analysts' upgrades at Summit Stocks.com</a></li>
+				</ul>
+			</div>
+		</div>
+	</section>
+	<!-- END ANALYSTS NEW COVERAGE -->
+
+	<!-- MORE CALENDERS -->
+	<section class="more-calenders padd">
+		<div class="container">
+			<div class="more-calenders-meta heading-body">
+				<h1 class="heading text-center">More Calendars from Summit Stocks</h1>
+				<a href="#">U.S. Analyst Ratings,</a>
+				<a href="#">Canadian Analyst Ratings,</a>
+				<a href="#">U.K. Analyst Ratings,</a>
+				<a href="#">Corporate Buybacks,</a>
+				<a href="#">Cryptocurrencies,</a>
+				<a href="#">Dividend Declarations,</a>
+				<a href="#">Earnings Announcements,</a>
+				<a href="#">Earnings Conference Calls,</a>
+				<a href="#">U.S. Analyst Ratings,</a>
+				<a href="#">Canadian Analyst Ratings,</a>
+				<a href="#">U.K. Analyst Ratings,</a>
+				<a href="#">Corporate Buybacks,</a>
+				<a href="#">Cryptocurrencies,</a>
+				<a href="#">Dividend Declarations,</a>
+				<a href="#">Earnings Announcements,</a>
+				<a href="#">Earnings Conference Calls,</a>
+			</div>
+		</div>
+	</section>
+	<!-- END MORE CALENDERS -->
+
+	<!-- RESOURCES -->
+	<section class="resources padd">
+		<div class="container">
+			<div class="row">
+				<div class="col-md-4">
+					<div class="resources-meta heading-body">
+						<h1 class="heading">Upgrade Your Subscription</h1>
+						<p>Upgrade to Summit Stocks Daily Premium and receive your premium edition of Summit Stocks Daily at 9:00 AM ET.</p>
+						<a href="#" class="resources-btn">upgrade now</a>
+					</div>
+				</div>
+				<div class="col-md-4">
+					<div class="resources-meta h-100 heading-body">
+						<h1 class="heading">Manage Your Watchlist</h1>
+						<p>View and add up to five holdings to your watchlist.</p>
+						<a href="#" class="resources-btn portfolio">View my portfolio</a>
+					</div>
+				</div>
+				<div class="col-md-4">
+					<div class="resources-meta h-100 heading-body">
+						<h1 class="heading">Join Our Facebook Group</h1>
+						<p>Join Summit Stocks’s free stock discussion and trading idea group on Facebook.</p>
+						<a href="#" class="resources-btn join-now">join now</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+	<!-- END RESOURCES -->
+
+	<!-- FOOTER -->
+	<footer class="footer mt-5">
+		<div class="container">
+			<h3>Thank you for subscribing to Summit Stocks!</h3>
+			<p>We empower individual investors to make better trading decisions by providing real-time financial information and objective market research. Summit Stocks is a small business and email is a crucial tool for us to share information, news, trading ideas and financial products and services with our subscribers (that's you!). If you have questions about your subscription, feel free to contact our U.S. based support team via email at <a href="#">contact@Summit Stocks.com</a> or leave us a voicemail at (844) 978-6257.</p>
+			<div class="footer-para">
+				<p>If you would like to unsubscribe or change which emails you receive, you can <a href="#">manage your mailing preferences</a> or <a href="#">unsubscribe</a> from these emails.</p>
+				<p>© 2006-2021 American Consumer News, LLC dba Summit Stocks. 326 E 8th St #105, Sioux Falls, SD 57103. United States.</p>
+			</div>
+		</div>
+	</footer>
+	<!-- END FOOTER -->
+
+	<!-- OPTIONAL JAVASCRIPT -->
+    <script src="http://ec2-3-134-87-12.us-east-2.compute.amazonaws.com/news-letter/assets/js/jquery-3.4.1.min.js"></script>
+    <script src="http://ec2-3-134-87-12.us-east-2.compute.amazonaws.com/news-letter/assets/lib/bootstrap/js/bootstrap.min.js"></script>
+    <script src="http://ec2-3-134-87-12.us-east-2.compute.amazonaws.com/news-letter/assets/js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,15 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+.active{
+	background-color: aliceblue;
+	border: 2px solid whitesmoke;
+   /* border-radius: 25px*/
+}
+.active_dashboard{
+	background-color: aliceblue;
+	border: 2px solid whitesmoke;
+    /*border-radius: 25px*/
+    border-top-left-radius: 21px;
+    border-top-right-radius: 21px;
+}

@@ -1,0 +1,19 @@
+.table {
+    overflow-x: scroll;
+}
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+a {
+    text-decoration: none !important;
+}
+
+@media screen and (max-width: 800px) {
+    .notifications {
+        display: none !important;
+    }
+}
