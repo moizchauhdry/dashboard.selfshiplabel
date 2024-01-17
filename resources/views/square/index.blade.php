@@ -4,7 +4,8 @@
     <link rel="stylesheet" href="{{asset('square/square.css')}}" preload>
     <link rel="stylesheet" href="{{asset('square/app.css')}}" preload>
     <link rel="stylesheet" href="{{asset('square/admin.css')}}" preload>
-    <script src="https://web.squarecdn.com/v1/square.js"></script>
+    {{-- <script src="https://web.squarecdn.com/v1/square.js"></script> --}}
+    <script src="https://sandbox.web.squarecdn.com/v1/square.js"></script>
 </head>
 
 <body>
