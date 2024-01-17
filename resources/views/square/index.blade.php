@@ -63,6 +63,7 @@
                         $(".livewire-loader").removeClass('hidden');
                     },
                     success: function (response) {
+                        console.log(response);
                         if (response.code == 200) {
                             var url = "{{ route('success') }}";
                             location.href = url;
@@ -72,6 +73,7 @@
                         }
                     },
                     error : function (errors) {
+                        console.log(errors);
                         alert('SYSTEM ERROR!');
                         $(".livewire-loader").addClass('hidden');
                     }
