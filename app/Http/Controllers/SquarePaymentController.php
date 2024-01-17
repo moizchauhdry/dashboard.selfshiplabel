@@ -24,11 +24,11 @@ class SquarePaymentController extends Controller
 
         // $url = 'https://connect.squareup.com/v2/payments';
         $url = 'https://connect.squareupsandbox.com/v2/payments';
-        
+
         $body = [
             'amount_money' => [
                 'amount' => $amount,
-                'currency' => 'CAD',
+                'currency' => 'USD',
             ],
             'idempotency_key' => (string) Str::uuid(),
             'source_id' => $request->payment_token,
