@@ -22,7 +22,9 @@ class SquarePaymentController extends Controller
         $grand_total_array = explode(".", $grand_total);
         $amount = (int) $grand_total_array[0];
 
-        $url = 'https://connect.squareup.com/v2/payments';
+        // $url = 'https://connect.squareup.com/v2/payments';
+        $url = 'https://connect.squareupsandbox.com/v2/payments';
+        
         $body = [
             'amount_money' => [
                 'amount' => $amount,
