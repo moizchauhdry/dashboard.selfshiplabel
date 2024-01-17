@@ -4,6 +4,4 @@
 .env
 /uploads
 *.zip
-.htaccess
-/public/.htaccess
 /storage
