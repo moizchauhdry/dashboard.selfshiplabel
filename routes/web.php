@@ -4,8 +4,10 @@ use App\Http\Controllers\AuctionController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ShippingCalculatorController;
 use App\Http\Controllers\ShippingRatesController;
+use App\Http\Controllers\SquarePaymentController;
 use Inertia\Inertia;
 
 /*
@@ -140,3 +142,9 @@ Route::post('bid-auction', [AuctionController::class, 'bid'])->name('auctions.bi
 Route::get('decode-label/{id}', [HomeController::class, 'decodeLabel']);
 Route::get('stripe/{client_secret}', [HomeController::class, 'stripe']);
 Route::get('stripe-success', [HomeController::class, 'stripeSuccess']);
+
+// SQUARE PAYMENT
+
+Route::get('/square-payment/{package_id}', [SquarePaymentController::class, 'squarePayment'])->name('package.square-payment');
+Route::post('square-payment-success', [SquarePaymentController::class, 'squarePaymentSuccess'])->name('package.square-payment.success');
+Route::get('square-success', [SquarePaymentController::class, 'success'])->name('success');

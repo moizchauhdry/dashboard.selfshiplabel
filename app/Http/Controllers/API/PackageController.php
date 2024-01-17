@@ -319,10 +319,57 @@ class PackageController extends BaseController
         return $response = json_decode($response);
     }
 
+    // public function payment(Request $request)
+    // {
+    //     $package = Package::find($request->package_id);
+
+    //     return $package;
+    //     $grand_total = 0;
+
+    //     if ($package->grand_total > 0) {
+    //         $grand_total = $package->grand_total;
+    //     } else {
+    //         return $this->error('The value must be greater then 0',);
+    //     }
+
+    //     $stripe = new \Stripe\StripeClient(config('app.stripe_secret_key'));
+    //     $customer = $stripe->customers->create([]);
+
+    //     \Stripe\Stripe::setApiKey(config('app.stripe_secret_key'));
+    //     $intent = \Stripe\PaymentIntent::create([
+    //         'customer' => $customer->id,
+    //         'setup_future_usage' => 'off_session',
+    //         'amount' => $grand_total * 100,
+    //         'currency' => 'usd',
+    //         'automatic_payment_methods' => [
+    //             'enabled' => 'true',
+    //         ],
+    //     ])->toArray();
+
+
+    //     $data = [
+    //         'package_id' => $package->id,
+    //         'customer_id' => $package->customer_id,
+    //         'payment_type' => 'stripe',
+    //         'charged_amount' => 0,
+    //         'transaction_id' => 0,
+    //         'stripe_customer_id' => $intent['customer'],
+    //         'stripe_payment_id' => $intent['id'],
+    //         'stripe_client_secret' => $intent['client_secret'],
+    //     ];
+
+    //     Payment::updateOrCreate(['package_id' => $package->id], $data);
+
+    //     $data['client_secret'] = $intent['client_secret'];
+
+    //     return $this->sendResponse($data, 'The payment intent created successfully.');
+    // }
+
     public function payment(Request $request)
     {
         $package = Package::find($request->package_id);
 
+        return $package;
         $grand_total = 0;
 
         if ($package->grand_total > 0) {
@@ -331,35 +378,35 @@ class PackageController extends BaseController
             return $this->error('The value must be greater then 0',);
         }
 
-        $stripe = new \Stripe\StripeClient(config('app.stripe_secret_key'));
-        $customer = $stripe->customers->create([]);
+        // $stripe = new \Stripe\StripeClient(config('app.stripe_secret_key'));
+        // $customer = $stripe->customers->create([]);
 
-        \Stripe\Stripe::setApiKey(config('app.stripe_secret_key'));
-        $intent = \Stripe\PaymentIntent::create([
-            'customer' => $customer->id,
-            'setup_future_usage' => 'off_session',
-            'amount' => $grand_total * 100,
-            'currency' => 'usd',
-            'automatic_payment_methods' => [
-                'enabled' => 'true',
-            ],
-        ])->toArray();
+        // \Stripe\Stripe::setApiKey(config('app.stripe_secret_key'));
+        // $intent = \Stripe\PaymentIntent::create([
+        //     'customer' => $customer->id,
+        //     'setup_future_usage' => 'off_session',
+        //     'amount' => $grand_total * 100,
+        //     'currency' => 'usd',
+        //     'automatic_payment_methods' => [
+        //         'enabled' => 'true',
+        //     ],
+        // ])->toArray();
 
 
-        $data = [
-            'package_id' => $package->id,
-            'customer_id' => $package->customer_id,
-            'payment_type' => 'stripe',
-            'charged_amount' => 0,
-            'transaction_id' => 0,
-            'stripe_customer_id' => $intent['customer'],
-            'stripe_payment_id' => $intent['id'],
-            'stripe_client_secret' => $intent['client_secret'],
-        ];
+        // $data = [
+        //     'package_id' => $package->id,
+        //     'customer_id' => $package->customer_id,
+        //     'payment_type' => 'stripe',
+        //     'charged_amount' => 0,
+        //     'transaction_id' => 0,
+        //     'stripe_customer_id' => $intent['customer'],
+        //     'stripe_payment_id' => $intent['id'],
+        //     'stripe_client_secret' => $intent['client_secret'],
+        // ];
 
-        Payment::updateOrCreate(['package_id' => $package->id], $data);
+        // Payment::updateOrCreate(['package_id' => $package->id], $data);
 
-        $data['client_secret'] = $intent['client_secret'];
+        // $data['client_secret'] = $intent['client_secret'];
 
         return $this->sendResponse($data, 'The payment intent created successfully.');
     }
