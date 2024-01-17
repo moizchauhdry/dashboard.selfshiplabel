@@ -17,7 +17,6 @@ class SquarePaymentController extends Controller
 
     public function squarePaymentSuccess(Request $request)
     {
-        dd($request->all());
         $package = Package::find($request->package_id);
         $grand_total = $package->grand_total * 100;
         $grand_total_array = explode(".", $grand_total);
@@ -34,7 +33,7 @@ class SquarePaymentController extends Controller
         ];
 
         $headers = [
-            'Authorization' => 'Bearer EAAAEPCcfpuLVg_qVvrlfh_UT8B3CEI3PDX8DNVGVrqJPaWYQiElFU-bcLVcweH8'
+            'Authorization' => 'Bearer EAAAEPcP7wW7hp68oZHTLDGY4E7XjEAQWGFzLHVrIFpElBcX6CTDSSkk0UsEKx4e'
         ];
 
         $response = Http::withHeaders($headers)->post($url, $body);
@@ -43,8 +42,7 @@ class SquarePaymentController extends Controller
         $response_body = json_decode($response->getBody(), true);
 
         $package->update([
-            'package_status' => true,
-            'payment_status' => true,
+            'payment_status' => 'Paid',
         ]);
 
         return response()->json([
