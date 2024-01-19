@@ -65,7 +65,7 @@
                     success: function (response) {
                         console.log(response);
                         if (response.code == 200) {
-                            var url = "{{ route('success') }}";
+                            var url = "{{ route('square.complete') }}";
                             location.href = url;
                         } else {
                             alert('PAYMENT ERROR!');

@@ -78,6 +78,6 @@ class SquarePaymentController extends Controller
 
     public function success()
     {
-        return view('frontend.success');
+        return view('square.success');
     }
 }
