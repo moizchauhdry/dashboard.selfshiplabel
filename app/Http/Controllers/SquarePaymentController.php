@@ -76,7 +76,7 @@ class SquarePaymentController extends Controller
         ]);
     }
 
-    public function success()
+    public function complete()
     {
         return view('square.success');
     }
