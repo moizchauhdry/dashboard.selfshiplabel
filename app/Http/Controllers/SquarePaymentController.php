@@ -9,9 +9,31 @@ use Illuminate\Support\Str;
 
 class SquarePaymentController extends Controller
 {
-    public function squarePayment($package_id)
+    public function payment(Request $request)
     {
-        $package = Package::find($package_id);
+        $package = Package::find($request->package_id);
+        $grand_total = 0;
+
+        if ($package->grand_total > 0) {
+            $grand_total = $package->grand_total;
+        } else {
+            return $this->error('The value must be greater then 0',);
+        }
+
+        $data = [
+            'package_id' => $package->id,
+            'customer_id' => $package->customer_id,
+            'payment_type' => 'stripe',
+            'charged_amount' => 0,
+            'transaction_id' => 0
+        ];
+
+        return $this->sendResponse($data, 'The payment intent created successfully.');
+    }
+
+    public function index($id)
+    {
+        $package = Package::find($id);
         return view('square.index', compact('package'));
     }
 

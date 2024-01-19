@@ -5,6 +5,7 @@ use App\Http\Controllers\API\DataController;
 use App\Http\Controllers\API\PackageController;
 use App\Http\Controllers\API\RateController;
 use App\Http\Controllers\API\RegisterController;
+use App\Http\Controllers\SquarePaymentController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -32,6 +33,7 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::post('package/update-rate', [PackageController::class, 'updateRate']);
     Route::post('package/set-address', [PackageController::class, 'setAddress']);
     Route::post('package/set-custom', [PackageController::class, 'setCustom']);
-    Route::post('package/payment', [PackageController::class, 'payment']);
+    Route::post('package/payment', [SquarePaymentController::class, 'payment']);
+    Route::post('package/square-payment', [SquarePaymentController::class, 'index']);
     // Route::post('package/payment-charge-later', [PackageController::class, 'chargeLater']);
 });
