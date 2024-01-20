@@ -69,7 +69,10 @@ class SquarePaymentController extends Controller
 
                 $status_code = $response->status();
                 $response = json_decode($response->getBody(), true);
-                                
+
+
+                dd($response);
+                
                 $package->update([
                     'payment_status' => 'Paid',
                     'cart' => 0,
