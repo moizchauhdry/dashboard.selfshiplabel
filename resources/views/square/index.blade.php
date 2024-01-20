@@ -12,7 +12,7 @@
     <div class="container">
         <div class="row">
             <div class="text-center" style="margin-top: 50px">
-                <img src="{{asset('frontend/images/public-paypal.png')}}" style="width: 150px;">
+                <img src="http://127.0.0.1:8000/theme/img/logo.png" style="width: 150px;">
                 <h3>Please pay ${{$package->grand_total}} to complete your package order.</h3>
             </div>
         </div>

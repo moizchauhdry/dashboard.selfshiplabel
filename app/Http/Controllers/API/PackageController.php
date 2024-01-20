@@ -34,7 +34,7 @@ class PackageController extends BaseController
             'customer_id' => $user->id,
             'status' => 'open',
             'pkg_type' => 'single',
-            'warehouse_id' => 0,
+            'warehouse_id' => 1,
             'carrier_code' => $request->rate['code'],
             'service_code' => $request->rate['type'],
             'package_type_code' => $request->rate['pkg_type'],
@@ -157,11 +157,19 @@ class PackageController extends BaseController
                 $order_item->save();
             }
 
-            $label = $this->label($package);
-            $encoded_label = $label->output->transactionShipments[0]->pieceResponses[0]->packageDocuments[0]->encodedLabel;
-            Storage::disk('public')->put('label-' . $package->id . '.pdf', base64_decode($encoded_label));
+            if ($package->carrier_code == 'fedex') {
+                $data['fedex_label'] = generateLabelFedex($package->id);
+            }
 
-            return $this->sendResponse('success', 'The custom decration form filled successfully.');
+            if ($package->carrier_code == 'ups') {
+                $data['ups_label'] = generateLabelUps($package->id);
+            }
+
+            if ($package->carrier_code == 'dhl') {
+                generateLabelDhl($package->id);
+            }
+        
+            return $this->sendResponse($data, 'The custom decration form filled successfully.');
         } catch (\Throwable $th) {
             return $this->error($th->getMessage());
         }
@@ -319,52 +327,6 @@ class PackageController extends BaseController
         return $response = json_decode($response);
     }
 
-    // public function payment(Request $request)
-    // {
-    //     $package = Package::find($request->package_id);
-
-    //     return $package;
-    //     $grand_total = 0;
-
-    //     if ($package->grand_total > 0) {
-    //         $grand_total = $package->grand_total;
-    //     } else {
-    //         return $this->error('The value must be greater then 0',);
-    //     }
-
-    //     $stripe = new \Stripe\StripeClient(config('app.stripe_secret_key'));
-    //     $customer = $stripe->customers->create([]);
-
-    //     \Stripe\Stripe::setApiKey(config('app.stripe_secret_key'));
-    //     $intent = \Stripe\PaymentIntent::create([
-    //         'customer' => $customer->id,
-    //         'setup_future_usage' => 'off_session',
-    //         'amount' => $grand_total * 100,
-    //         'currency' => 'usd',
-    //         'automatic_payment_methods' => [
-    //             'enabled' => 'true',
-    //         ],
-    //     ])->toArray();
-
-
-    //     $data = [
-    //         'package_id' => $package->id,
-    //         'customer_id' => $package->customer_id,
-    //         'payment_type' => 'stripe',
-    //         'charged_amount' => 0,
-    //         'transaction_id' => 0,
-    //         'stripe_customer_id' => $intent['customer'],
-    //         'stripe_payment_id' => $intent['id'],
-    //         'stripe_client_secret' => $intent['client_secret'],
-    //     ];
-
-    //     Payment::updateOrCreate(['package_id' => $package->id], $data);
-
-    //     $data['client_secret'] = $intent['client_secret'];
-
-    //     return $this->sendResponse($data, 'The payment intent created successfully.');
-    // }
-
     public function payment(Request $request)
     {
         $package = Package::find($request->package_id);
@@ -378,35 +340,7 @@ class PackageController extends BaseController
             return $this->error('The value must be greater then 0',);
         }
 
-        // $stripe = new \Stripe\StripeClient(config('app.stripe_secret_key'));
-        // $customer = $stripe->customers->create([]);
-
-        // \Stripe\Stripe::setApiKey(config('app.stripe_secret_key'));
-        // $intent = \Stripe\PaymentIntent::create([
-        //     'customer' => $customer->id,
-        //     'setup_future_usage' => 'off_session',
-        //     'amount' => $grand_total * 100,
-        //     'currency' => 'usd',
-        //     'automatic_payment_methods' => [
-        //         'enabled' => 'true',
-        //     ],
-        // ])->toArray();
-
-
-        // $data = [
-        //     'package_id' => $package->id,
-        //     'customer_id' => $package->customer_id,
-        //     'payment_type' => 'stripe',
-        //     'charged_amount' => 0,
-        //     'transaction_id' => 0,
-        //     'stripe_customer_id' => $intent['customer'],
-        //     'stripe_payment_id' => $intent['id'],
-        //     'stripe_client_secret' => $intent['client_secret'],
-        // ];
-
-        // Payment::updateOrCreate(['package_id' => $package->id], $data);
-
-        // $data['client_secret'] = $intent['client_secret'];
+        $data = [];
 
         return $this->sendResponse($data, 'The payment intent created successfully.');
     }

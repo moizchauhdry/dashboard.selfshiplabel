@@ -1093,4 +1093,29 @@ class PackageController extends Controller
             return redirect()->back()->with('error', $th->getMessage());
         }
     }
+
+    public function generateLabel(Request $request)
+    {
+        try {
+            
+            $package = Package::where('id', $request->package_id)->first();
+
+            if ($package->carrier_code == 'fedex') {
+                generateLabelFedex($package->id);
+            }
+
+            if ($package->carrier_code == 'ups') {
+                generateLabelUps($package->id);
+            }
+
+            if ($package->carrier_code == 'dhl') {
+                generateLabelDhl($package->id);
+            }
+
+            return redirect()->back()->with('success', 'The label has been generated successfully.');
+        } catch (\Throwable $th) {
+            // throw $th;
+            return redirect()->back()->with('error', $th->getMessage());
+        }
+    }
 }

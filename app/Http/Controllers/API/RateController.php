@@ -62,8 +62,8 @@ class RateController extends BaseController
             $data = [
                 'ship_from_postal_code' => $ship_from_postal_code,
                 'ship_from_country_code' => $request->ship_from_country_code,
-                // 'ship_from_city' => $ship_from_city,
-                // 'ship_from_state' => $ship_from_state,
+                'ship_from_city' => "Anaheim",
+                'ship_from_state' => "CA",
                 'ship_to_postal_code' => $ship_to_postal_code,
                 'ship_to_country_code' => $request->ship_to_country_code,
                 'ship_to_city' => $request->ship_to_city,
@@ -76,10 +76,8 @@ class RateController extends BaseController
             ];
 
             $fedex_rates = $this->fedex($data);
-            // $dhl_rates = $this->dhl($data);
-            $dhl_rates = [];
-            // $ups_rates = $this->ups($data);
-            $ups_rates = [];
+            $dhl_rates = $this->dhl($data);
+            $ups_rates = $this->ups($data);
 
             $rates = array_merge($fedex_rates, $dhl_rates, $ups_rates);
 
@@ -300,6 +298,7 @@ class RateController extends BaseController
     public function ups($data)
     {
         try {
+
             // Authorization
             $curl = curl_init();
 

@@ -28,5 +28,6 @@ Route::middleware(['auth'])->group(function () {
         Route::get('commercial-invoice/{id}', 'PackageController@commercialInvoice')->name('packages.pdf');
         Route::post('destroy', 'PackageController@destroy')->name('packages.destroy');
         Route::post('upload-file', 'PackageController@uploadFile')->name('packages.upload-file');
+        Route::post('generate-label', 'PackageController@generateLabel')->name('packages.generate-label');
     });
 });

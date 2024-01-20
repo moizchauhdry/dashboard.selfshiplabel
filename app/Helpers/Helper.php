@@ -100,7 +100,7 @@ function generateLabelFedex($id)
 {
     $package = Package::where('id', $id)->first();
     $warehouse = Warehouse::where('id', $package->warehouse_id)->first();
-    $ship_to = Address::where('id', $package->address_book_id)->first();
+    $ship_to = Address::where('id', $package->ship_to)->first();
 
     $service_type = 'international';
     if ($warehouse->country_id == $ship_to->country_id) {
@@ -295,7 +295,7 @@ function generateLabelUps($id)
 {
     $package = Package::where('id', $id)->first();
     $warehouse = Warehouse::where('id', $package->warehouse_id)->first();
-    $ship_to = Address::where('id', $package->address_book_id)->first();
+    $ship_to = Address::where('id', $package->ship_to)->first();
 
     $service_type = 'international';
     if ($warehouse->country_id == $ship_to->country_id) {
@@ -451,14 +451,15 @@ function generateLabelUps($id)
     $response = curl_exec($curl);
     $response = json_decode($response);
     $results = $response->ShipmentResponse->ShipmentResults->PackageResults;
-
+    
     commercialInvoiceForLabel($package->id);
     $oMerger = PDFMerger::init();
     $filename1 = $package->id;
     $count = 1;
-    foreach ($results as $key => $result) {
+    // foreach ($results as $key => $result) {
+        // return $result;
         $filename2 = $filename1 . '-' . $count . '.png';
-        Storage::disk('labels')->put($filename2, base64_decode($result->ShippingLabel->GraphicImage));
+        Storage::disk('labels')->put($filename2, base64_decode($results->ShippingLabel->GraphicImage));
 
         $pdf = PDF::loadView('pdfs.label', ['imagePath' => 'storage/labels/' . $filename2]);
         $pdf->setPaper('A4', 'portrait');
@@ -468,7 +469,7 @@ function generateLabelUps($id)
         response()->download('storage/ups-labels/' . $filename2_pdf);
         $oMerger->addPDF('storage/ups-labels/' . $filename2_pdf, 'all');
         $count++;
-    }
+    // }
 
     $oMerger->addPDF('storage/commercial-invoices/' . $filename1 . '.pdf', 'all');
     $oMerger->merge();
@@ -496,7 +497,7 @@ function generateLabelDhl($id)
 {
     $package = Package::where('id', $id)->first();
     $warehouse = Warehouse::where('id', $package->warehouse_id)->first();
-    $ship_to = Address::where('id', $package->address_book_id)->first();
+    $ship_to = Address::where('id', $package->ship_to)->first();
 
     $service_type = 'international';
     if ($warehouse->country_id == $ship_to->country_id) {

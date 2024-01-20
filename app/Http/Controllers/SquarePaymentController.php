@@ -38,7 +38,7 @@ class SquarePaymentController extends Controller
     }
 
     public function squarePaymentSuccess(Request $request)
-    {
+    {        
         $package = Package::find($request->package_id);
         $grand_total = $package->grand_total * 100;
         $grand_total_array = explode(".", $grand_total);
@@ -67,6 +67,7 @@ class SquarePaymentController extends Controller
 
         $package->update([
             'payment_status' => 'Paid',
+            'cart' => 0,
         ]);
 
         return response()->json([
