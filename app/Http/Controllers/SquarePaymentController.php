@@ -70,11 +70,6 @@ class SquarePaymentController extends Controller
                 $status_code = $response->status();
                 $response = json_decode($response->getBody(), true);
                 
-                $package->update([
-                    'payment_status' => 'Paid',
-                    'cart' => 0,
-                ]);
-
                 $data = [
                     'payment_module' => 'package',
                     'payment_module_id' => $package->id,
@@ -87,6 +82,18 @@ class SquarePaymentController extends Controller
                 ];
 
                 Payment::create($data);
+
+                if ($response['payment']['status'] === 'COMPLETED') {
+                    $package->update([
+                        'payment_status' => 'Paid',
+                        'cart' => 0,
+                    ]);
+                } else {
+                    // $package->update([
+                    //     'payment_status' => 'Paid',
+                    //     'cart' => 0,
+                    // ]);
+                }
 
                 return response()->json([
                     'status' => true,
