@@ -69,10 +69,7 @@ class SquarePaymentController extends Controller
 
                 $status_code = $response->status();
                 $response = json_decode($response->getBody(), true);
-                
-
-                return $response->payment;
-                
+                                
                 $package->update([
                     'payment_status' => 'Paid',
                     'cart' => 0,
@@ -84,7 +81,7 @@ class SquarePaymentController extends Controller
                     'customer_id' => $package->customer_id,
                     'transaction_id' => $response['payment']['id'],
                     'payment_method' => 'square',
-                    'charge_amount' => $response['payment']['amount_money'],
+                    'charge_amount' => $response['payment']['amount_money']['amount'],
                     'charged_at' => Carbon::now(),
                     'payment_response' => $response,
                 ];
