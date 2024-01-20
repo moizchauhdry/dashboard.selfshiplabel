@@ -44,7 +44,7 @@ class SquarePaymentController extends Controller
         try {
             $package = Package::find($request->package_id);
 
-            if ($package->payment_status == 'pending') {
+            if ($package->payment_status == 'Pending') {
                 $grand_total = $package->grand_total * 100;
                 $grand_total_array = explode(".", $grand_total);
                 $amount = (int) $grand_total_array[0];
