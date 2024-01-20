@@ -81,7 +81,7 @@ class SquarePaymentController extends Controller
                     'customer_id' => $package->customer_id,
                     'transaction_id' => $response['payment']['id'],
                     'payment_method' => 'square',
-                    'charge_amount' => $response['payment']['amount_money']['amount'],
+                    'charged_amount' => $response['payment']['amount_money']['amount'],
                     'charged_at' => Carbon::now(),
                     // 'payment_response' => $response,
                 ];
