@@ -88,18 +88,16 @@ class SquarePaymentController extends Controller
 
             Payment::create($data);
 
-            dd('payment-success');
             return response()->json([
                 'status' => true,
                 'code' => $status_code,
                 'message' => 'success',
             ]);
         } else {
-            dd('payment-error');
             return response()->json([
                 'status' => false,
                 'code' => 403,
-                'message' => 'error',
+                'message' => 'already-paid',
             ]);
         }
     }
