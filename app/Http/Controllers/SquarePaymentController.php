@@ -41,63 +41,71 @@ class SquarePaymentController extends Controller
 
     public function squarePaymentSuccess(Request $request)
     {
-        $package = Package::find($request->package_id);
+        try {
+            $package = Package::find($request->package_id);
 
-        if ($package->payment_status == 'pending') {
-            $grand_total = $package->grand_total * 100;
-            $grand_total_array = explode(".", $grand_total);
-            $amount = (int) $grand_total_array[0];
+            if ($package->payment_status == 'pending') {
+                $grand_total = $package->grand_total * 100;
+                $grand_total_array = explode(".", $grand_total);
+                $amount = (int) $grand_total_array[0];
 
-            // $url = 'https://connect.squareup.com/v2/payments';
-            $url = 'https://connect.squareupsandbox.com/v2/payments';
+                // $url = 'https://connect.squareup.com/v2/payments';
+                $url = 'https://connect.squareupsandbox.com/v2/payments';
 
-            $body = [
-                'amount_money' => [
-                    'amount' => $amount,
-                    'currency' => 'USD',
-                ],
-                'idempotency_key' => (string) Str::uuid(),
-                'source_id' => $request->payment_token,
-            ];
+                $body = [
+                    'amount_money' => [
+                        'amount' => $amount,
+                        'currency' => 'USD',
+                    ],
+                    'idempotency_key' => (string) Str::uuid(),
+                    'source_id' => $request->payment_token,
+                ];
 
-            $headers = [
-                'Authorization' => 'Bearer EAAAEPcP7wW7hp68oZHTLDGY4E7XjEAQWGFzLHVrIFpElBcX6CTDSSkk0UsEKx4e'
-            ];
+                $headers = [
+                    'Authorization' => 'Bearer EAAAEPcP7wW7hp68oZHTLDGY4E7XjEAQWGFzLHVrIFpElBcX6CTDSSkk0UsEKx4e'
+                ];
 
-            $response = Http::withHeaders($headers)->post($url, $body);
+                $response = Http::withHeaders($headers)->post($url, $body);
 
-            $status_code = $response->status();
-            $response = json_decode($response->getBody(), true);
-            $response = $response->toArray();
+                $status_code = $response->status();
+                $response = json_decode($response->getBody(), true);
+                $response = $response->toArray();
 
-            $package->update([
-                'payment_status' => 'Paid',
-                'cart' => 0,
-            ]);
+                $package->update([
+                    'payment_status' => 'Paid',
+                    'cart' => 0,
+                ]);
 
-            $data = [
-                'payment_module' => 'package',
-                'payment_module_id' => $package->id,
-                'customer_id' => $package->customer_id,
-                'transaction_id' => $response['payment']['id'],
-                'payment_method' => 'square',
-                'charge_amount' => $response['payment']['amount_money'],
-                'charged_at' => Carbon::now(),
-                'payment_response' => $response,
-            ];
+                $data = [
+                    'payment_module' => 'package',
+                    'payment_module_id' => $package->id,
+                    'customer_id' => $package->customer_id,
+                    'transaction_id' => $response['payment']['id'],
+                    'payment_method' => 'square',
+                    'charge_amount' => $response['payment']['amount_money'],
+                    'charged_at' => Carbon::now(),
+                    'payment_response' => $response,
+                ];
 
-            Payment::create($data);
+                Payment::create($data);
 
-            return response()->json([
-                'status' => true,
-                'code' => $status_code,
-                'message' => 'success',
-            ]);
-        } else {
+                return response()->json([
+                    'status' => true,
+                    'code' => $status_code,
+                    'message' => 'success',
+                ]);
+            } else {
+                return response()->json([
+                    'status' => false,
+                    'code' => 403,
+                    'message' => 'already-paid',
+                ]);
+            }
+        } catch (\Throwable $th) {
             return response()->json([
                 'status' => false,
                 'code' => 403,
-                'message' => 'already-paid',
+                'message' => $th->getMessage(),
             ]);
         }
     }
