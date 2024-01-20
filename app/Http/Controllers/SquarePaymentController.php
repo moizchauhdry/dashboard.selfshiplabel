@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Package;
+use App\Models\Payment;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
@@ -38,43 +40,68 @@ class SquarePaymentController extends Controller
     }
 
     public function squarePaymentSuccess(Request $request)
-    {        
+    {
         $package = Package::find($request->package_id);
-        $grand_total = $package->grand_total * 100;
-        $grand_total_array = explode(".", $grand_total);
-        $amount = (int) $grand_total_array[0];
 
-        // $url = 'https://connect.squareup.com/v2/payments';
-        $url = 'https://connect.squareupsandbox.com/v2/payments';
+        if ($package->payment_status == 'pending') {
+            $grand_total = $package->grand_total * 100;
+            $grand_total_array = explode(".", $grand_total);
+            $amount = (int) $grand_total_array[0];
 
-        $body = [
-            'amount_money' => [
-                'amount' => $amount,
-                'currency' => 'USD',
-            ],
-            'idempotency_key' => (string) Str::uuid(),
-            'source_id' => $request->payment_token,
-        ];
+            // $url = 'https://connect.squareup.com/v2/payments';
+            $url = 'https://connect.squareupsandbox.com/v2/payments';
 
-        $headers = [
-            'Authorization' => 'Bearer EAAAEPcP7wW7hp68oZHTLDGY4E7XjEAQWGFzLHVrIFpElBcX6CTDSSkk0UsEKx4e'
-        ];
+            $body = [
+                'amount_money' => [
+                    'amount' => $amount,
+                    'currency' => 'USD',
+                ],
+                'idempotency_key' => (string) Str::uuid(),
+                'source_id' => $request->payment_token,
+            ];
 
-        $response = Http::withHeaders($headers)->post($url, $body);
+            $headers = [
+                'Authorization' => 'Bearer EAAAEPcP7wW7hp68oZHTLDGY4E7XjEAQWGFzLHVrIFpElBcX6CTDSSkk0UsEKx4e'
+            ];
 
-        $status_code = $response->status();
-        $response_body = json_decode($response->getBody(), true);
+            $response = Http::withHeaders($headers)->post($url, $body);
 
-        $package->update([
-            'payment_status' => 'Paid',
-            'cart' => 0,
-        ]);
+            $status_code = $response->status();
+            $response = json_decode($response->getBody(), true);
+            $response = $response->toArray();
 
-        return response()->json([
-            'status' => true,
-            'code' => $status_code,
-            'message' => 'success',
-        ]);
+            $package->update([
+                'payment_status' => 'Paid',
+                'cart' => 0,
+            ]);
+
+            $data = [
+                'payment_module' => 'package',
+                'payment_module_id' => $package->id,
+                'customer_id' => $package->customer_id,
+                'transaction_id' => $response['payment']['id'],
+                'payment_method' => 'square',
+                'charge_amount' => $response['payment']['amount_money'],
+                'charged_at' => Carbon::now(),
+                'payment_response' => $response,
+            ];
+
+            Payment::create($data);
+
+            dd('payment-success');
+            return response()->json([
+                'status' => true,
+                'code' => $status_code,
+                'message' => 'success',
+            ]);
+        } else {
+            dd('payment-error');
+            return response()->json([
+                'status' => false,
+                'code' => 403,
+                'message' => 'error',
+            ]);
+        }
     }
 
     public function complete()
