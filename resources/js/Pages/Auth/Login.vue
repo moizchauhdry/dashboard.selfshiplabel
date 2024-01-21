@@ -35,15 +35,6 @@
 			</breeze-button>
 		</div>
 
-		<!-- <hr class="m-4" /> -->
-
-		<!-- <div class="text-center">
-			<span>Don't have an account? <br />
-				Join now and get your US address. <br /></span>
-			<inertia-link :href="route('register')" class="btn btn-link font-bold text-lg">
-				Register new account
-			</inertia-link>
-		</div> -->
 	</form>
 </template>
 
