@@ -11,7 +11,7 @@ use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Http\Controllers\leadController;
 use Illuminate\Support\Facades\Route;
 
-// Route::get('/register', [RegisteredUserController::class, 'create'])->middleware('guest')->name('register');
+Route::get('/register', [RegisteredUserController::class, 'create'])->middleware('guest')->name('register');
 // Route::get('/invest-better-with-summit-stocks', [RegisteredUserController::class, 'create_leads'])->name('invest-better-with-summit-stocks');
 // Route::get('/thanks/{id}', [RegisteredUserController::class, 'thanks'])->name('thanks');
 // Route::post('/update_experience', [RegisteredUserController::class, 'update_experience'])->name('update_experience');
