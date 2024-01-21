@@ -11,12 +11,13 @@ use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Http\Controllers\leadController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/register', [RegisteredUserController::class, 'create'])->middleware('guest')->name('register');
-Route::get('/invest-better-with-summit-stocks', [RegisteredUserController::class, 'create_leads'])->name('invest-better-with-summit-stocks');
-Route::get('/thanks/{id}', [RegisteredUserController::class, 'thanks'])->name('thanks');
-Route::post('/update_experience', [RegisteredUserController::class, 'update_experience'])->name('update_experience');
-Route::post('/register', [RegisteredUserController::class, 'store'])->middleware('guest');
-Route::post('/leads/save', [RegisteredUserController::class, 'save_lead']);
+// Route::get('/register', [RegisteredUserController::class, 'create'])->middleware('guest')->name('register');
+// Route::get('/invest-better-with-summit-stocks', [RegisteredUserController::class, 'create_leads'])->name('invest-better-with-summit-stocks');
+// Route::get('/thanks/{id}', [RegisteredUserController::class, 'thanks'])->name('thanks');
+// Route::post('/update_experience', [RegisteredUserController::class, 'update_experience'])->name('update_experience');
+// Route::post('/register', [RegisteredUserController::class, 'store'])->middleware('guest');
+// Route::post('/leads/save', [RegisteredUserController::class, 'save_lead']);
+
 Route::get('/login', [AuthenticatedSessionController::class, 'create'])->middleware('guest')->name('login');
 Route::post('/login', [AuthenticatedSessionController::class, 'store'])->middleware('guest');
 Route::get('/forgot-password', [PasswordResetLinkController::class, 'create'])->middleware('guest')->name('password.request');

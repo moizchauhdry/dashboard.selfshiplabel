@@ -1,23 +1,9 @@
 <template>
 	<header class="navbar navbar-light sticky-top bg-dark flex-md-nowrap p-0 shadow bg-light" style="" id="header2">
 		<a href="http://shippingxps.com" style="padding: 5px 10px" target="_blank">
-			<img alt="Porto" width="100" height="35" src="/theme/img/logo.png" />
+			<!-- <img alt="Porto" width="100" height="35" src="/theme/img/logo.png" /> -->
+			<h1>SELF-SERVICE</h1>
 		</a>
-		<nav class="navbar navbar-expand-lg navbar-light bg-light" style="display: none">
-			<div class="collapse navbar-collapse" id="navbarNav">
-				<ul class="navbar-nav">
-					<li class="nav-item">
-						<a class="nav-link" href="#">Arrived <span class="sr-only">(current)</span></a>
-					</li>
-					<li class="nav-item">
-						<a class="nav-link" href="#">Labeled </a>
-					</li>
-					<li class="nav-item">
-						<a class="nav-link" href="#">Shipped</a>
-					</li>
-				</ul>
-			</div>
-		</nav>
 		<ul class="flex-md-row inline-flex navbar-nav px-3">
 			<inertia-link :href="route('notifications')"
 				class="notifications mb-2 mr-1 inline-flex i+tems-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150">
@@ -59,237 +45,85 @@
 	</header>
 	<div class="row">
 		<div class="container-fluid">
-			<!-- SIDEBAR -->
 			<div class="sidebar" id="main_sidebar" v-if="main_sidebar == 1">
 				<div class="sidebar-menu mt-sm-5 mt-md-0">
 					<inertia-link class="nav-link" :href="route('dashboard')"
 						:class="{ active: route().current('dashboard') }" :active="route().current('dashboard')">
-						<i class="fas fa-home"></i><span>Dashboard</span>
+						<i class="fas fa-list"></i><span>Dashboard</span>
 					</inertia-link>
-					<button v-if="$page.props.auth.user.type == 'admin' || $page.props.auth.user.type == 'manager'"
-						class="accordion">Users</button>
-					<div v-if="$page.props.auth.user.type == 'admin' || $page.props.auth.user.type == 'manager'"
-						class="accordion-content">
-						<inertia-link
-							v-if="$page.props.auth.user.type == 'admin' && $page.props.auth.user.type != 'manager'"
-							class="nav-link" :href="route('manage-users')"
+
+					<div class="accordion-content">
+						<inertia-link class="nav-link" :href="route('manage-users')"
 							:class="{ active: route().current('manage-users') || route().current('create-users') }"
 							:active="route().current('manage-users')">
-							<i class="fas fa-user-tie"></i><span>Manage Users</span>
+							<i class="fas fa-list"></i><span>Users</span>
 						</inertia-link>
 
 						<inertia-link v-if="$page.props.auth.user.type != 'customer'" class="nav-link"
 							:href="route('customers.index')" :class="{
 								active: route().current('customers.index') || route().current('customers.edit') || route().current('customers.detail')
 							}" :active="route().current('customers.index')">
-							<i class="fas fa-users"></i><span>Manage Customers</span>
+							<i class="fas fa-list"></i><span>Customers</span>
 						</inertia-link>
 					</div>
 
-					<template v-if="$page.props.auth.user.type == 'customer'">
-						<button class="accordion">Address</button>
+					<template>
 						<div class="accordion-content">
-							<!-- <inertia-link
-							class="nav-link"
-							:href="route('address.suite')"
-							:class="{ active: route().current('address.suite') }"
-							:active="route().current('address.suite')"
-						>
-							<i class="fas fa-address-book"></i>
-							<span>Mailing Addresses</span>
-						</inertia-link> -->
-							<inertia-link class="nav-link" :href="route('addresses')" :class="{
-								active:
-									route().current('addresses') ||
-									route().current('address.create') ||
-									route().current('address.edit'),
-							}" :active="route().current('addresses')">
-								<i class="fas fa-address-book"></i>
-								<span>Shipping Address</span>
+							<inertia-link class="nav-link" :href="route('addresses')"
+								:class="{ active: route().current('addresses') || route().current('address.create') || route().current('address.edit'), }"
+								:active="route().current('addresses')">
+								<i class="fas fa-list"></i>
+								<span>Address</span>
 							</inertia-link>
 						</div>
 					</template>
 
-					<button class="accordion">Packages</button>
 					<div class="accordion-content">
-						<inertia-link class="nav-link" v-if="$page.props.auth.user.type == 'admin'"
-							:href="route('shop-for-me.index')" :class="{
-								active:
-									route().current('shop-for-me.index') ||
-									route().current('shop-for-me.edit') ||
-									route().current('shop-for-me.show'),
-							}" :active="route().current('shop-for-me.index')">
-							<i class="fas fa-shopping-cart"></i>
-							<span>Shopping</span>
-						</inertia-link>
-
-						<inertia-link class="nav-link" :href="route('packages.index')" :class="{
-							active:
-								route().current('packages.index') ||
-								route().current('packages.show') ||
-								route().current('packages.custom'),
-						}" :active="route().current('packages.index')">
-							<i class="fas fa-box"></i>
+						<inertia-link class="nav-link" :href="route('packages.index')"
+							:class="{ active: route().current('packages.index') || route().current('packages.show') || route().current('packages.custom') }"
+							:active="route().current('packages.index')">
+							<i class="fas fa-list"></i>
 							<span>Packages</span>
-						</inertia-link>
-
-						<inertia-link class="nav-link" :href="route('custom-form.index')"
-							v-if="$page.props.auth.user.type == 'admin'"
-							:class="{ active: route().current('custom-form.index') || route().current('custom-form.create') }"
-							:active="route().current('custom-form.index')"><i class="fas fa-print"></i><span>Custom
-								Form</span>
 						</inertia-link>
 
 						<inertia-link v-if="$page.props.auth.user.type != 'manager'" class="nav-link"
 							:href="route('payments.getPayments')"
 							:class="{ active: route().current('payments.getPayments') }"
 							:active="route().current('payments.getPayments')">
-							<i class="fas fa-money-check-alt"></i>
+							<i class="fas fa-list"></i>
 							<span>Payments</span>
 						</inertia-link>
-
-						<inertia-link class="nav-link" v-if="$page.props.auth.user.type == 'customer'"
-							:href="route('shop-for-me.index')" :class="{
-								active:
-									route().current('shop-for-me.index') ||
-									route().current('shop-for-me.edit') ||
-									route().current('shop-for-me.show'),
-							}" :active="route().current('shop-for-me.index')">
-							<i class="fas fa-list"></i>
-							<span>My Shopping List</span>
-						</inertia-link>
-
-						<inertia-link class="nav-link" v-if="$page.props.auth.user.type == 'customer'"
-							:href="route('shop-for-me.create')" :class="{ active: route().current('shop-for-me.create') }"
-							:active="route().current('shop-for-me.create')">
-							<i class="fas fa-shopping-cart"></i>
-							<span>Shop for me</span>
-						</inertia-link>
-
-						<inertia-link v-if="$page.props.auth.user.type == 'admin'" class="nav-link"
-							:href="route('coupon.index')" :class="{
-								active:
-									route().current('coupon.index') ||
-									route().current('coupon.create') ||
-									route().current('coupon.edit'),
-							}" :active="route().current('coupon.index')">
-							<i class="fas fa-tag"></i>
-							<span>Coupons</span>
-						</inertia-link>
 					</div>
 
-					<button class="accordion">Services</button>
 					<div class="accordion-content">
-						<inertia-link v-if="$page.props.auth.user.type != 'manager'" class="nav-link"
-							:href="route('insurance.index')" :class="{
-								active:
-									route().current('insurance.index') ||
-									route().current('insurance.show') ||
-									route().current('insurance.create'),
-							}" :active="route().current('insurance.index')">
-							<i class="fas fa-boxes"></i>
-							<span>Insurance</span>
-						</inertia-link>
-
-						<inertia-link class="nav-link" v-if="$page.props.auth.user.type != 'manager'"
-							:href="route('additional-request.index')" :class="{
-								active:
-									route().current('additional-request.index') ||
-									route().current('additional-request.create') ||
-									route().current('additional-request.edit'),
-							}" :active="route().current('additional-request')">
-							<i class="fas fa-truck"></i>
-							<span>Additional Request</span>
-						</inertia-link>
-
-						<inertia-link class="nav-link" v-if="$page.props.auth.user.type != 'manager'"
-							:href="route('gift-card.index')" :class="{
-								active:
-									route().current('gift-card.index') ||
-									route().current('gift-card.create') ||
-									route().current('gift-card.edit'),
-							}" :active="route().current('gift-card')">
-							<i class="fas fa-gift"></i>
-							<span>Gift Card</span>
-						</inertia-link>
-
-						<inertia-link class="nav-link" :href="route('dashboard.shipping-calculator.index')" :class="{
-							active: route().current('dashboard.shipping-calculator.index'),
-						}" :active="route().current('dashboard.shipping-calculator.index')">
-							<i class="fas fa-calculator"></i>
-							<span>Shipping Calculator</span>
-						</inertia-link>
-						<inertia-link class="nav-link" :href="route('auctions.listing')" :class="{
-							active: route().current('auctions.listing'),
-						}" :active="route().current('auctions.listing')">
-							<i class="fas fa-gavel"></i>
-							<span>Auctions</span>
+						<inertia-link class="nav-link" :href="route('dashboard.shipping-calculator.index')"
+							:class="{ active: route().current('dashboard.shipping-calculator.index'), }"
+							:active="route().current('dashboard.shipping-calculator.index')">
+							<i class="fas fa-list"></i>
+							<span>Calculator</span>
 						</inertia-link>
 					</div>
 
-					<button v-if="$page.props.auth.user.type == 'admin' ||
-						$page.props.auth.user.type == 'manager'
-						" class="accordion">
-						Manage
-					</button>
-
-					<div v-if="$page.props.auth.user.type == 'admin' ||
-						$page.props.auth.user.type == 'manager'
-						" class="accordion-content">
-						<inertia-link v-if="$page.props.auth.user.type == 'admin'" class="nav-link"
-							:href="route('services')" :class="{
-								active:
-									route().current('services') ||
-									route().current('services.create') ||
-									route().current('services.edit'),
-							}" :active="route().current('services')">
-							<i class="fas fa-shipping-fast"></i>
-							<span>Services</span>
-						</inertia-link>
-
-						<inertia-link v-if="$page.props.auth.user.type == 'admin' &&
-							$page.props.auth.user.type != 'manager'
-							" class="nav-link" :href="route('warehouses')" :class="{
-		active:
-			route().current('warehouses') ||
-			route().current('warehouses.create') ||
-			route().current('warehouses.edit'),
-	}" :active="route().current('warehouses')">
-							<i class="fas fa-warehouse"></i>
-							<span>Warehouses</span>
-						</inertia-link>
-
-						<inertia-link v-if="$page.props.auth.user.type == 'admin'" class="nav-link"
-							:href="route('store.index')" :class="{
-								active:
-									route().current('store.index') ||
-									route().current('store.create') ||
-									route().current('store.edit'),
-							}" :active="route().current('store.index')">
-							<i class="fas fa-store-alt"></i>
-							<span>Stores</span>
-						</inertia-link>
-
+					<div class="accordion-content">
 						<inertia-link v-if="$page.props.auth.user.type == 'admin'" class="nav-link"
 							:href="route('settings')" :class="{ active: route().current('settings') }"
 							:active="route().current('settings')">
-							<i class="fas fa-file-invoice"></i>
-							<span>Fee & Charges</span>
+							<i class="fas fa-list"></i>
+							<span>Settings</span>
 						</inertia-link>
 					</div>
 				</div>
 			</div>
+
 			<div class="toggle-side" @click="toggleSideBar()">
 				<i class="fa fa-bars"></i>
 			</div>
-			<!-- SIDEBAR -->
 
 			<div role="main" class="main-section">
 				<div class="d-flex justify-content-center">
 					<FlashMessages />
 				</div>
 				<div class="col-md-12">
-					<Announcement></Announcement>
 					<slot />
 				</div>
 			</div>
