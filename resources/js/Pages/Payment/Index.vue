@@ -82,7 +82,7 @@
 									</template>
 								</td>
 								<td>{{ item.transaction_id }}</td>
-								<td>{{ item.payment_type ?? "Authorize.net" }}</td>
+								<td>{{ item.payment_method}}</td>
 								<td>
 									{{ item.package != NULL ? item.package.service_label : "" }}
 								</td>
@@ -91,8 +91,8 @@
 								<td>
 									<a :href="route('payment.invoice', item.id)" class="btn btn-primary btn-sm m-1"
 										target="_blank">Print Invoice</a>
-									<a :href="route('generateReport', item.id)" target="_blank"
-										class="btn btn-info btn-sm m-1">Print Report</a>
+									<!-- <a :href="route('generateReport', item.id)" target="_blank"
+										class="btn btn-info btn-sm m-1">Print Report</a> -->
 								</td>
 							</tr>
 							<tr v-show="data.data.length === 0">
