@@ -42,7 +42,7 @@
     "vue3-clipboard": "^1.0.0",
     "vue3-date-time-picker": "^2.4.4"
   },
-  "name": "shippingxps",
+  "name": "self-service-backend",
   "description": "<p align=\"center\"><a href=\"https://laravel.com\" target=\"_blank\"><img src=\"https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg\" width=\"400\"></a></p>",
   "version": "1.0.6",
   "main": "tailwind.config.js",
@@ -51,12 +51,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/moizchauhdry/shippingxps.git"
+    "url": "git+https://github.com/moizchauhdry/self-service-backend.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/moizchauhdry/shippingxps/issues"
+    "url": "https://github.com/moizchauhdry/self-service-backend/issues"
   },
-  "homepage": "https://github.com/moizchauhdry/shippingxps#readme"
+  "homepage": "https://github.com/moizchauhdry/self-service-backend#readme"
 }
