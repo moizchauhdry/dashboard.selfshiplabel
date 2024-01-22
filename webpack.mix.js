@@ -26,6 +26,6 @@ if (mix.inProduction()) {
 }
 
 mix.browserSync({
-    proxy: 'http://shippingxps.test',
+    proxy: 'http://self-service-backend.test',
 
 });
