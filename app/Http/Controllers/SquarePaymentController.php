@@ -138,11 +138,11 @@ class SquarePaymentController extends Controller
                     'square_card_response' => json_encode($card_response),
                 ]);
 
-                return response()->json([
-                    'status' => true,
-                    'code' => $status_code,
-                    'message' => 'success',
-                ]);
+                // return response()->json([
+                //     'status' => true,
+                //     'code' => $status_code,
+                //     'message' => 'success',
+                // ]);
             } else {
                 return response()->json([
                     'status' => false,
