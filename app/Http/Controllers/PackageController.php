@@ -248,9 +248,9 @@ class PackageController extends Controller
         }
 
         $payments = [];
-        $payments = Payment::where('package_id', $packag->id)->get();
+        $payments = Payment::where('payment_module', 'package')->where('payment_module_id', $packag->id)->get();
         $package_files = [];
-        $package_files = PackageFile::where('payment_module', 'package')->where('payment_module_id', $packag->id)->get();
+        // $package_files = PackageFile::where('payment_module', 'package')->where('payment_module_id', $packag->id)->get();
 
         return Inertia::render('Packages/Show', [
             'packag' => $packag,
