@@ -15,7 +15,7 @@ class ChangeInPaymentsTable extends Migration
     {
         Schema::table('payments', function (Blueprint $table) {
             $table->string('square_customer_id', 100)->nullable();
-            $table->string('square_customer_response', 100)->nullable();
+            $table->json('square_customer_response')->nullable();
         });
     }
 
