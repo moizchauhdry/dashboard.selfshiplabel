@@ -107,7 +107,7 @@ class SquarePaymentController extends Controller
 
                 $cc_response = Http::withHeaders($cc_headers)->post($cc_url, $cc_body);
                 $cc_response = json_decode($cc_response->getBody(), true);
-                dd($request->payment_token);
+                dd($cc_response);
 
                 // $payment->update([
                 //     'square_customer_id' => $cc_response['customer']['id'],
