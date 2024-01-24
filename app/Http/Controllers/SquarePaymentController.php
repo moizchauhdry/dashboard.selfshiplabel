@@ -113,7 +113,6 @@ class SquarePaymentController extends Controller
                 ]);
 
 
-
                 $card_url = 'https://connect.squareupsandbox.com/v2/cards';
 
                 $card_body = [
@@ -136,7 +135,6 @@ class SquarePaymentController extends Controller
                     'square_card_id' => $card_response['card']['id'],
                     'square_card_response' => json_encode($card_response),
                 ]);
-
 
                 return response()->json([
                     'status' => true,
