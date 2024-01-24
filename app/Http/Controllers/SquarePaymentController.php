@@ -78,10 +78,10 @@ class SquarePaymentController extends Controller
                     'payment_response' => json_encode($response),
                 ];
 
-                // $payment = Payment::updateOrCreate([
-                //     'payment_module' => 'package',
-                //     'payment_module_id' => $package->id,
-                // ], $data);
+                $payment = Payment::updateOrCreate([
+                    'payment_module' => 'package',
+                    'payment_module_id' => $package->id,
+                ], $data);
 
                 // if ($response['payment']['status'] === 'COMPLETED') {
                 //     $package->update([
@@ -106,12 +106,11 @@ class SquarePaymentController extends Controller
 
                 $cc_response = Http::withHeaders($cc_headers)->post($cc_url, $cc_body);
                 $cc_response = json_decode($cc_response->getBody(), true);
-                dd($cc_response);
 
-                // $payment->update([
-                //     'square_customer_id' => $cc_response['customer']['id'],
-                //     'square_customer_response' => json_encode($cc_response),
-                // ]);
+                $payment->update([
+                    'square_customer_id' => $cc_response['customer']['id'],
+                    'square_customer_response' => json_encode($cc_response),
+                ]);
 
                 return response()->json([
                     'status' => true,
