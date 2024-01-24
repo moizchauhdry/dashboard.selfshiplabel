@@ -92,7 +92,6 @@ class SquarePaymentController extends Controller
                 //     // $package->update(['payment_status' => 'failed']);
                 // }
 
-                dd('success');
 
                 $cc_url = 'https://connect.squareupsandbox.com/v2/customers';
 
