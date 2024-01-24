@@ -78,7 +78,7 @@ class SquarePaymentController extends Controller
                     'payment_response' => json_encode($response),
                 ];
 
-                Payment::updateOrCreate([
+                $payment = Payment::updateOrCreate([
                     'payment_module' => 'package',
                     'payment_module_id' => $package->id,
                 ], $data);
@@ -91,6 +91,27 @@ class SquarePaymentController extends Controller
                 } else {
                     // $package->update(['payment_status' => 'failed']);
                 }
+
+
+                $cc_url = 'https://connect.squareupsandbox.com/v2/customers';
+
+                $cc_body = [
+                    "company_name" => "Moiz Chauhdry v1",
+                    'idempotency_key' => (string) Str::uuid(),
+                    'source_id' => $request->payment_token,
+                ];
+
+                $cc_headers = [
+                    'Authorization' => 'Bearer EAAAEPcP7wW7hp68oZHTLDGY4E7XjEAQWGFzLHVrIFpElBcX6CTDSSkk0UsEKx4e'
+                ];
+
+                $cc_response = Http::withHeaders($headers)->post($url, $body);
+                $cc_response = json_decode($cc_response->getBody(), true);
+
+                $payment->update([
+                    'square_customer_id' => $cc_response['customer']['id'],
+                    'square_customer_response' => json_encode($cc_response),
+                ]);
 
                 return response()->json([
                     'status' => true,
