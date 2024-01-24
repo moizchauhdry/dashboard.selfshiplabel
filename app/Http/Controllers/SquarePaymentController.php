@@ -105,7 +105,7 @@ class SquarePaymentController extends Controller
                     'Authorization' => 'Bearer EAAAEPcP7wW7hp68oZHTLDGY4E7XjEAQWGFzLHVrIFpElBcX6CTDSSkk0UsEKx4e'
                 ];
 
-                $cc_response = Http::withHeaders($headers)->post($url, $body);
+                $cc_response = Http::withHeaders($cc_headers)->post($cc_url, $cc_body);
                 $cc_response = json_decode($cc_response->getBody(), true);
 
                 $payment->update([
