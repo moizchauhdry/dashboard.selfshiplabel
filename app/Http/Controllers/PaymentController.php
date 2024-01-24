@@ -922,9 +922,6 @@ class PaymentController extends Controller
         $payment_response = Http::withHeaders($headers)->post($payment_url, $payment_body);
         $payment_response = json_decode($payment_response->getBody(), true);
 
-
-        dd($payment_response);
-
         $data = [
             'payment_module' => 'package',
             'payment_module_id' => $payment->payment_module_id,
