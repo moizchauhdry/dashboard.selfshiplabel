@@ -98,7 +98,6 @@ class SquarePaymentController extends Controller
                 $cc_body = [
                     "company_name" => "Moiz Chauhdry v1",
                     'idempotency_key' => (string) Str::uuid(),
-                    'source_id' => $request->payment_token,
                 ];
 
                 $cc_headers = [
