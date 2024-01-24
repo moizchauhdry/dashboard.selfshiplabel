@@ -71,11 +71,11 @@ class SquarePaymentController extends Controller
                     'payment_module' => 'package',
                     'payment_module_id' => $package->id,
                     'customer_id' => $package->customer_id,
-                    'transaction_id' => $response['payment']['id'],
+                    // 'transaction_id' => $response['payment']['id'],
                     'payment_method' => 'square',
-                    'charged_amount' => $response['payment']['amount_money']['amount'],
+                    // 'charged_amount' => $response['payment']['amount_money']['amount'],
                     'charged_at' => Carbon::now(),
-                    'payment_response' => json_encode($response),
+                    // 'payment_response' => json_encode($response),
                 ];
 
                 $payment = Payment::updateOrCreate([
