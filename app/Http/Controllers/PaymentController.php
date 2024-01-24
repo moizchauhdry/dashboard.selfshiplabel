@@ -928,7 +928,7 @@ class PaymentController extends Controller
             'customer_id' => $payment->customer_id,
             'transaction_id' => $payment_response['payment']['id'],
             'payment_method' => 'square',
-            'charged_amount' => $payment_response['payment']['amount_money']['amount'] / 100,
+            'charged_amount' => $payment_response['payment']['amount_money']['amount'],
             'charged_at' => Carbon::now(),
             'sq_payment_id' => $payment_response['payment']['id'],
             'sq_payment_response' => json_encode($payment_response),
