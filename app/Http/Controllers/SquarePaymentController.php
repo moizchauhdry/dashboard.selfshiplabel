@@ -39,6 +39,9 @@ class SquarePaymentController extends Controller
     public function squarePaymentSuccess(Request $request)
     {
         try {
+
+            dd($request->all());
+            
             $package = Package::find($request->package_id);
 
             if ($package->payment_status == 'Pending') {
