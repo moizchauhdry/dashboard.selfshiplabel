@@ -121,7 +121,7 @@ class SquarePaymentController extends Controller
                         "customer_id" => $payment->square_customer_id
                     ],
                     'idempotency_key' => (string) Str::uuid(),
-                    'source_id' => $request->payment_token,
+                    'source_id' => "cnon:card-nonce-ok",
                 ];
 
                 $card_headers = [
