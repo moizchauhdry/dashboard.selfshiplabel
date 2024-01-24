@@ -900,7 +900,8 @@ class PaymentController extends Controller
 
     public function squareChargeLater(Request $request)
     {
-        $payment = Payment::where('payment_module', 'package')->where('payment_module_id', $request->package_id)->first();
+        try {
+            $payment = Payment::where('payment_module', 'package')->where('payment_module_id', $request->package_id)->first();
 
         // CREATE PAYMENT
         $payment_url = 'https://connect.squareupsandbox.com/v2/payments';
@@ -937,5 +938,9 @@ class PaymentController extends Controller
         Payment::create($data);
 
         return redirect()->back()->with('success', 'charge success');
+        } catch (\Throwable $th) {
+            return redirect()->back()->with('error', 'payment error');
+
+        }
     }
 }
