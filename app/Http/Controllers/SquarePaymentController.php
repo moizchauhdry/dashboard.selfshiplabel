@@ -39,15 +39,64 @@ class SquarePaymentController extends Controller
     public function squarePaymentSuccess(Request $request)
     {
         try {
-
-            dd($request->all());
-            
             $package = Package::find($request->package_id);
 
             if ($package->payment_status == 'Pending') {
                 $grand_total = $package->grand_total * 100;
                 $grand_total_array = explode(".", $grand_total);
                 $amount = (int) $grand_total_array[0];
+
+                // CREATE CUSTOMER
+                $customer_url = 'https://connect.squareupsandbox.com/v2/customers';
+
+                $customer_body = [
+                    "company_name" => "Moiz Chauhdry v1",
+                    'idempotency_key' => (string) Str::uuid(),
+                ];
+
+                $customer_headers = [
+                    'Authorization' => 'Bearer EAAAEPcP7wW7hp68oZHTLDGY4E7XjEAQWGFzLHVrIFpElBcX6CTDSSkk0UsEKx4e'
+                ];
+
+                $customer_response = Http::withHeaders($customer_headers)->post($customer_url, $customer_body);
+                $customer_response = json_decode($customer_response->getBody(), true);
+
+                // CREATE CARD
+                $card_url = 'https://connect.squareupsandbox.com/v2/cards';
+
+                $card_body = [
+                    "card" => [
+                        "cardholder_name" => "Moiz Chauhdry",
+                        "customer_id" => $customer_response['customer']['id']
+                    ],
+                    'idempotency_key' => (string) Str::uuid(),
+                    'source_id' => $request->payment_token,
+                ];
+
+                $card_headers = [
+                    'Authorization' => 'Bearer EAAAEPcP7wW7hp68oZHTLDGY4E7XjEAQWGFzLHVrIFpElBcX6CTDSSkk0UsEKx4e'
+                ];
+
+                $card_response = Http::withHeaders($card_headers)->post($card_url, $card_body);
+                $card_response = json_decode($card_response->getBody(), true);
+
+                dd($card_response);
+
+                // $payment->update([
+                //     'square_card_id' => $card_response['card']['id'],
+                //     'square_card_response' => json_encode($card_response),
+                // ]);
+
+                // $data = [
+                //     'square_customer_id' => $customer_response['customer']['id'],
+                //     'square_customer_response' => json_encode($customer_response),
+                // ];
+
+                // $payment = Payment::updateOrCreate([
+                //     'payment_module' => 'package',
+                //     'payment_module_id' => $package->id,
+                // ], $data);
+
 
                 // $url = 'https://connect.squareup.com/v2/payments';
                 // $url = 'https://connect.squareupsandbox.com/v2/payments';
@@ -70,21 +119,21 @@ class SquarePaymentController extends Controller
                 // $status_code = $response->status();
                 // $response = json_decode($response->getBody(), true);
 
-                $data = [
-                    'payment_module' => 'package',
-                    'payment_module_id' => $package->id,
-                    'customer_id' => $package->customer_id,
-                    // 'transaction_id' => $response['payment']['id'],
-                    'payment_method' => 'square',
-                    // 'charged_amount' => $response['payment']['amount_money']['amount'],
-                    'charged_at' => Carbon::now(),
-                    // 'payment_response' => json_encode($response),
-                ];
+                // $data = [
+                //     'payment_module' => 'package',
+                //     'payment_module_id' => $package->id,
+                //     'customer_id' => $package->customer_id,
+                //     // 'transaction_id' => $response['payment']['id'],
+                //     'payment_method' => 'square',
+                //     // 'charged_amount' => $response['payment']['amount_money']['amount'],
+                //     'charged_at' => Carbon::now(),
+                //     // 'payment_response' => json_encode($response),
+                // ];
 
-                $payment = Payment::updateOrCreate([
-                    'payment_module' => 'package',
-                    'payment_module_id' => $package->id,
-                ], $data);
+                // $payment = Payment::updateOrCreate([
+                //     'payment_module' => 'package',
+                //     'payment_module_id' => $package->id,
+                // ], $data);
 
                 // if ($response['payment']['status'] === 'COMPLETED') {
                 //     $package->update([
@@ -94,52 +143,6 @@ class SquarePaymentController extends Controller
                 // } else {
                 //     // $package->update(['payment_status' => 'failed']);
                 // }
-
-
-                $cc_url = 'https://connect.squareupsandbox.com/v2/customers';
-
-                $cc_body = [
-                    "company_name" => "Moiz Chauhdry v1",
-                    'idempotency_key' => (string) Str::uuid(),
-                ];
-
-                $cc_headers = [
-                    'Authorization' => 'Bearer EAAAEPcP7wW7hp68oZHTLDGY4E7XjEAQWGFzLHVrIFpElBcX6CTDSSkk0UsEKx4e'
-                ];
-
-                $cc_response = Http::withHeaders($cc_headers)->post($cc_url, $cc_body);
-                $cc_response = json_decode($cc_response->getBody(), true);
-
-                $payment->update([
-                    'square_customer_id' => $cc_response['customer']['id'],
-                    'square_customer_response' => json_encode($cc_response),
-                ]);
-
-
-                $card_url = 'https://connect.squareupsandbox.com/v2/cards';
-
-                $card_body = [
-                    "card" => [
-                        "cardholder_name" => "Moiz Chauhdry",
-                        "customer_id" => $payment->square_customer_id
-                    ],
-                    'idempotency_key' => (string) Str::uuid(),
-                    'source_id' => "cnon:card-nonce-ok",
-                ];
-
-                $card_headers = [
-                    'Authorization' => 'Bearer EAAAEPcP7wW7hp68oZHTLDGY4E7XjEAQWGFzLHVrIFpElBcX6CTDSSkk0UsEKx4e'
-                ];
-
-                $card_response = Http::withHeaders($card_headers)->post($card_url, $card_body);
-                $card_response = json_decode($card_response->getBody(), true);
-
-                dd($card_response);
-
-                $payment->update([
-                    'square_card_id' => $card_response['card']['id'],
-                    'square_card_response' => json_encode($card_response),
-                ]);
 
                 // return response()->json([
                 //     'status' => true,
