@@ -253,7 +253,7 @@ class PackageController extends Controller
         }
         $package_files = [];
         if ($packag->project_id == 2) {
-            $package_files = PackageFile::where('package_id', $packag->id)->get();
+            $package_files = PackageFile::where('payment_module', 'package')->where('payment_module_id', $packag->id)->get();
         }
 
         return Inertia::render('Packages/Show', [
@@ -1097,7 +1097,7 @@ class PackageController extends Controller
     public function generateLabel(Request $request)
     {
         try {
-            
+
             $package = Package::where('id', $request->package_id)->first();
 
             if ($package->carrier_code == 'fedex') {
