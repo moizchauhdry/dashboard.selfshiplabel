@@ -106,7 +106,7 @@ class SquarePaymentController extends Controller
                     ],
                     'idempotency_key' => (string) Str::uuid(),
                     'source_id' => $card_response['card']['id'],
-                    'source_id' => $customer_response['customer']['id'],
+                    'customer_id' => $customer_response['customer']['id'],
                 ];
 
                 $headers = [
