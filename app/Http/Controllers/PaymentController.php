@@ -907,7 +907,7 @@ class PaymentController extends Controller
 
         $payment_body = [
             'amount_money' => [
-                'amount' => (float) $request->amount,
+                'amount' => (float) $request->amount * 100,
                 'currency' => 'USD',
             ],
             'idempotency_key' => (string) Str::uuid(),
