@@ -22,7 +22,14 @@ class CreatePaymentsTable extends Migration
             $table->enum('payment_method', ['square', 'authorize', 'paypal', 'stripe'])->nullable()->default('square');
             $table->decimal('charged_amount', 8, 2);
             $table->dateTime('charged_at')->nullable();
-            $table->json('payment_response')->nullable();
+            
+            // SQUARE
+            $table->string('sq_customer_id', 100)->nullable();
+            $table->json('sq_customer_response')->nullable();
+            $table->string('sq_card_id', 100)->nullable();
+            $table->json('sq_card_response')->nullable();
+            $table->string('sq_payment_id', 100)->nullable();
+            $table->json('sq_payment_response')->nullable();
             $table->timestamps();
         });
     }

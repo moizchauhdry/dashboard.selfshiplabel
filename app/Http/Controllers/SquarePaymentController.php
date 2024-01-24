@@ -46,6 +46,10 @@ class SquarePaymentController extends Controller
                 $grand_total_array = explode(".", $grand_total);
                 $amount = (int) $grand_total_array[0];
 
+                $headers = [
+                    'Authorization' => 'Bearer EAAAEPcP7wW7hp68oZHTLDGY4E7XjEAQWGFzLHVrIFpElBcX6CTDSSkk0UsEKx4e'
+                ];
+
                 // CREATE CUSTOMER
                 $customer_url = 'https://connect.squareupsandbox.com/v2/customers';
 
@@ -54,11 +58,7 @@ class SquarePaymentController extends Controller
                     'idempotency_key' => (string) Str::uuid(),
                 ];
 
-                $customer_headers = [
-                    'Authorization' => 'Bearer EAAAEPcP7wW7hp68oZHTLDGY4E7XjEAQWGFzLHVrIFpElBcX6CTDSSkk0UsEKx4e'
-                ];
-
-                $customer_response = Http::withHeaders($customer_headers)->post($customer_url, $customer_body);
+                $customer_response = Http::withHeaders($headers)->post($customer_url, $customer_body);
                 $customer_response = json_decode($customer_response->getBody(), true);
 
                 // CREATE CARD
@@ -73,33 +73,13 @@ class SquarePaymentController extends Controller
                     'source_id' => $request->payment_token,
                 ];
 
-                $card_headers = [
-                    'Authorization' => 'Bearer EAAAEPcP7wW7hp68oZHTLDGY4E7XjEAQWGFzLHVrIFpElBcX6CTDSSkk0UsEKx4e'
-                ];
-
-                $card_response = Http::withHeaders($card_headers)->post($card_url, $card_body);
+                $card_response = Http::withHeaders($headers)->post($card_url, $card_body);
                 $card_response = json_decode($card_response->getBody(), true);
 
-                // $payment->update([
-                //     'square_card_id' => $card_response['card']['id'],
-                //     'square_card_response' => json_encode($card_response),
-                // ]);
+                // CREATE PAYMENT
+                $payment_url = 'https://connect.squareupsandbox.com/v2/payments';
 
-                // $data = [
-                //     'square_customer_id' => $customer_response['customer']['id'],
-                //     'square_customer_response' => json_encode($customer_response),
-                // ];
-
-                // $payment = Payment::updateOrCreate([
-                //     'payment_module' => 'package',
-                //     'payment_module_id' => $package->id,
-                // ], $data);
-
-
-                // $url = 'https://connect.squareup.com/v2/payments';
-                $url = 'https://connect.squareupsandbox.com/v2/payments';
-
-                $body = [
+                $payment_body = [
                     'amount_money' => [
                         'amount' => $amount,
                         'currency' => 'USD',
@@ -109,47 +89,45 @@ class SquarePaymentController extends Controller
                     'customer_id' => $customer_response['customer']['id'],
                 ];
 
-                $headers = [
-                    'Authorization' => 'Bearer EAAAEPcP7wW7hp68oZHTLDGY4E7XjEAQWGFzLHVrIFpElBcX6CTDSSkk0UsEKx4e'
+                $payment_response = Http::withHeaders($headers)->post($payment_url, $payment_body);
+                $payment_response = json_decode($payment_response->getBody(), true);
+
+                $data = [
+                    'payment_module' => 'package',
+                    'payment_module_id' => $package->id,
+                    'customer_id' => $package->customer_id,
+                    'transaction_id' => $payment_response['payment']['id'],
+                    'payment_method' => 'square',
+                    'charged_amount' => $payment_response['payment']['amount_money']['amount'],
+                    'charged_at' => Carbon::now(),
+
+                    'sq_customer_id' => $customer_response['customer']['id'],
+                    'sq_customer_response' => json_encode($customer_response),
+                    'sq_card_id' => $card_response['card']['id'],
+                    'sq_card_response' => json_encode($card_response),
+                    'sq_payment_id' => $payment_response['payment']['id'],
+                    'sq_payment_response' => json_encode($payment_response),
                 ];
 
-                $response = Http::withHeaders($headers)->post($url, $body);
+                Payment::updateOrCreate([
+                    'payment_module' => 'package',
+                    'payment_module_id' => $package->id,
+                ], $data);
 
-                $status_code = $response->status();
-                $response = json_decode($response->getBody(), true);
+                if ($payment_response['payment']['status'] === 'COMPLETED') {
+                    $package->update([
+                        'payment_status' => 'Paid',
+                        'cart' => 0,
+                    ]);
+                } else {
+                    // $package->update(['payment_status' => 'failed']);
+                }
 
-                dd($response);
-
-                // $data = [
-                //     'payment_module' => 'package',
-                //     'payment_module_id' => $package->id,
-                //     'customer_id' => $package->customer_id,
-                //     // 'transaction_id' => $response['payment']['id'],
-                //     'payment_method' => 'square',
-                //     // 'charged_amount' => $response['payment']['amount_money']['amount'],
-                //     'charged_at' => Carbon::now(),
-                //     // 'payment_response' => json_encode($response),
-                // ];
-
-                // $payment = Payment::updateOrCreate([
-                //     'payment_module' => 'package',
-                //     'payment_module_id' => $package->id,
-                // ], $data);
-
-                // if ($response['payment']['status'] === 'COMPLETED') {
-                //     $package->update([
-                //         'payment_status' => 'Paid',
-                //         'cart' => 0,
-                //     ]);
-                // } else {
-                //     // $package->update(['payment_status' => 'failed']);
-                // }
-
-                // return response()->json([
-                //     'status' => true,
-                //     'code' => $status_code,
-                //     'message' => 'success',
-                // ]);
+                return response()->json([
+                    'status' => true,
+                    'code' => 200,
+                    'message' => 'success',
+                ]);
             } else {
                 return response()->json([
                     'status' => false,
