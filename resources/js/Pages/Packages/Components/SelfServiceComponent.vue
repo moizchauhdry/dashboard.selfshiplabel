@@ -24,16 +24,12 @@
                         <th>Payment ID</th>
                         <th>Charged Amount</th>
                         <th>Charged Date</th>
-                        <th>Stripe Customer ID</th>
-                        <th>Stripe Payment ID</th>
                     </tr>
                     <tr v-for="payment, index in payments" :key="payment.id">
                         <td>{{ ++index }}</td>
                         <td>{{ payment.id }}</td>
                         <td>${{ payment.charged_amount }}</td>
                         <td>{{ payment.charged_at }}</td>
-                        <td>{{ payment.stripe_customer_id }}</td>
-                        <td>{{ payment.stripe_payment_id }}</td>
                     </tr>
                 </table>
             </div>
@@ -99,7 +95,7 @@ export default {
         charge() {
             var result = window.confirm("Are you sure you want to charge?");
             if (result) {
-                this.self_service_charge_form.post(this.route("payment.stripe-charge-later"));
+                this.self_service_charge_form.post(this.route("payment.square-charge-later"));
                 this.self_service_charge_form.amount = 0;
             }
         },

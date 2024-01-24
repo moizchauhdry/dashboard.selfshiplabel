@@ -24,6 +24,8 @@ use Inertia\Inertia;
 use PDF;
 use net\authorize\api\contract\v1 as AnetAPI;
 use net\authorize\api\controller as AnetController;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Http;
 
 class PaymentController extends Controller
 {
@@ -832,67 +834,111 @@ class PaymentController extends Controller
         return redirect()->back();
     }
 
-    public function stripeChargeLater(Request $request)
+    // public function stripeChargeLater(Request $request)
+    // {
+    //     try {
+    //         DB::beginTransaction();
+
+    //         $payment_module = $request->payment_module;
+
+    //         if (!in_array($payment_module, ['package'])) {
+    //             return redirect()->back()->with('error', 'PAYMENT DENIED!');
+    //         }
+
+    //         if ($payment_module == 'package') {
+    //             $payment = Payment::where('package_id', $request->package_id)->first();
+    //         }
+
+    //         $stripe = new \Stripe\StripeClient(config('app.stripe_secret_key'));
+    //         $method = $stripe->paymentMethods->all([
+    //             'customer' => $payment->stripe_customer_id,
+    //             'type' => 'card',
+    //         ])->toArray();
+
+    //         $pm_id = $method['data'][0]['id'];
+
+    //         \Stripe\Stripe::setApiKey(config('app.stripe_secret_key'));
+
+    //         try {
+    //             $intent =  \Stripe\PaymentIntent::create([
+    //                 'amount' => $request->amount * 100,
+    //                 'currency' => 'usd',
+    //                 'automatic_payment_methods' => ['enabled' => true],
+    //                 'customer' => $payment->stripe_customer_id,
+    //                 'payment_method' => $pm_id,
+    //                 // 'return_url' => 'https://example.com/order/123/complete',
+    //                 'off_session' => true,
+    //                 'confirm' => true,
+    //             ])->toArray();
+
+    //             $data = [
+    //                 'package_id' => $payment->package_id,
+    //                 'customer_id' => $payment->customer_id,
+    //                 'payment_type' => 'stripe',
+    //                 'charged_amount' => $intent['amount'] / 100,
+    //                 'charged_at' => Carbon::now(),
+    //                 'transaction_id' => 0,
+    //                 'stripe_customer_id' => $intent['customer'],
+    //                 'stripe_payment_id' => $intent['id'],
+    //                 'stripe_client_secret' => $intent['client_secret'],
+    //             ];
+
+    //             Payment::create($data);
+
+    //             DB::commit();
+    //             return redirect()->back()->with('success', 'charge success');
+    //         } catch (\Stripe\Exception\CardException $e) {
+    //             echo 'Error code is:' . $e->getError()->code;
+    //             // $payment_intent_id = $e->getError()->payment_intent->id;
+    //             // $payment_intent = \Stripe\PaymentIntent::retrieve($payment_intent_id);
+    //         }
+    //     } catch (\Throwable $th) {
+    //         DB::rollback();
+    //         return redirect()->back()->with('error', $th->getMessage());
+    //     }
+    // }
+
+    public function squareChargeLater(Request $request)
     {
-        try {
-            DB::beginTransaction();
+        $payment = Payment::where('payment_module', 'package')->where('payment_module_id', $request->package_id)->first();
 
-            $payment_module = $request->payment_module;
+        // CREATE PAYMENT
+        $payment_url = 'https://connect.squareupsandbox.com/v2/payments';
 
-            if (!in_array($payment_module, ['package'])) {
-                return redirect()->back()->with('error', 'PAYMENT DENIED!');
-            }
+        $payment_body = [
+            'amount_money' => [
+                'amount' => (float) $request->amount,
+                'currency' => 'USD',
+            ],
+            'idempotency_key' => (string) Str::uuid(),
+            'source_id' => $payment->sq_card_id,
+            'customer_id' => $payment->sq_customer_id,
+        ];
 
-            if ($payment_module == 'package') {
-                $payment = Payment::where('package_id', $request->package_id)->first();
-            }
+        $headers = [
+            'Authorization' => 'Bearer EAAAEPcP7wW7hp68oZHTLDGY4E7XjEAQWGFzLHVrIFpElBcX6CTDSSkk0UsEKx4e'
+        ];
 
-            $stripe = new \Stripe\StripeClient(config('app.stripe_secret_key'));
-            $method = $stripe->paymentMethods->all([
-                'customer' => $payment->stripe_customer_id,
-                'type' => 'card',
-            ])->toArray();
+        $payment_response = Http::withHeaders($headers)->post($payment_url, $payment_body);
+        $payment_response = json_decode($payment_response->getBody(), true);
 
-            $pm_id = $method['data'][0]['id'];
 
-            \Stripe\Stripe::setApiKey(config('app.stripe_secret_key'));
+        dd($payment_response);
 
-            try {
-                $intent =  \Stripe\PaymentIntent::create([
-                    'amount' => $request->amount * 100,
-                    'currency' => 'usd',
-                    'automatic_payment_methods' => ['enabled' => true],
-                    'customer' => $payment->stripe_customer_id,
-                    'payment_method' => $pm_id,
-                    // 'return_url' => 'https://example.com/order/123/complete',
-                    'off_session' => true,
-                    'confirm' => true,
-                ])->toArray();
+        $data = [
+            'payment_module' => 'package',
+            'payment_module_id' => $payment->payment_module_id,
+            'customer_id' => $payment->customer_id,
+            'transaction_id' => $payment_response['payment']['id'],
+            'payment_method' => 'square',
+            'charged_amount' => $payment_response['payment']['amount_money']['amount'],
+            'charged_at' => Carbon::now(),
+            'sq_payment_id' => $payment_response['payment']['id'],
+            'sq_payment_response' => json_encode($payment_response),
+        ];
 
-                $data = [
-                    'package_id' => $payment->package_id,
-                    'customer_id' => $payment->customer_id,
-                    'payment_type' => 'stripe',
-                    'charged_amount' => $intent['amount'] / 100,
-                    'charged_at' => Carbon::now(),
-                    'transaction_id' => 0,
-                    'stripe_customer_id' => $intent['customer'],
-                    'stripe_payment_id' => $intent['id'],
-                    'stripe_client_secret' => $intent['client_secret'],
-                ];
+        Payment::create($data);
 
-                Payment::create($data);
-
-                DB::commit();
-                return redirect()->back()->with('success', 'charge success');
-            } catch (\Stripe\Exception\CardException $e) {
-                echo 'Error code is:' . $e->getError()->code;
-                // $payment_intent_id = $e->getError()->payment_intent->id;
-                // $payment_intent = \Stripe\PaymentIntent::retrieve($payment_intent_id);
-            }
-        } catch (\Throwable $th) {
-            DB::rollback();
-            return redirect()->back()->with('error', $th->getMessage());
-        }
+        return redirect()->back()->with('success', 'charge success');
     }
 }
