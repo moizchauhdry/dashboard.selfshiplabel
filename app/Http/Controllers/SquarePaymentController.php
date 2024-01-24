@@ -80,8 +80,6 @@ class SquarePaymentController extends Controller
                 $card_response = Http::withHeaders($card_headers)->post($card_url, $card_body);
                 $card_response = json_decode($card_response->getBody(), true);
 
-                dd($card_response);
-
                 // $payment->update([
                 //     'square_card_id' => $card_response['card']['id'],
                 //     'square_card_response' => json_encode($card_response),
@@ -99,25 +97,27 @@ class SquarePaymentController extends Controller
 
 
                 // $url = 'https://connect.squareup.com/v2/payments';
-                // $url = 'https://connect.squareupsandbox.com/v2/payments';
+                $url = 'https://connect.squareupsandbox.com/v2/payments';
 
-                // $body = [
-                //     'amount_money' => [
-                //         'amount' => $amount,
-                //         'currency' => 'USD',
-                //     ],
-                //     'idempotency_key' => (string) Str::uuid(),
-                //     'source_id' => $request->payment_token,
-                // ];
+                $body = [
+                    'amount_money' => [
+                        'amount' => $amount,
+                        'currency' => 'USD',
+                    ],
+                    'idempotency_key' => (string) Str::uuid(),
+                    'source_id' => $card_response['card']['id'],
+                ];
 
-                // $headers = [
-                //     'Authorization' => 'Bearer EAAAEPcP7wW7hp68oZHTLDGY4E7XjEAQWGFzLHVrIFpElBcX6CTDSSkk0UsEKx4e'
-                // ];
+                $headers = [
+                    'Authorization' => 'Bearer EAAAEPcP7wW7hp68oZHTLDGY4E7XjEAQWGFzLHVrIFpElBcX6CTDSSkk0UsEKx4e'
+                ];
 
-                // $response = Http::withHeaders($headers)->post($url, $body);
+                $response = Http::withHeaders($headers)->post($url, $body);
 
-                // $status_code = $response->status();
-                // $response = json_decode($response->getBody(), true);
+                $status_code = $response->status();
+                $response = json_decode($response->getBody(), true);
+
+                dd($response);
 
                 // $data = [
                 //     'payment_module' => 'package',
