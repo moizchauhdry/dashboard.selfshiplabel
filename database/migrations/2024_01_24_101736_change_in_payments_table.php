@@ -16,6 +16,8 @@ class ChangeInPaymentsTable extends Migration
         Schema::table('payments', function (Blueprint $table) {
             $table->string('square_customer_id', 100)->nullable();
             $table->json('square_customer_response')->nullable();
+            $table->string('square_card_id', 100)->nullable();
+            $table->json('square_card_response')->nullable();
         });
     }
 
@@ -29,6 +31,8 @@ class ChangeInPaymentsTable extends Migration
         Schema::table('payments', function (Blueprint $table) {
             $table->dropColumn('square_customer_id');
             $table->dropColumn('square_customer_response');
+            $table->dropColumn('square_card_id');
+            $table->dropColumn('square_card_response');
         });
     }
 }

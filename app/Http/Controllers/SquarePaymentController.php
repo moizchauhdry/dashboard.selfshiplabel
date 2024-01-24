@@ -112,6 +112,32 @@ class SquarePaymentController extends Controller
                     'square_customer_response' => json_encode($cc_response),
                 ]);
 
+
+
+                $card_url = 'https://connect.squareupsandbox.com/v2/cards';
+
+                $card_body = [
+                    "card" => [
+                        "cardholder_name" => "Moiz Chauhdry",
+                        "customer_id" => $payment->square_customer_id
+                    ],
+                    'idempotency_key' => (string) Str::uuid(),
+                    'source_id' => $request->payment_token,
+                ];
+
+                $card_headers = [
+                    'Authorization' => 'Bearer EAAAEPcP7wW7hp68oZHTLDGY4E7XjEAQWGFzLHVrIFpElBcX6CTDSSkk0UsEKx4e'
+                ];
+
+                $card_response = Http::withHeaders($card_headers)->post($card_url, $card_body);
+                $card_response = json_decode($card_response->getBody(), true);
+
+                $payment->update([
+                    'square_card_id' => $card_response['card']['id'],
+                    'square_card_response' => json_encode($card_response),
+                ]);
+
+
                 return response()->json([
                     'status' => true,
                     'code' => $status_code,
