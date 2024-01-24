@@ -47,25 +47,25 @@ class SquarePaymentController extends Controller
                 $amount = (int) $grand_total_array[0];
 
                 // $url = 'https://connect.squareup.com/v2/payments';
-                $url = 'https://connect.squareupsandbox.com/v2/payments';
+                // $url = 'https://connect.squareupsandbox.com/v2/payments';
 
-                $body = [
-                    'amount_money' => [
-                        'amount' => $amount,
-                        'currency' => 'USD',
-                    ],
-                    'idempotency_key' => (string) Str::uuid(),
-                    'source_id' => $request->payment_token,
-                ];
+                // $body = [
+                //     'amount_money' => [
+                //         'amount' => $amount,
+                //         'currency' => 'USD',
+                //     ],
+                //     'idempotency_key' => (string) Str::uuid(),
+                //     'source_id' => $request->payment_token,
+                // ];
 
-                $headers = [
-                    'Authorization' => 'Bearer EAAAEPcP7wW7hp68oZHTLDGY4E7XjEAQWGFzLHVrIFpElBcX6CTDSSkk0UsEKx4e'
-                ];
+                // $headers = [
+                //     'Authorization' => 'Bearer EAAAEPcP7wW7hp68oZHTLDGY4E7XjEAQWGFzLHVrIFpElBcX6CTDSSkk0UsEKx4e'
+                // ];
 
-                $response = Http::withHeaders($headers)->post($url, $body);
+                // $response = Http::withHeaders($headers)->post($url, $body);
 
-                $status_code = $response->status();
-                $response = json_decode($response->getBody(), true);
+                // $status_code = $response->status();
+                // $response = json_decode($response->getBody(), true);
 
                 $data = [
                     'payment_module' => 'package',
