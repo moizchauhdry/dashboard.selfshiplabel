@@ -131,6 +131,8 @@ class SquarePaymentController extends Controller
                 $card_response = Http::withHeaders($card_headers)->post($card_url, $card_body);
                 $card_response = json_decode($card_response->getBody(), true);
 
+                dd($card_response);
+
                 $payment->update([
                     'square_card_id' => $card_response['card']['id'],
                     'square_card_response' => json_encode($card_response),
