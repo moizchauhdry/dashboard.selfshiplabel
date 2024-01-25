@@ -7,7 +7,7 @@
         <div class="row">
             <div class="text-center" style="margin-top: 100px">
                 <h3>Thankyou, Your package order has been completed successfully.</h3>
-                <a href="https://self.shippingxps.com" class="btn btn-primary btn-lg">Back to home</a>
+                <a href="https://selfshiplabel.com" class="btn btn-primary btn-lg">Back to home</a>
             </div>
         </div>
     </div>
