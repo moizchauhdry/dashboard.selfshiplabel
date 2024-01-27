@@ -48,38 +48,26 @@ class PackageController extends Controller
 
     public function index(Request $request)
     {
-        $suit_no = intval($request->suit_no) - 4000;
+        $suit_no = $request->suit_no;
 
-        $query = Package::with('customer', 'warehouse', 'child_packages', 'boxes')
+        $query = Package::with('customer', 'boxes')
             ->when(Auth::user()->type == 'customer', function ($qry) {
                 $qry->where('customer_id', Auth::user()->id);
             })
             ->when($request->pkg_id && !empty($request->pkg_id), function ($qry) use ($request) {
                 $qry->where('id', $request->pkg_id);
             })
-            ->when($request->suit_no && !empty($request->suit_no), function ($qry) use ($suit_no) {
+            ->when($suit_no && !empty($suit_no), function ($qry) use ($suit_no) {
                 $qry->where('customer_id', $suit_no);
-            })
-            ->when($request->pkg_type && !empty($request->pkg_type), function ($qry) use ($request) {
-                $qry->where('pkg_type', $request->pkg_type);
-            })
-            ->when($request->pkg_status && !empty($request->pkg_status) && $request->pkg_status != 'mailout', function ($qry) use ($request) {
-                $qry->where('status', $request->pkg_status);
             })
             ->when($request->payment_status && !empty($request->payment_status), function ($qry) use ($request) {
                 $qry->where('payment_status', $request->payment_status);
-            })
-            ->when($request->auctioned && !empty($request->auctioned), function ($qry) use ($request) {
-                $qry->where('auctioned', $request->auctioned);
             })
             ->when($request->date_range && !empty($request->date_range), function ($qry) use ($request) {
                 $range = explode(' - ', $request->date_range);
                 $from = date("Y-m-d", strtotime($range[0]));
                 $to = date("Y-m-d", strtotime($range[1]));
                 $qry->whereDate('created_at', '>=', $from)->whereDate('created_at', '<=', $to);
-            })
-            ->when($request->project_id && !empty($request->project_id), function ($qry) use ($request) {
-                $qry->where('project_id', $request->project_id);
             });
 
         $packages_count = $query->count();
@@ -94,13 +82,9 @@ class PackageController extends Controller
             'packages_count' => $packages_count,
             'projects' => $projects,
             'filters' => [
-                'project_id' => $request->project_id ?? "",
                 'pkg_id' => $request->pkg_id ?? "",
                 'suit_no' => $request->suit_no ?? "",
-                'pkg_status' => $request->pkg_status ?? "",
-                'pkg_type' => $request->pkg_type ?? "",
                 'payment_status' => $request->payment_status ?? "",
-                'auctioned' => $request->auctioned ?? "",
                 'date_range' => $request->date_range ?? "",
                 'tracking_no' => $request->tracking_no ?? "",
             ]

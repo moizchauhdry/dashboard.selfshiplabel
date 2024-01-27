@@ -8,8 +8,6 @@
     <title>Commercial Invoice - {{$package->id}} </title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    {{-- <link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@400;500;600;700&display=swap"
-        rel="stylesheet"> --}}
     <style>
         h5,
         table,
@@ -49,34 +47,19 @@
 </head>
 
 <body>
-    {{-- <table style="border:none;">
-        <tr>
-            <td style="width:50%" style="border:none;font-size:7px;text-align:left;">
-                <p>Commercial Invoice</p>
-            </td>
-            <td style="width:50%" style="border:none;font-size:7px;text-align:right;">
-                <p>{{ date('Y-m-d') }}</p>
-                <p>{{ $warehouse->address }}</p>
-                <p>{{ $warehouse->city }},{{ $warehouse->state }},{{ $warehouse->zip.',' ?? '' }}</p>
-                <p>{{ $warehouse->country->nicename }}</p>
-            </td>
-        </tr>
-    </table> --}}
     <h5 style="text-align:center;"> COMMERCIAL INVOICE </h5>
-    <table style="margin-bottom: 30px;">
+    <table style="margin-bottom: 30px; text-transform: capitalize;">
         <tr>
             <td style="padding: 5px" width="50%">
                 <h4>{{ strtoupper('Shipped From') }}:</h4><br>
-                <strong>Contact Name</strong> : {{ $warehouse->contact_person}}<br>
+                <strong>Contact Name</strong> : {{ $ship_from->fullname}}<br>
                 <strong>EORI:</strong><br>
-                <strong>Telephone No.</strong> : {{ $warehouse->phone}}<br>
-                <strong>E-mail</strong> : {{ $warehouse->email}}<br>
+                <strong>Phone</strong> : {{ $ship_from->phone}}<br>
+                <strong>E-mail</strong> : {{ $ship_from->email}}<br>
                 <strong>Company / Address</strong> :<br>
-                {{ $warehouse->address}},{{ $warehouse->city }},<br>{{ $warehouse->state }}, {{ $warehouse->zip. ', ' ??
-                ''
-                }}{{ $warehouse->country->nicename }}
-                <br><br>
-                <strong>Country</strong> : {{ $warehouse->country->nicename }}<br>
+                {{ $ship_from->address}},{{ $ship_from->city }},<br>
+                {{ $ship_from->state }}, {{ $ship_from->zip_code}} <br><br>
+                <strong>Country</strong> : {{ $ship_from->country->nicename }}<br>
                 <strong>Incoterms</strong> : DDU/DAP <br>
                 <strong>Reason For Export</strong> : {{ $package->package_type}}<br>
 
@@ -84,27 +67,26 @@
             <td style="padding: 5px" width="50%">
                 <strong>Tracking Number</strong>:<br> {{ $package->tracking_number_out}}<br><br>
                 <strong>Date</strong> : {{ date('Y-m-d') }}<br>
-                <strong>Package ID</strong>: {{ $package->package_no}} <br>
+                <strong>Package ID</strong>: {{ $package->id}} <br>
             </td>
         </tr>
         <tr>
             <td style="padding: 5px" width="50%">
                 <h4>{{ strtoupper('Shipped To') }}:</h4><br>
-                <strong>Contact Name</strong> :
-                {{ isset($address->fullname) ? strtoupper($address->fullname) : '' }}<br>
-                <strong>Telephone No.</strong> : {{ $address->phone ?? ''}}<br>
-                <strong>E-mail</strong> : {{ $user->email ?? ''}}<br>
+                <strong>Contact Name</strong> : {{$ship_to->fullname}}<br>
+                <strong>Phone</strong> : {{ $ship_to->phone ?? ''}}<br>
+                <strong>E-mail</strong> : {{ $ship_to->email ?? ''}}<br>
                 <strong>Company / Address</strong> :<br>
-                {{ $address->address ?? ''}} <br>
-                {{ $address->address_2 ?? ''}} <br>
-                {{ $address->address_3 ?? ''}} <br>
-                @if (isset($address->tax_no))
-                <strong>Tax ID</strong> : {{ isset($address->tax_no) ? $address->tax_no : ''}} <br>
+                {{ $ship_to->address ?? ''}} <br>
+                {{ $ship_to->address_2 ?? ''}} <br>
+                {{ $ship_to->address_3 ?? ''}} <br>
+                @if (isset($ship_to->tax_no))
+                <strong>Tax ID</strong> : {{ isset($ship_to->tax_no) ? $ship_to->tax_no : ''}} <br>
                 @endif
-                <strong>City</strong> : {{ $address->city ?? ''}} <br>
-                <strong>State/Province</strong> : {{ $address->state ?? ''}} <br>
-                <strong>Zip code</strong> : {{ $address->zip_code ?? ''}} <br> <br>
-                <strong>Country</strong> : {{ $address->country->name ?? '' }}
+                <strong>City</strong> : {{ $ship_to->city ?? ''}} <br>
+                <strong>State/Province</strong> : {{ $ship_to->state ?? ''}} <br>
+                <strong>ZIP code</strong> : {{ $ship_to->zip_code ?? ''}} <br> <br>
+                <strong>Country</strong> : {{ $ship_to->country->name ?? '' }}
             </td>
 
             <td style="padding: 5px" width="50%">
@@ -203,11 +185,11 @@
 
         <tr>
             <td colspan="2" style="height:80px; padding: 10px;border-right:none">
-                <strong>Signature</strong>:<br> <b>{{ $warehouse->contact_person }}</b>
+                <strong>Signature</strong>:<br> <b>{{ $ship_from->fullname }}</b>
             </td>
             <td colspan="7" style="height:80px;border-left:none;text-align: right">
                 {{-- <img style="height: 75px; width: auto;margin-right:10px"
-                    src="{{ asset('storage/'.$warehouse->signature) }}" alt=""> --}}
+                    src="{{ asset('storage/'.$ship_from->signature) }}" alt=""> --}}
             </td>
         </tr>
     </table>

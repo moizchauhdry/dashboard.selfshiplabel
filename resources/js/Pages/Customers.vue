@@ -41,13 +41,11 @@
 								<td>{{ customer.created_at }}</td>
 								<td>{{ customer.status == 1 ? 'Active' : 'Inactive' }}</td>
 								<td>
-									<template v-if="$page.props.auth.user.type == 'admin' ||
-										$page.props.auth.user.type == 'manager'
-										">
-										<inertia-link class="btn btn-success btn-xs m-1"
+									<template v-if="$page.props.auth.user.type == 'admin' || $page.props.auth.user.type == 'manager'">
+										<!-- <inertia-link class="btn btn-success btn-xs m-1"
 											:href="createOrderLink(customer.id)">
 											<i class="fa fa-plus mr-1"></i>Create
-											Package</inertia-link>
+											Package</inertia-link> -->
 										<inertia-link :href="route('customers.edit', customer.id)"
 											class="btn btn-primary btn-xs m-1">
 											<i class="fa fa-pencil-alt mr-1"></i>Edit</inertia-link>

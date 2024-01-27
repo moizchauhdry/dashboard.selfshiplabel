@@ -6,8 +6,6 @@
 					<th scope="col">SR #</th>
 					<th scope="col">Package ID</th>
 					<th scope="col">Tracking Number</th>
-					<th scope="col">Warehouse</th>
-					<th scope="col">Status</th>
 					<th scope="col">Customer</th>
 					<th scope="col">Created Date</th>
 					<th scope="col"></th>
@@ -17,11 +15,7 @@
 				<tr v-for="(pkg, index) in pkgs.data" :key="pkg.id">
 					<td>{{ ++index }}</td>
 					<td style="width: 200px;">
-						<span class="badge badge-primary text-sm">PKG #{{ pkg.id }}</span> <br>
-						<template v-for="child_pkg in pkg.child_packages" :key="child_pkg.id">
-							<span class="badge badge-info mr-1 mb-1" v-if="child_pkg.id != pkg.id">
-								PKG #{{ child_pkg.id }}</span>
-						</template>
+						<span class="badge badge-primary text-sm">PKG #{{ pkg.id }}</span>
 					</td>
 					<td>
 						<div v-for="box in pkg.boxes" :key="box.id">
@@ -43,36 +37,18 @@
 						</div>
 					</td>
 					<td>
-						{{ pkg?.warehouse?.name }}
-					</td>
-					<td>
-						<span class="mr-1" :class="getLabelClass(pkg.status)">{{ pkg.status }}</span>
-						<span class="badge badge-warning text-uppercase mr-1"
-							v-if="pkg.pkg_type == 'consolidation' || pkg.pkg_type == 'multipiece'">{{ pkg.pkg_type }}</span>
 						<span class="badge badge-success text-uppercase mr-1"
 							v-if="pkg.payment_status == 'Paid'">Paid</span>
-						<span class="badge badge-warning text-uppercase mr-1" v-if="pkg.auctioned == 1">Auctioned</span>
 					</td>
 					<td>
 						<inertia-link :href="route('customers.show', pkg?.customer?.id)" class="btn btn-link">
-							{{ pkg?.customer?.name }} - {{ siuteNum(pkg?.customer?.id) }}
+							{{ pkg?.customer?.name }} - {{ pkg?.customer?.id }}
 						</inertia-link>
 					</td>
 					<td>{{ pkg.created_at }}</td>
 					<td>
-						<template v-if="pkg.pkg_type != 'assigned'">
-							<inertia-link class="btn btn-info btn-sm m-1" :href="route('packages.show', pkg.id)">
-								<i class="fa fa-list mr-1"></i>Detail</inertia-link>
-							<template v-if="pkg.status != 'open'">
-								<a class="btn btn-warning btn-sm m-1" :href="route('packages.pdf', pkg.id)" target="_blank">
-									<i class="fa fa-print mr-1"></i>Print</a>
-							</template>
-						</template>
-						<template v-else>
-							<inertia-link class="btn btn-link" :href="route('packages.show', pkg.package_handler_id)">
-								This package is assigned to PKG #{{ pkg.package_handler_id }}
-							</inertia-link>
-						</template>
+						<inertia-link class="btn btn-info btn-sm m-1" :href="route('packages.show', pkg.id)">
+							<i class="fa fa-list mr-1"></i>Detail</inertia-link>
 					</td>
 				</tr>
 				<tr v-if="pkgs.data.length == 0">

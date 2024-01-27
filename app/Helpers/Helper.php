@@ -65,15 +65,11 @@ function shipping_service_markup($type)
 }
 
 function commercialInvoiceForLabel($id)
-{
-    $package = Package::with(['packageItems', 'warehouse.country'])
-        ->when(Auth::user()->type == 'customer', function ($qry) {
-            $qry->where('customer_id', Auth::user()->id);
-        })->findOrFail($id);
+{    
+    $package = Package::find($id);
 
-    $warehouse = $package->warehouse;
-    $user = User::find($package->customer_id);
-    $address = Address::find($package->address_book_id);
+    $ship_from = Address::find($package->ship_from);
+    $ship_to = Address::find($package->ship_to);
 
     $package_weight = 0;
     if (isset($package->boxes)) {
@@ -83,9 +79,8 @@ function commercialInvoiceForLabel($id)
     view()->share([
         'package' => $package,
         'package_weight' => $package_weight,
-        'warehouse' => $warehouse,
-        'user' => $user,
-        'address' => $address
+        'ship_from' => $ship_from,
+        'ship_to' => $ship_to
     ]);
 
     $pdf = PDF::loadView('pdfs.commercial-invoice');
@@ -99,11 +94,12 @@ function commercialInvoiceForLabel($id)
 function generateLabelFedex($id)
 {
     $package = Package::where('id', $id)->first();
-    $warehouse = Warehouse::where('id', $package->warehouse_id)->first();
+    // $warehouse = Warehouse::where('id', $package->warehouse_id)->first();
+    $ship_from = Address::where('id', $package->ship_from)->first();
     $ship_to = Address::where('id', $package->ship_to)->first();
 
     $service_type = 'international';
-    if ($warehouse->country_id == $ship_to->country_id) {
+    if ($ship_from->country_id == $ship_to->country_id) {
         $service_type = 'domestic';
     }
 
@@ -181,20 +177,19 @@ function generateLabelFedex($id)
             "shipper" => [
                 "address" => [
                     "streetLines" => [
-                        $warehouse->address,
+                        $ship_from->address,
                     ],
-                    "city" => $warehouse->city,
-                    "stateOrProvinceCode" => $warehouse->state,
-                    "postalCode" => $warehouse->zip,
+                    "city" => $ship_from->city,
+                    "stateOrProvinceCode" => $ship_from->state,
+                    "postalCode" => $ship_from->zip_code,
                     "countryCode" => "US",
-                    "residential" => false
+                    "residential" =>  $ship_from->is_residential
                 ],
                 "contact" => [
-                    "personName" => $warehouse->contact_person,
-                    "emailAddress" => $warehouse->email,
-                    "phoneExtension" => "91",
-                    "phoneNumber" => $warehouse->phone,
-                    "companyName" => "ShippingXPS"
+                    "personName" => $ship_from->fullname,
+                    "emailAddress" => $ship_from->email,
+                    "phoneExtension" => "",
+                    "phoneNumber" => $ship_from->phone,
                 ]
             ],
             "recipients" => [
@@ -451,24 +446,24 @@ function generateLabelUps($id)
     $response = curl_exec($curl);
     $response = json_decode($response);
     $results = $response->ShipmentResponse->ShipmentResults->PackageResults;
-    
+
     commercialInvoiceForLabel($package->id);
     $oMerger = PDFMerger::init();
     $filename1 = $package->id;
     $count = 1;
     // foreach ($results as $key => $result) {
-        // return $result;
-        $filename2 = $filename1 . '-' . $count . '.png';
-        Storage::disk('labels')->put($filename2, base64_decode($results->ShippingLabel->GraphicImage));
+    // return $result;
+    $filename2 = $filename1 . '-' . $count . '.png';
+    Storage::disk('labels')->put($filename2, base64_decode($results->ShippingLabel->GraphicImage));
 
-        $pdf = PDF::loadView('pdfs.label', ['imagePath' => 'storage/labels/' . $filename2]);
-        $pdf->setPaper('A4', 'portrait');
+    $pdf = PDF::loadView('pdfs.label', ['imagePath' => 'storage/labels/' . $filename2]);
+    $pdf->setPaper('A4', 'portrait');
 
-        $filename2_pdf = $filename1 . '-' . $count . '.pdf';
-        Storage::disk('ups-labels')->put($filename2_pdf, $pdf->output());
-        response()->download('storage/ups-labels/' . $filename2_pdf);
-        $oMerger->addPDF('storage/ups-labels/' . $filename2_pdf, 'all');
-        $count++;
+    $filename2_pdf = $filename1 . '-' . $count . '.pdf';
+    Storage::disk('ups-labels')->put($filename2_pdf, $pdf->output());
+    response()->download('storage/ups-labels/' . $filename2_pdf);
+    $oMerger->addPDF('storage/ups-labels/' . $filename2_pdf, 'all');
+    $count++;
     // }
 
     $oMerger->addPDF('storage/commercial-invoices/' . $filename1 . '.pdf', 'all');

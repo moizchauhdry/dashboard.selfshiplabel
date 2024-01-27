@@ -2,64 +2,21 @@
 	<MainLayout>
 		<div class="card mb-5">
 			<div class="card-header">
-				<b>Manage Packages</b>
-				<template v-if="open_pkgs_count >= 2">
-					<inertia-link :href="route('packages.consolidation')" class="btn btn-success float-right mr-1"
-						v-if="$page.props.auth.user.type == 'customer'">
-						<i class="fa fa-plus mr-1"></i>Package
-						Consolidation</inertia-link>
-
-					<inertia-link :href="route('packages.multipiece')" class="btn btn-primary float-right mr-1"
-						v-if="$page.props.auth.user.type == 'customer'">
-						<i class="fa fa-plus mr-1"></i>Multipiece
-						Package</inertia-link>
-				</template>
-
-				<inertia-link :href="route('orders.create')" class="btn btn-success float-right mr-1"
-					v-if="$page.props.auth.user.type == 'admin'">
-					<i class="fa fa-plus mr-1"></i>Add Package</inertia-link>
+				<b>Packages</b>
 			</div>
 			<div class="card-body">
 				<div class="row">
 					<div class="col-md-12">
 						<form @submit.prevent="submit">
 							<div class="d-flex search">
-								<div class="form-group">
-									<label for="">Project Type</label>
-									<select class="form-control custom-select" v-model="form.project_id">
-										<option value="" selected>All</option>
-										<template v-for="project in projects" :key="project.id">
-											<option :value="project.id">{{project.name}}</option>
-										</template>
-									</select>
-								</div>
+								
 								<div class="form-group">
 									<label for="">Package Number</label>
 									<input type="number" name="number" v-model="form.pkg_id" class="form-control" />
 								</div>
 								<div class="form-group">
-									<label for="">Suit Number</label>
+									<label for="">Customer Number</label>
 									<input type="number" name="number" v-model="form.suit_no" class="form-control" />
-								</div>
-								<div class="form-group">
-									<label for="">Package Status</label>
-									<select class="form-control custom-select" v-model="form.pkg_status">
-										<option value="" selected>All</option>
-										<option value="open">Open</option>
-										<option value="filled">Filled</option>
-										<option value="checkout">Checkout</option>
-										<option value="rejected">Rejected</option>
-									</select>
-								</div>
-								<div class="form-group">
-									<label for="">Package Type</label>
-									<select class="form-control custom-select" v-model="form.pkg_type">
-										<option value="" selected>All</option>
-										<option value="single">Single</option>
-										<option value="consolidation">Consolidation</option>
-										<option value="multipiece">Multipiece</option>
-										<option value="assigned">Assigned</option>
-									</select>
 								</div>
 								<div class="form-group">
 									<label for="">Payment Status</label>
@@ -67,14 +24,6 @@
 										<option value="" selected>All</option>
 										<option value="Paid">Paid</option>
 										<option value="Pending">Pending</option>
-									</select>
-								</div>
-								<div class="form-group">
-									<label for="">Auction Status</label>
-									<select class="form-control custom-select" v-model="form.auctioned">
-										<option value="" selected>All</option>
-										<option value="1">Yes</option>
-										<option value="0">No</option>
 									</select>
 								</div>
 								<div class="form-group">
