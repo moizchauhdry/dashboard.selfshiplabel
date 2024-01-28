@@ -122,4 +122,9 @@ class Package extends Model
     {
         return $query->where('project_id', 2)->where('customer_id', auth()->id())->orderBy('id', 'desc')->where('cart', 1);
     }
+
+    public function payments()
+    {
+        return $this->hasMany(Payment::class, 'payment_module_id', 'id')->where('payment_module', 'package');
+    }
 }

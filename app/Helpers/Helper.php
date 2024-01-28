@@ -709,7 +709,7 @@ function paymentInvoiceForLabel($id)
     $pdf = PDF::loadView('pdfs.payment-invoice');
     $pdf->setPaper('A4', 'portrait');
 
-    $filename = $package->id . '-' . $payment->id . '.pdf';
+    $filename = $payment->id . '.pdf';
     Storage::disk('payment-invoices')->put($filename, $pdf->output());
     return response()->download('storage/payment-invoices/' . $filename);
 }
