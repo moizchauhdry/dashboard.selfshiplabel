@@ -3,6 +3,7 @@
 use App\Models\Address;
 use App\Models\OrderItem;
 use App\Models\Package;
+use App\Models\Payment;
 use App\Models\ShippingService;
 use App\Models\SiteSetting;
 use App\Models\User;
@@ -65,7 +66,7 @@ function shipping_service_markup($type)
 }
 
 function commercialInvoiceForLabel($id)
-{    
+{
     $package = Package::find($id);
 
     $ship_from = Address::find($package->ship_from);
@@ -689,4 +690,26 @@ function generateLabelDhl($id)
         Storage::disk('labels')->delete($box->package_id . '-' . $count . '.pdf');
         $count++;
     }
+}
+
+function paymentInvoiceForLabel($id)
+{
+    $payment = Payment::find($id);
+    $package = Package::where('id', $payment->payment_module_id)->first();
+    $ship_from = Address::find($package->ship_from);
+    $ship_to = Address::find($package->ship_to);
+
+    view()->share([
+        'payment' => $payment,
+        'package' => $package,
+        'ship_from' => $ship_from,
+        'ship_to' => $ship_to
+    ]);
+
+    $pdf = PDF::loadView('pdfs.payment-invoice');
+    $pdf->setPaper('A4', 'portrait');
+
+    $filename = $package->id . '-' . $payment->id . '.pdf';
+    Storage::disk('payment-invoices')->put($filename, $pdf->output());
+    return response()->download('storage/payment-invoices/' . $filename);
 }

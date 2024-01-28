@@ -98,7 +98,7 @@ class SquarePaymentController extends Controller
                     'customer_id' => $package->customer_id,
                     'transaction_id' => $payment_response['payment']['id'],
                     'payment_method' => 'square',
-                    'charged_amount' => $payment_response['payment']['amount_money']['amount'],
+                    'charged_amount' => $payment_response['payment']['amount_money']['amount'] / 100,
                     'charged_at' => Carbon::now(),
 
                     'sq_customer_id' => $customer_response['customer']['id'],
@@ -109,12 +109,15 @@ class SquarePaymentController extends Controller
                     'sq_payment_response' => json_encode($payment_response),
                 ];
 
-                Payment::updateOrCreate([
+                $payment = Payment::updateOrCreate([
                     'payment_module' => 'package',
                     'payment_module_id' => $package->id,
                 ], $data);
 
                 if ($payment_response['payment']['status'] === 'COMPLETED') {
+
+                    paymentInvoiceForLabel($payment->id);
+
                     $package->update([
                         'payment_status' => 'Paid',
                         'cart' => 0,

@@ -124,12 +124,10 @@
         </tr>
         <tr>
             <td>
-                @if (isset($payment->package->boxes[0]->tracking_out) && $payment->package->pkg_type == 'single')
+                @if (isset($payment->package->boxes[0]->tracking_out))
                 Tracking Number: {{$payment->package->boxes[0]->tracking_out}} <br>
                 @endif
                 Transaction ID: {{$payment->transaction_id}} <br>
-                Payment Type: {{$payment->payment_type}} <br>
-                Payment Method: Card <br>
             </td>
             <td>{{ date('d-m-Y',strtotime($payment->charged_at)) }}</td>
             <td>Paid</td>

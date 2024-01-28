@@ -67,6 +67,13 @@ return [
             'visibility' => 'public',
         ],
 
+        'payment-invoices' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public/payment-invoices'),
+            'url' => env('APP_URL') . '/storage/payment-invoices',
+            'visibility' => 'public',
+        ],
+
         'ups-labels' => [
             'driver' => 'local',
             'root' => storage_path('app/public/ups-labels'),
