@@ -51,173 +51,48 @@
         <tr>
             <td colspan="4">
                 <h3>Invoiced From</h3>
-                <strong>ShippingXPS</strong><br>
-                {{ $package->warehouse->name ?? $order->warehouse->name ?? $warehouse->name ?? '- -' }}<br>
-                Address:
-                @if(isset($package->warehouse))
-                {{ $package->warehouse->address}},{{ $package->warehouse->city }},{{ $package->warehouse->state }}{{
-                ','.$package->warehouse->zip ?? '' }}
-                @elseif(isset($order->warehouse))
-                {{ $order->warehouse->address}},{{ $order->warehouse->city }},{{ $order->warehouse->state }}{{
-                ','.$order->warehouse->zip ?? '' }}
-                @elseif(isset($warehouse))
-                {{ $warehouse->address}},{{ $warehouse->city }},{{ $warehouse->state }}{{ ','.$warehouse->zip ?? '' }}
-                @else
-                - -
-                @endif
-                <br>
-                Phone: {{ $package->warehouse->phone ?? $order->warehouse->phone ?? $warehouse->phone ?? '- -' }}<br>
-                Email : {{ $package->warehouse->email ?? $order->warehouse->email ?? $warehouse->email ?? '- -' }}
+                <strong>{{$ship_from->fullname}}</strong><br>
+                <strong>Phone</strong>: {{ $ship_from->phone ?? ''}}<br>
+                <strong>E-mail</strong>: {{ $ship_from->email ?? ''}}<br>
+                <strong>Address</strong>:<br>
+                {{ $ship_from->address ?? ''}} <br>
+                {{ $ship_from->address_2 ?? ''}} <br>
+                {{ $ship_from->address_3 ?? ''}} <br>
             </td>
         </tr>
         <tr>
             <td colspan="2">
                 <h3>Invoice To:</h3>
-                <strong>{{ $address->fullname ?? '' }}</strong><br>
-                Address:{{ $address->address ?? '' }}<br>
-                Phone: {{ $address->phone ?? '' }}<br>
-                Email: {{ $address->email ?? $customer->email ?? '' }}
+                <strong>{{$ship_to->fullname}}</strong><br>
+                <strong>Phone</strong>: {{ $ship_to->phone ?? ''}}<br>
+                <strong>E-mail</strong>: {{ $ship_to->email ?? ''}}<br>
+                <strong>Address</strong>:<br>
+                {{ $ship_to->address ?? ''}} <br>
+                {{ $ship_to->address_2 ?? ''}} <br>
+                {{ $ship_to->address_3 ?? ''}} <br>
             </td>
             <td colspan="2">
-                @if ($billing)
-                <h3>Bill To:</h3>
-                <strong>{{ $billing->fullname ?? '' }}</strong><br>
-                Address:{{ $billing->address ?? '' }}<br>
-                Phone: {{ $billing->phone ?? '' }}<br>
-                Email: {{ $billing->email ?? '' }}
-                @endif
+                <strong>{{$ship_to->fullname}}</strong><br>
+                <strong>Phone</strong>: {{ $ship_to->phone ?? ''}}<br>
+                <strong>E-mail</strong>: {{ $ship_to->email ?? ''}}<br>
+                <strong>Address</strong>:<br>
+                {{ $ship_to->address ?? ''}} <br>
+                {{ $ship_to->address_2 ?? ''}} <br>
+                {{ $ship_to->address_3 ?? ''}} <br>
             </td>
         </tr>
     </table>
-
-    <br>
-
-    @isset($order)
-    <span style="font-size:10px"><b>ITEMS:</b></span>
-    <table class="border" style="width: 100%">
-        @foreach ($order_items as $oi)
-        <tr>
-            <td>{{$oi->name}} - {{$oi->description}} x {{$oi->quantity}}</td>
-            <td style="width: 100px">${{ format_number($oi->unit_price) }}</td>
-        </tr>
-        @endforeach
-    </table>
-    @endisset
-    
-    <br>
 
     <span style="font-size:10px"><b>CHARGES:</b></span>
 
     @isset($package)
     <table class="border" style="width: 100%">
-
-        @if (isset($service_requests))
-        @foreach($service_requests as $item)
-        <tr>
-            <td style="width:85%">{{ $item->service->title }}</td>
-            <td style="width:15%">
-                @if($item->service->id == 1)
-                ${{ $item->service->price + $package->orders->count() * 1.5 }}
-                @else
-                ${{ format_number($item->service->price) }}
-                @endif
-            </td>
-        </tr>
-        @endforeach
-        @endif
-
-        @if ($package->consolidation_fee > 0)
-        <tr>
-            <td>Consolidation</td>
-            <td>${{ format_number($package->consolidation_fee) }}</td>
-        </tr>
-        @endif
-
-        <tr>
-            <td style="width:85%">Mail Fee</td>
-            <td style="width:15%">${{format_number($mailout_fee)}}</td>
-        </tr>
-
-        @if ($package->storage_fee > 0)
-        <tr>
-            <td style="width:85%">Storage Fee</td>
-            <td style="width:15%">${{ format_number($package->storage_fee) }}</td>
-        </tr>
-        @endif
-
         @if ($package->shipping_charges > 0)
         <tr>
             <td style="width:85%">Shipping Service - {{ $package->service_label }}</td>
             <td style="width:15%">${{ format_number($package->shipping_charges) }}</td>
         </tr>
         @endif
-    </table>
-    @endisset
-
-    @isset($order)
-    <table class="border" style="width: 100%">
-        <tr>
-            <td>
-                Order Items Total
-            </td>
-            <td style="width: 100px">${{ format_number($order->sub_total) }}</td>
-        </tr>
-        <tr>
-            <td>
-                Service Charges
-            </td>
-            <td style="width: 100px">${{ format_number($order->service_charges) }}</td>
-        </tr>
-        <tr>
-            <td>
-                Shipping From Shop
-            </td>
-            <td style="width: 100px">${{ format_number($order->shipping_from_shop) }}</td>
-        </tr>
-        <tr>
-            <td>
-                Pickup Charges
-            </td>
-
-            <td style="width: 100px">${{ format_number($order->pickup_charges) ?? 0.00 }}</td>
-        </tr>
-    </table>
-    @endisset
-
-
-    @isset($additionalRequest)
-    <table class="border" style="width: 100%">
-        <tr>
-            <td>
-                Additional Charges For Request - {{ $additionalRequest->message ?? '- -' }}
-            </td>
-
-            <td style="width: 100px">${{ format_number($additionalRequest->price) }}</td>
-        </tr>
-    </table>
-    @endisset
-
-
-    @isset($insuranceRequest)
-    <table class="border" style="width: 100%">
-        <tr>
-            <td>
-                Charges For Insurance Request with Shipping
-            </td>
-
-            <td style="width: 100px">${{ format_number($insuranceRequest->amount) }}</td>
-        </tr>
-    </table>
-    @endisset
-
-    @isset($giftCard)
-    <table class="border" style="width: 100%">
-        <tr>
-            <td>
-                <span style="text-transform:uppercase">{{$giftCard->type}} Gift Card</span> x {{$giftCard->qty}}
-            </td>
-            <td style="width: 100px; padding:10px;">${{ format_number($giftCard->amount) }}</td>
-        </tr>
     </table>
     @endisset
 
@@ -231,9 +106,7 @@
                 @if ($payment->discount > 0)
                 Discount : ${{ format_number($payment->discount) }} <br>
                 @endif
-                @if ($payment->paypal_fee > 0)
-                Paypal Fee : ${{ format_number($payment->paypal_fee) }} <br>
-                @endif
+              
                 Grand Total : ${{format_number($payment->charged_amount) }}
             </th>
         </tr>
@@ -265,7 +138,8 @@
     <br>
 
     <p style="font-size: 10px">
-        I possess an electronic signature confirming both the initiation and authorization of the payment, which was made by me.
+        I possess an electronic signature confirming both the initiation and authorization of the payment, which was
+        made by me.
     </p>
 </body>
 

@@ -718,62 +718,16 @@ class PaymentController extends Controller
 
     public function invoice($id)
     {
-        $billing = [];
-        $package = null;
-        $order = null;
-        $additionalRequest = null;
-        $insurance = null;
-        $giftCard = null;
-        $service_requests = [];
-        $order_items = [];
-
-        $payment = Payment::when(Auth::user()->type == 'customer', function ($qry) {
-            $qry->where('customer_id', Auth::user()->id);
-        })->findOrFail($id);
-
-        $customer = $payment->customer;
-        $billing = json_decode($payment->billing_address) ?? [];
-        $warehouse = Warehouse::first();
-        $address = json_decode($payment->shipping_address) ?? Address::where('user_id', $customer->id)->first();
-        $mailout_fee = SiteSetting::where('id', 2)->first()->value;
-
-        if (isset($payment->package_id)) {
-            $package = $payment->package;
-            $service_requests = $package->serviceRequests->where('status', 'served');
-        }
-
-        if (isset($payment->order_id)) {
-            $order = $payment->order;
-            $order_items = OrderItem::where('order_id', $order->id)->get();
-        }
-
-        if (isset($payment->additional_request_id)) {
-            $additionalRequest = $payment->additionalRequest;
-        }
-
-        if (isset($payment->insurance_id)) {
-            $insurance = $payment->insuranceRequest;
-            $warehouse = Warehouse::find($insurance->package->warehouse_id);
-        }
-
-        if (isset($payment->gift_card_id)) {
-            $giftCard = $payment->giftCard;
-        }
+        $payment = Payment::find($id);
+        $package = Package::where('payment_module', 'package')->where('id', $payment->payment_module_id)->first();
+        $ship_from = Address::find($package->ship_from);
+        $ship_to = Address::find($package->ship_to);
 
         view()->share([
             'payment' => $payment,
             'package' => $package,
-            'customer' => $customer,
-            'address' => $address,
-            'warehouse' => $warehouse,
-            'billing' => $billing,
-            'order' => $order,
-            'order_items' => $order_items,
-            'additionalRequest' => $additionalRequest,
-            'insuranceRequest' => $insurance,
-            'giftCard' => $giftCard,
-            'service_requests' => $service_requests,
-            'mailout_fee' => $mailout_fee,
+            'ship_from' => $ship_from,
+            'ship_to' => $ship_to
         ]);
 
         $pdf = PDF::loadView('pdfs.payment-invoice');
