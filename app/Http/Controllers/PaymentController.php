@@ -719,7 +719,7 @@ class PaymentController extends Controller
     public function invoice($id)
     {
         $payment = Payment::find($id);
-        $package = Package::where('payment_module', 'package')->where('id', $payment->payment_module_id)->first();
+        $package = Package::where('id', $payment->payment_module_id)->first();
         $ship_from = Address::find($package->ship_from);
         $ship_to = Address::find($package->ship_to);
 
