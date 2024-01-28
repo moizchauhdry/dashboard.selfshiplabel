@@ -72,6 +72,8 @@
                 {{ $ship_to->address_3 ?? ''}} <br>
             </td>
             <td colspan="2">
+                <h3>Bill To:</h3>
+
                 <strong>{{$ship_to->fullname}}</strong><br>
                 <strong>Phone</strong>: {{ $ship_to->phone ?? ''}}<br>
                 <strong>E-mail</strong>: {{ $ship_to->email ?? ''}}<br>
