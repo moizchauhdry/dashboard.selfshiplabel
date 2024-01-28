@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\API\BaseController as BaseController;
 use App\Models\Address;
 use App\Models\Country;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -60,5 +61,20 @@ class DataController extends BaseController
         $data['addresses'] = $addresses;
 
         return $this->sendResponse($data, 'success');
+    }
+
+    public function profile()
+    {
+        $user = User::select('id','name','email')->where('id',Auth::user()->id)->first();
+
+        $data = [
+            'user' => $user
+        ];
+
+        return response()->json([
+            'status' => true,
+            'message' => 'success',
+            'data' => $data,
+        ]);
     }
 }

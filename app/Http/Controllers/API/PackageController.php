@@ -21,7 +21,7 @@ class PackageController extends BaseController
     public function index()
     {
         $user = Auth::user();
-        $data['packages'] = Package::where('project_id', 2)->where('customer_id', $user->id)->orderBy('id', 'desc')->paginate(100);
+        $data['packages'] = Package::with('boxes')->where('project_id', 2)->where('customer_id', $user->id)->orderBy('id', 'desc')->paginate(100);
         return $this->sendResponse($data, 'success');
     }
 

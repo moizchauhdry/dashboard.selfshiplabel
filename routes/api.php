@@ -25,6 +25,7 @@ Route::post('rates', [RateController::class, 'index']);
 Route::post('data', [DataController::class, 'index']);
 
 Route::group(['middleware' => 'auth:api'], function () {
+    Route::post('profile', [DataController::class, 'profile']);
     Route::post('addresses', [DataController::class, 'addresses']);
     Route::post('address/store', [AddressController::class, 'store']);
     Route::post('package/index', [PackageController::class, 'index']);
@@ -35,5 +36,4 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::post('package/set-custom', [PackageController::class, 'setCustom']);
     Route::post('package/payment', [SquarePaymentController::class, 'payment']);
     Route::post('package/square-payment', [SquarePaymentController::class, 'index']);
-    // Route::post('package/payment-charge-later', [PackageController::class, 'chargeLater']);
 });
