@@ -271,10 +271,14 @@ function generateLabelFedex($id)
     $label_url = 'storage/labels/' . $filename1 . '.pdf';
     $oMerger->save($label_url);
 
+    // Master Tracking Number
+    $master_tracking_no = $response->output->transactionShipments[0]->masterTrackingNumber;
+
     $package->update([
         'label_generated_at' => Carbon::now(),
         'label_generated_by' => auth()->id(),
         'label_url' => $label_url,
+        'tracking_number_out' => $master_tracking_no
     ]);
 
     // DELETE ADDITIONAL FILES
@@ -472,10 +476,14 @@ function generateLabelUps($id)
     $label_url = 'storage/labels/' . $filename1 . '.pdf';
     $oMerger->save($label_url);
 
+    // Master Tracking Number
+    $master_tracking_no = $response->ShipmentResponse->ShipmentResults->PackageResults->TrackingNumber;
+
     $package->update([
         'label_generated_at' => Carbon::now(),
         'label_generated_by' => auth()->id(),
         'label_url' => $label_url,
+        'tracking_number_out' => $master_tracking_no,
     ]);
 
 
