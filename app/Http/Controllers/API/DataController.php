@@ -77,4 +77,19 @@ class DataController extends BaseController
             'data' => $data,
         ]);
     }
+
+    public function getAddress(Request $request)
+    {        
+        $address = Address::where('id', $request->address_id)->first();
+
+        $data = [
+            'address' => $address
+        ];
+
+        return response()->json([
+            'status' => true,
+            'message' => 'success',
+            'data' => $data,
+        ]);
+    }
 }

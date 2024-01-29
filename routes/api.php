@@ -26,6 +26,7 @@ Route::post('data', [DataController::class, 'index']);
 
 Route::group(['middleware' => 'auth:api'], function () {
     Route::post('profile', [DataController::class, 'profile']);
+    Route::post('get-address', [DataController::class, 'getAddress']);
     Route::post('addresses', [DataController::class, 'addresses']);
     Route::post('address/store', [AddressController::class, 'store']);
     Route::post('package/index', [PackageController::class, 'index']);

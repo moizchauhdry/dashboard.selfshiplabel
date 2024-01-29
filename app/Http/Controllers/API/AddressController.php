@@ -23,8 +23,8 @@ class AddressController extends BaseController
                 ->where('type', $request->type)
                 ->count();
 
-            if ($address_count > 5) {
-                return $this->sendError('The address count is not more than 5.');
+            if ($address_count > 10) {
+                return $this->sendError('The address count is not more than 10.');
             }
 
             $rules = [
@@ -134,32 +134,40 @@ class AddressController extends BaseController
                 }
             }
 
-            $address = Address::where('user_id', $user->id)
-                ->where('address', $request->address)
-                ->where('type', $request->type)
-                ->first();
+            $data = [
+                'user_id' => $user->id,
+                'fullname' => $request->fullname,
+                'country_id' => $request->country_id,
+                'country_code' => $country_code,
+                'state' => $request->state,
+                'city' => $request->city,
+                'zip_code' => $request->zip_code,
+                'phone' => $request->phone,
+                'email' => $request->email,
+                'address' => $request->address,
+                'address_2' => $request->address_2,
+                'address_3' =>  $request->address_3,
+                'is_residential' => $request->is_residential,
+                'tax_no' => $request->tax_no,
+                'type' => $request->type,
+            ];
 
-            if ($address) {
-                return $this->sendError('This address is already added.');
+
+            if ($request->update_flag == true) {
+                $address = Address::find($request->address_id);
+                $address->update($data);
+            } else {
+                $address = Address::where('user_id', $user->id)
+                    ->where('address', $request->address)
+                    ->where('type', $request->type)
+                    ->first();
+
+                if ($address) {
+                    return $this->sendError('This address is already added.');
+                } else {
+                    $address = Address::create($data);
+                }
             }
-
-            $address = new Address();
-            $address->user_id = $user->id;
-            $address->fullname = $request->fullname;
-            $address->country_id = $request->country_id;
-            $address->country_code = $country_code;
-            $address->state = $request->state;
-            $address->city = $request->city;
-            $address->zip_code = $request->zip_code;
-            $address->phone = $request->phone;
-            $address->email = $request->email;
-            $address->address = $request->address;
-            $address->address_2 = $request->address_2;
-            $address->address_3 =  $request->address_3;
-            $address->is_residential = $request->is_residential;
-            $address->tax_no = $request->tax_no;
-            $address->type = $request->type;
-            $address->save();
 
             $message = "The address have been created successfully.";
             $data['address_id'] = $address->id;
@@ -171,6 +179,7 @@ class AddressController extends BaseController
                 'data' => $data,
             ]);
         } catch (\Throwable $th) {
+            return $th;
             return $this->sendError($th->getMessage());
         }
     }
