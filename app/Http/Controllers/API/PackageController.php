@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 
 class PackageController extends BaseController
 {
@@ -122,6 +123,7 @@ class PackageController extends BaseController
                 'shipping_total' => 'required',
                 'package_type' => 'required',
                 'country' => 'required',
+                'itn' => Rule::requiredIf($request->shipping_total > 2500),
             ],  [
                 'items.*.description.required' => 'The package items description field is required.',
                 'items.*.quantity.required' => 'The package items quantity field is required.',
@@ -142,6 +144,7 @@ class PackageController extends BaseController
                 'package_type' => $request->package_type,
                 'shipping_total' => $request->shipping_total,
                 'grand_total' => $grand_total,
+                'itn' => $request->itn,
             ]);
 
             OrderItem::where('package_id', $package->id)->delete();
