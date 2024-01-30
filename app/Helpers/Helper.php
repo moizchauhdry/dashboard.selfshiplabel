@@ -232,9 +232,9 @@ function generateLabelFedex($id)
                 "dutiesPayment" => [
                     "paymentType" => "RECIPIENT"
                 ],
-                "exportDetail" => [
+                "exportDetail" => $package->shipping_total > 2500 ? [
                     "exportComplianceStatement" => 'AES ' . $package->itn
-                ]
+                ] : NULL
             ] : NULL
         ],
         "labelResponseOptions" => "LABEL",
