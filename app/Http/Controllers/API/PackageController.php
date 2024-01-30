@@ -117,7 +117,7 @@ class PackageController extends BaseController
                 'shipping_total' => 'required',
                 'package_type' => 'required',
                 'country' => 'required',
-                'itn' => [Rule::requiredIf($request->shipping_total > 2500), 'max:15', 'min:15'],
+                'itn' => [Rule::requiredIf($request->shipping_total > 2500)],
             ],  [
                 'items.*.description.required' => 'The package items description field is required.',
                 'items.*.quantity.required' => 'The package items quantity field is required.',
