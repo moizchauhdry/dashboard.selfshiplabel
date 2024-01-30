@@ -6,13 +6,11 @@ use App\Models\Package;
 use App\Models\Payment;
 use App\Models\ShippingService;
 use App\Models\SiteSetting;
-use App\Models\User;
 use App\Models\Warehouse;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Webklex\PDFMerger\Facades\PDFMergerFacade as PDFMerger;
 use GuzzleHttp\Client;
-use Illuminate\Support\Facades\Auth;
 
 function format_number($number)
 {
@@ -233,6 +231,9 @@ function generateLabelFedex($id)
                 "commodities" => $commodities,
                 "dutiesPayment" => [
                     "paymentType" => "RECIPIENT"
+                ],
+                "exportDetail" => [
+                    "exportComplianceStatement" => 'AES ' . $package->itn
                 ]
             ] : NULL
         ],
