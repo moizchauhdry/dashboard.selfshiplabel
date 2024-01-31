@@ -14,7 +14,8 @@ class Change10InPackagesTable extends Migration
     public function up()
     {
         Schema::table('packages', function (Blueprint $table) {
-            $table->string('itn', 100)->nullable();
+            $table->string('itn', 25)->nullable();
+            $table->enum('pkg_ship_type', ['international', 'domestic'])->nullable();
         });
     }
 
@@ -27,6 +28,7 @@ class Change10InPackagesTable extends Migration
     {
         Schema::table('packages', function (Blueprint $table) {
             $table->dropColumn('itn');
+            $table->dropColumn('pkg_ship_type');
         });
     }
 }

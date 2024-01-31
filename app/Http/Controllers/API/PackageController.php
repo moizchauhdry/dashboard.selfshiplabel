@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\API\BaseController as BaseController;
+use App\Models\Address;
 use App\Models\OrderItem;
 use App\Models\Package;
 use App\Models\PackageBox;
@@ -89,17 +90,48 @@ class PackageController extends BaseController
 
     public function setAddress(Request $request)
     {
-        $package = Package::cart()->first();
+        try {
+            $package = Package::cart()->first();
 
-        if ($request->type == 'ship_from') {
-            $package->update(['ship_from' => $request->id]);
+            if ($request->type == 'ship_from') {
+                $package->update(['ship_from' => $request->id]);
+            }
+
+            if ($request->type == 'ship_to') {
+                $package->update(['ship_to' => $request->id]);
+            }
+
+            $ship_from = Address::find($package->ship_from);
+            $ship_to = Address::find($package->ship_to);
+
+            if ($package->ship_from && $package->ship_to) {
+
+                if ($ship_from->country_id == $ship_to->country_id) {
+                    $package->update(['pkg_ship_type' => 'domestic']);
+                } else {
+                    $package->update(['pkg_ship_type' => 'international']);
+                }
+
+
+                if ($package->pkg_ship_type == 'domestic') {
+                    if ($package->carrier_code == 'fedex') {
+                        $data['fedex_label'] = generateLabelFedex($package->id);
+                    }
+
+                    if ($package->carrier_code == 'ups') {
+                        $data['ups_label'] = generateLabelUps($package->id);
+                    }
+
+                    if ($package->carrier_code == 'dhl') {
+                        $data['dhl_label'] = generateLabelDhl($package->id);
+                    }
+                }
+            }
+
+            return $this->sendResponse('success', 'success');
+        } catch (\Throwable $th) {
+            return $this->error($th->getMessage());
         }
-
-        if ($request->type == 'ship_to') {
-            $package->update(['ship_to' => $request->id]);
-        }
-
-        return $this->sendResponse('success', 'success');
     }
 
     public function setCustom(Request $request)

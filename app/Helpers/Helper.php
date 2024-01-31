@@ -93,17 +93,11 @@ function commercialInvoiceForLabel($id)
 function generateLabelFedex($id)
 {
     $package = Package::where('id', $id)->first();
-    // $warehouse = Warehouse::where('id', $package->warehouse_id)->first();
     $ship_from = Address::where('id', $package->ship_from)->first();
     $ship_to = Address::where('id', $package->ship_to)->first();
 
-    $service_type = 'international';
-    if ($ship_from->country_id == $ship_to->country_id) {
-        $service_type = 'domestic';
-    }
-
     $commodities = [];
-    if ($service_type == 'international') {
+    if ($package->pkg_ship_type == 'international') {
         $items = OrderItem::with('originCountry')->where('package_id', $package->id)->get();
         foreach ($items as $key => $item) {
             $commodities[] = [
@@ -200,7 +194,7 @@ function generateLabelFedex($id)
                             $ship_to->address_3
                         ],
                         "city" => $ship_to->city,
-                        "stateOrProvinceCode" => $service_type == 'domestic' ? $ship_to->state : NULL,
+                        "stateOrProvinceCode" => $package->pkg_ship_type == 'domestic' ? $ship_to->state : NULL,
                         "postalCode" => $ship_to->zip_code,
                         "countryCode" => $ship_to->country->iso,
                         "residential" => $ship_to->is_residential
@@ -226,7 +220,7 @@ function generateLabelFedex($id)
                     ]
                 ]
             ],
-            "customsClearanceDetail" => $service_type == 'international' ? [
+            "customsClearanceDetail" => $package->pkg_ship_type == 'international' ? [
                 "isDocumentOnly" => true,
                 "commodities" => $commodities,
                 "dutiesPayment" => [
@@ -256,7 +250,10 @@ function generateLabelFedex($id)
 
     $encoded_labels = $response->output->transactionShipments[0]->pieceResponses;
 
-    commercialInvoiceForLabel($package->id);
+    if ($package->pkg_ship_type == 'international') {
+        commercialInvoiceForLabel($package->id);
+    }
+
     $oMerger = PDFMerger::init();
     $filename1 = $package->id;
     $count = 1;
@@ -267,7 +264,10 @@ function generateLabelFedex($id)
         $count++;
     }
 
-    $oMerger->addPDF('storage/commercial-invoices/' . $filename1 . '.pdf', 'all');
+    if ($package->pkg_ship_type == 'international') {
+        $oMerger->addPDF('storage/commercial-invoices/' . $filename1 . '.pdf', 'all');
+    }
+
     $oMerger->merge();
     $label_url = 'storage/labels/' . $filename1 . '.pdf';
     $oMerger->save($label_url);
@@ -295,13 +295,8 @@ function generateLabelFedex($id)
 function generateLabelUps($id)
 {
     $package = Package::where('id', $id)->first();
-    $warehouse = Warehouse::where('id', $package->warehouse_id)->first();
+    $ship_from = Address::where('id', $package->ship_from)->first();
     $ship_to = Address::where('id', $package->ship_to)->first();
-
-    $service_type = 'international';
-    if ($warehouse->country_id == $ship_to->country_id) {
-        $service_type = 'domestic';
-    }
 
     $curl = curl_init();
     $payload = "grant_type=client_credentials";
@@ -353,22 +348,22 @@ function generateLabelUps($id)
     $body = [
         "ShipmentRequest" => [
             "Shipment" => [
-                "Description" => "SHIPPINGXPS LABEL",
+                "Description" => "SELF_SHIP_LABEL",
                 "Shipper" => [
-                    "Name" => "ShippingXPS",
-                    "AttentionName" => $warehouse->contact_person,
+                    "Name" => $ship_from->fullname,
+                    "AttentionName" => $ship_from->fullname,
                     "ShipperNumber" => "WY2291",
                     "Phone" => [
-                        "Number" => $warehouse->phone,
+                        "Number" => $ship_from->phone,
                         "Extension" => " "
                     ],
                     "Address" => [
                         "AddressLine" => [
-                            $warehouse->address
+                            $ship_from->address
                         ],
-                        "City" => $warehouse->city,
-                        "StateProvinceCode" => $warehouse->state,
-                        "PostalCode" => $warehouse->zip,
+                        "City" => $ship_from->city,
+                        "StateProvinceCode" => $ship_from->state,
+                        "PostalCode" => $ship_from->zip_code,
                         "CountryCode" => "US"
                     ]
                 ],
@@ -385,26 +380,26 @@ function generateLabelUps($id)
                             $ship_to->address_3,
                         ],
                         "City" => $ship_to->city,
-                        "StateProvinceCode" => $service_type == 'domestic' ? $ship_to->state : $ship_to->state,
+                        "StateProvinceCode" => $package->pkg_ship_type == 'domestic' ? $ship_to->state : $ship_to->state,
                         "PostalCode" => $ship_to->zip_code,
                         "CountryCode" => $ship_to->country->iso
                     ],
                     "Residential" => $ship_to->is_residential
                 ],
                 "ShipFrom" => [
-                    "Name" => "ShippingXPS",
-                    "AttentionName" => $warehouse->contact_person,
+                    "Name" => $ship_from->fullname,
+                    "AttentionName" => $ship_from->fullname,
                     "Phone" => [
-                        "Number" => $warehouse->phone
+                        "Number" => $ship_from->phone
                     ],
                     "FaxNumber" => NULL,
                     "Address" => [
                         "AddressLine" => [
-                            $warehouse->address
+                            $ship_from->address
                         ],
-                        "City" => $warehouse->city,
-                        "StateProvinceCode" => $warehouse->state,
-                        "PostalCode" => $warehouse->zip,
+                        "City" => $ship_from->city,
+                        "StateProvinceCode" => $ship_from->state,
+                        "PostalCode" => $ship_from->zip_code,
                         "CountryCode" => "US"
                     ]
                 ],
@@ -453,7 +448,10 @@ function generateLabelUps($id)
     $response = json_decode($response);
     $results = $response->ShipmentResponse->ShipmentResults->PackageResults;
 
-    commercialInvoiceForLabel($package->id);
+    if ($package->pkg_ship_type == 'international') {
+        commercialInvoiceForLabel($package->id);
+    }
+
     $oMerger = PDFMerger::init();
     $filename1 = $package->id;
     $count = 1;
@@ -472,7 +470,10 @@ function generateLabelUps($id)
     $count++;
     // }
 
-    $oMerger->addPDF('storage/commercial-invoices/' . $filename1 . '.pdf', 'all');
+    if ($package->pkg_ship_type == 'international') {
+        $oMerger->addPDF('storage/commercial-invoices/' . $filename1 . '.pdf', 'all');
+    }
+
     $oMerger->merge();
     $label_url = 'storage/labels/' . $filename1 . '.pdf';
     $oMerger->save($label_url);
