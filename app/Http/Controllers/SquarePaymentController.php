@@ -24,9 +24,9 @@ class SquarePaymentController extends Controller
                 'transaction_id' => 0
             ];
 
-            return $this->sendResponse($data, 'success');
+            // return $this->sendResponse($data, 'success');
         } else {
-            return $this->error('The value must be greater then 0',);
+            // return $this->error('The value must be greater then 0');
         }
     }
 
