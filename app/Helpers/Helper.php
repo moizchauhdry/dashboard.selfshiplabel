@@ -507,13 +507,8 @@ function generateLabelUps($id)
 function generateLabelDhl($id)
 {
     $package = Package::where('id', $id)->first();
-    $warehouse = Warehouse::where('id', $package->warehouse_id)->first();
+    $ship_from = Address::where('id', $package->ship_from)->first();
     $ship_to = Address::where('id', $package->ship_to)->first();
-
-    $service_type = 'international';
-    if ($warehouse->country_id == $ship_to->country_id) {
-        $service_type = 'domestic';
-    }
 
     $client = new Client();
 
@@ -523,7 +518,6 @@ function generateLabelDhl($id)
     ];
 
     $line_items = [];
-    // if ($service_type == 'international') {
     $order_items = OrderItem::with('originCountry')->where('package_id', $package->id)->get();
     $count = 1;
     foreach ($order_items as $key => $oitem) {
@@ -551,12 +545,11 @@ function generateLabelDhl($id)
 
         $count++;
     }
-    // }
 
     $package_boxes = [];
     foreach ($package->boxes as $key => $box) {
         $package_boxes[] =    [
-            "description" => 'shippingxps',
+            "description" => 'Items',
             "weight" => $box->weight,
             "dimensions" => [
                 "length" => $box->length,
@@ -566,26 +559,28 @@ function generateLabelDhl($id)
         ];
     }
 
-
-    // dd($package_boxes);
+    $shipment_date = Carbon::now();
+    $shipment_date = $shipment_date->addDays(1);
+    $shipment_date = $shipment_date->format('Y-m-d');
 
     $body = [
-        "plannedShippingDateAndTime" => "2024-01-05T11:00:00GMT-08:00",
+        "plannedShippingDateAndTime" => $shipment_date . "T11:00:00GMT-08:00",
         "productCode" => "P",
         "customerDetails" => [
             "shipperDetails" => [
                 "postalAddress" => [
-                    "postalCode" => $warehouse->zip,
-                    "cityName" => $warehouse->city,
-                    "countryCode" => "US",
-                    "provinceCode" => $warehouse->state,
-                    "addressLine1" => $warehouse->address
+                    "postalCode" => $ship_from->zip_code,
+                    "cityName" => $ship_from->city,
+                    "countryCode" => $ship_from->country_code,
+                    "provinceCode" => $ship_from->state,
+                    "addressLine1" => $ship_from->address,
+                    "addressLine2" => $ship_from->address_2,
                 ],
                 "contactInformation" => [
-                    "email" => $warehouse->email,
-                    "phone" => $warehouse->phone,
-                    "companyName" => "ShippingXPS",
-                    "fullName" => $warehouse->contact_person
+                    "email" => $ship_from->email,
+                    "phone" => $ship_from->phone,
+                    "companyName" => $ship_from->company_name,
+                    "fullName" => $ship_from->fullname
                 ]
             ],
             "receiverDetails" => [
@@ -599,14 +594,14 @@ function generateLabelDhl($id)
                 "contactInformation" => [
                     "email" => $ship_to->email,
                     "phone" =>  $ship_to->phone,
-                    "companyName" => $ship_to->fullname,
+                    "companyName" => $ship_to->company_name,
                     "fullName" =>  $ship_to->fullname,
                 ]
             ]
         ],
         "content" => [
             "isCustomsDeclarable" => true,
-            "description" => "Apple Iphone 15 & 15 Pro Max",
+            "description" => "Items",
             "declaredValue" => 14,
             "declaredValueCurrency" => "USD",
             "incoterm" => "DAP",
@@ -630,11 +625,11 @@ function generateLabelDhl($id)
                 "number" => "849192247"
             ]
         ],
-        "valueAddedServices" => [
-            [
-                "serviceCode" => "WY"
-            ]
-        ],
+        // "valueAddedServices" => [
+        //     [
+        //         "serviceCode" => "WY"
+        //     ]
+        // ],
         "outputImageProperties" => [
             "printerDPI" => 300,
             "encodingFormat" => "pdf",
@@ -661,9 +656,6 @@ function generateLabelDhl($id)
         "requestOndemandDeliveryURL" => false,
         "getOptionalInformation" => false
     ];
-
-
-    // dd($body);
 
     $request = $client->post('https://express.api.dhl.com/mydhlapi/shipments', [
         'headers' => $headers,

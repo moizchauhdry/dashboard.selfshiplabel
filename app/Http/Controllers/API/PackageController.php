@@ -197,7 +197,7 @@ class PackageController extends BaseController
             }
 
             if ($package->carrier_code == 'dhl') {
-                generateLabelDhl($package->id);
+                $data['dhl_label'] = generateLabelDhl($package->id);
             }
 
             return $this->sendResponse($data, 'The custom decration form filled successfully.');
