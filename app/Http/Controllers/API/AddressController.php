@@ -28,6 +28,7 @@ class AddressController extends BaseController
             }
 
             $rules = [
+                'company_name' => 'nullable|max:100',
                 'fullname' => 'required|regex:/^[A-Za-z0-9\s]+$/',
                 'is_residential' => 'required|boolean',
                 'country_id' => 'required',
@@ -42,9 +43,9 @@ class AddressController extends BaseController
                 'type' => 'required|in:ship_from,ship_to',
             ];
 
-            if (in_array($request->country_id, [226, 138, 38])) {
+            if (in_array($request->country_id, [226])) { // 226, 138, 38
                 $rules += [
-                    'state' => ['min:2', 'max:2', 'required'],
+                    'state' => ['required'],
                 ];
             }
 
@@ -54,7 +55,7 @@ class AddressController extends BaseController
 
             $validator = Validator::make($request->all(), $rules, $messages);
             if ($validator->fails()) {
-                return $this->sendError('Validation Error.', $validator->errors());
+                return $this->sendError('Validation Failed!', $validator->errors());
             }
 
             $country = Country::find($request->country_id);
@@ -136,6 +137,7 @@ class AddressController extends BaseController
 
             $data = [
                 'user_id' => $user->id,
+                'company_name' => $request->company_name,
                 'fullname' => $request->fullname,
                 'country_id' => $request->country_id,
                 'country_code' => $country_code,

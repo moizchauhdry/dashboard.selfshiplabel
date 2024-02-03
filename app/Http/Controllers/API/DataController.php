@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\API\BaseController as BaseController;
 use App\Models\Address;
 use App\Models\Country;
+use App\Models\State;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -14,9 +15,11 @@ class DataController extends BaseController
     public function index()
     {
         $countries = Country::orderBy('name', 'asc')->get();
+        $states = State::where('country_id', 226)->orderBy('name', 'asc')->get();
 
         $data = [
-            'countries' => $countries
+            'countries' => $countries,
+            'states' => $states,
         ];
 
         return response()->json([
@@ -65,7 +68,7 @@ class DataController extends BaseController
 
     public function profile()
     {
-        $user = User::select('id','name','email')->where('id',Auth::user()->id)->first();
+        $user = User::select('id', 'name', 'email')->where('id', Auth::user()->id)->first();
 
         $data = [
             'user' => $user
@@ -79,7 +82,7 @@ class DataController extends BaseController
     }
 
     public function getAddress(Request $request)
-    {        
+    {
         $address = Address::where('id', $request->address_id)->first();
 
         $data = [

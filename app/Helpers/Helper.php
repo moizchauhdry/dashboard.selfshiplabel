@@ -171,6 +171,8 @@ function generateLabelFedex($id)
                 "address" => [
                     "streetLines" => [
                         $ship_from->address,
+                        $ship_from->address_2,
+                        $ship_from->address_3
                     ],
                     "city" => $ship_from->city,
                     "stateOrProvinceCode" => $ship_from->state,
@@ -183,6 +185,7 @@ function generateLabelFedex($id)
                     "emailAddress" => $ship_from->email,
                     "phoneExtension" => "",
                     "phoneNumber" => $ship_from->phone,
+                    "companyName" => $ship_from->company_name,
                 ]
             ],
             "recipients" => [
@@ -204,7 +207,7 @@ function generateLabelFedex($id)
                         "emailAddress" => $ship_to->email,
                         // "phoneExtension" => "91",
                         "phoneNumber" => $ship_to->phone,
-                        // "companyName" => $ship_to->fullname
+                        "companyName" => $ship_to->company_name
                     ]
                 ]
             ],
@@ -350,7 +353,7 @@ function generateLabelUps($id)
             "Shipment" => [
                 "Description" => "SELF_SHIP_LABEL",
                 "Shipper" => [
-                    "Name" => $ship_from->fullname,
+                    "Name" => $ship_from->company_name,
                     "AttentionName" => $ship_from->fullname,
                     "ShipperNumber" => "WY2291",
                     "Phone" => [
@@ -364,11 +367,11 @@ function generateLabelUps($id)
                         "City" => $ship_from->city,
                         "StateProvinceCode" => $ship_from->state,
                         "PostalCode" => $ship_from->zip_code,
-                        "CountryCode" => "US"
+                        "CountryCode" => $ship_from->country_code
                     ]
                 ],
                 "ShipTo" => [
-                    "Name" => $ship_to->fullname,
+                    "Name" => $ship_to->company_name,
                     "AttentionName" => $ship_to->fullname,
                     "Phone" => [
                         "Number" => $ship_to->phone
@@ -395,12 +398,14 @@ function generateLabelUps($id)
                     "FaxNumber" => NULL,
                     "Address" => [
                         "AddressLine" => [
-                            $ship_from->address
+                            $ship_from->address,
+                            $ship_from->address_2,
+                            $ship_from->address_3
                         ],
                         "City" => $ship_from->city,
                         "StateProvinceCode" => $ship_from->state,
                         "PostalCode" => $ship_from->zip_code,
-                        "CountryCode" => "US"
+                        "CountryCode" => $ship_from->country_code
                     ]
                 ],
                 "PaymentInformation" => [
