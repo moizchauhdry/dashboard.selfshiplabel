@@ -112,22 +112,22 @@ class PackageController extends BaseController
                     $package->update(['pkg_ship_type' => 'international']);
                 }
 
-                // if ($package->pkg_ship_type == 'domestic') {
+                if ($package->pkg_ship_type == 'domestic') {
 
-                //     if ($package->carrier_code == 'fedex') {
-                //         $data['fedex_label'] = generateLabelFedex($package->id);
-                //     }
+                    if ($package->carrier_code == 'fedex') {
+                        $data['fedex_label'] = generateLabelFedex($package->id);
+                    }
+                    
+                    if ($package->carrier_code == 'ups') {
+                        $data['ups_label'] = generateLabelUps($package->id);
+                    }
+                    
+                    if ($package->carrier_code == 'dhl') {
+                        $data['dhl_label'] = generateLabelDhl($package->id);
+                    }
 
-                //     if ($package->carrier_code == 'ups') {
-                //         $data['ups_label'] = generateLabelUps($package->id);
-                //     }
-
-                //     if ($package->carrier_code == 'dhl') {
-                //         $data['dhl_label'] = generateLabelDhl($package->id);
-                //     }
-
-                //     $package->update(['grand_total' => $package->shipping_charges]);
-                // }
+                    $package->update(['grand_total' => $package->shipping_charges]);
+                }
             }
 
             return $this->sendResponse('success', 'success');
