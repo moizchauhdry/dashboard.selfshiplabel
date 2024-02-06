@@ -137,7 +137,7 @@ class SquarePaymentController extends Controller
                     return response()->json([
                         'status' => false,
                         'code' => 403,
-                        'message' => 'failed',
+                        'message' => $payment_response,
                     ]);
                 }
             } else {
