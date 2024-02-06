@@ -126,15 +126,20 @@ class SquarePaymentController extends Controller
                         'payment_status' => 'Paid',
                         'cart' => 0,
                     ]);
+
+                    return response()->json([
+                        'status' => true,
+                        'code' => 200,
+                        'message' => 'success',
+                    ]);
                 } else {
                     // $package->update(['payment_status' => 'failed']);
+                    return response()->json([
+                        'status' => false,
+                        'code' => 403,
+                        'message' => 'failed',
+                    ]);
                 }
-
-                return response()->json([
-                    'status' => true,
-                    'code' => 200,
-                    'message' => 'success',
-                ]);
             } else {
                 return response()->json([
                     'status' => false,
