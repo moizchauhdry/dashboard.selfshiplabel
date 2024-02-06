@@ -858,7 +858,8 @@ class PaymentController extends Controller
             $payment = Payment::where('payment_module', 'package')->where('payment_module_id', $request->package_id)->first();
 
         // CREATE PAYMENT
-        $payment_url = 'https://connect.squareupsandbox.com/v2/payments';
+        // $payment_url = 'https://connect.squareupsandbox.com/v2/payments';
+        $payment_url = 'https://connect.squareup.com/v2/payments';
 
         $payment_body = [
             'amount_money' => [
@@ -871,7 +872,7 @@ class PaymentController extends Controller
         ];
 
         $headers = [
-            'Authorization' => 'Bearer EAAAEPcP7wW7hp68oZHTLDGY4E7XjEAQWGFzLHVrIFpElBcX6CTDSSkk0UsEKx4e'
+            'Authorization' => 'Bearer EAAAFIT1m3W_vYnBwzTr1M2OktU_vMDVT2tTm1OcNIcFSPa1X5oABXlHYx2P4kxN'
         ];
 
         $payment_response = Http::withHeaders($headers)->post($payment_url, $payment_body);

@@ -47,11 +47,13 @@ class SquarePaymentController extends Controller
                 $amount = (int) $grand_total_array[0];
 
                 $headers = [
-                    'Authorization' => 'Bearer EAAAEPcP7wW7hp68oZHTLDGY4E7XjEAQWGFzLHVrIFpElBcX6CTDSSkk0UsEKx4e'
+                    // 'Authorization' => 'Bearer EAAAEPcP7wW7hp68oZHTLDGY4E7XjEAQWGFzLHVrIFpElBcX6CTDSSkk0UsEKx4e'
+                    'Authorization' => 'Bearer EAAAFIT1m3W_vYnBwzTr1M2OktU_vMDVT2tTm1OcNIcFSPa1X5oABXlHYx2P4kxN'
                 ];
 
                 // CREATE CUSTOMER
-                $customer_url = 'https://connect.squareupsandbox.com/v2/customers';
+                // $customer_url = 'https://connect.squareupsandbox.com/v2/customers';
+                $customer_url = 'https://connect.squareup.com/v2/customers';
 
                 $customer_body = [
                     "company_name" => "Moiz Chauhdry v1",
@@ -62,7 +64,8 @@ class SquarePaymentController extends Controller
                 $customer_response = json_decode($customer_response->getBody(), true);
 
                 // CREATE CARD
-                $card_url = 'https://connect.squareupsandbox.com/v2/cards';
+                // $card_url = 'https://connect.squareupsandbox.com/v2/cards';
+                $card_url = 'https://connect.squareup.com/v2/cards';
 
                 $card_body = [
                     "card" => [
@@ -77,7 +80,8 @@ class SquarePaymentController extends Controller
                 $card_response = json_decode($card_response->getBody(), true);
 
                 // CREATE PAYMENT
-                $payment_url = 'https://connect.squareupsandbox.com/v2/payments';
+                // $payment_url = 'https://connect.squareupsandbox.com/v2/payments';
+                $payment_url = 'https://connect.squareup.com/v2/payments';
 
                 $payment_body = [
                     'amount_money' => [
