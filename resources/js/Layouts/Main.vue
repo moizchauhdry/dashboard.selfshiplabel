@@ -1,8 +1,7 @@
 <template>
 	<header class="navbar navbar-light sticky-top bg-dark flex-md-nowrap p-0 shadow bg-light" style="" id="header2">
-		<a href="http://shippingxps.com" style="padding: 5px 10px" target="_blank">
-			<!-- <img alt="Porto" width="100" height="35" src="/theme/img/logo.png" /> -->
-			<h1>SELF-SERVICE</h1>
+		<a href="http://shippingxps.com" style="padding: 5px" target="_blank">
+			<img alt="Porto" style="height: 45px;" src="/images/logo-2.png" />
 		</a>
 		<ul class="flex-md-row inline-flex navbar-nav px-3">
 			<inertia-link :href="route('notifications')"

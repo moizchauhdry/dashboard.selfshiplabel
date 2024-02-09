@@ -166,14 +166,14 @@
 					<template v-if="shipping_rates.length == 0">
 						<div class="d-flex justify-content-center">
 							<a href="http://shippingxps.com">
-								<img alt="shippingxps" width="237" height="55" src="/theme/img/logo.png" />
+								<img alt="shippingxps" width="237" height="55" src="/images/logo.png" />
 							</a>
 						</div>
 
 						<div class="d-flex justify-content-center">
 							<h1
 								class="text-8 text-lg-8 text-xl-8 line-height-3 text-transform-none font-weight-semibold text-primary">
-								Worldwide Shipping from the USA
+								Ship Smarter With Self Ship Label
 							</h1>
 						</div>
 
