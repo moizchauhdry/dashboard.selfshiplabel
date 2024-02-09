@@ -613,7 +613,7 @@ function generateLabelDhl($id)
                 "contactInformation" => [
                     "email" => $ship_from->email,
                     "phone" => $ship_from->phone,
-                    "companyName" => $ship_from->company_name,
+                    "companyName" => $ship_from->company_name ?? "-",
                     "fullName" => $ship_from->fullname
                 ]
             ],
@@ -622,7 +622,7 @@ function generateLabelDhl($id)
                 "contactInformation" => [
                     "email" => $ship_to->email,
                     "phone" =>  $ship_to->phone,
-                    "companyName" => $ship_to->company_name,
+                    "companyName" => $ship_to->company_name ?? "-",
                     "fullName" =>  $ship_to->fullname,
                 ]
             ]
