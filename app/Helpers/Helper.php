@@ -563,6 +563,7 @@ function generateLabelDhl($id)
     $shipment_date = $shipment_date->addDays(1);
     $shipment_date = $shipment_date->format('Y-m-d');
 
+    //  ********** SHIPPER & RECEIVER POSTAL ADDRESS ********
     $shipper_postal_address = [
         "postalCode" => $ship_from->zip_code,
         "cityName" => $ship_from->city,
@@ -604,27 +605,45 @@ function generateLabelDhl($id)
         ];
     }
 
+
+    //  ********** SHIPPER & RECEIVER CONTACT INFORMATION ********
+
+    $shipper_contact = [
+        "email" => $ship_from->email,
+        "phone" => $ship_from->phone,
+        "companyName" => $ship_from->company_name,
+        "fullName" => $ship_from->fullname
+    ];
+
+    if ($ship_from->company_name) {
+        $shipper_contact += [
+            "companyName" => $ship_from->company_name,
+        ];
+    }
+
+    $receiver_contact = [
+        "email" => $ship_to->email,
+        "phone" =>  $ship_to->phone,
+        "fullName" =>  $ship_to->fullname,
+    ];
+
+    if ($ship_to->company_name) {
+        $receiver_contact += [
+            "companyName" => $ship_to->company_name,
+        ];
+    }
+
     $body = [
         "plannedShippingDateAndTime" => $shipment_date . "T11:00:00GMT-08:00",
         "productCode" => "P",
         "customerDetails" => [
             "shipperDetails" => [
                 "postalAddress" => $shipper_postal_address,
-                "contactInformation" => [
-                    "email" => $ship_from->email,
-                    "phone" => $ship_from->phone,
-                    "companyName" => $ship_from->company_name,
-                    "fullName" => $ship_from->fullname
-                ]
+                "contactInformation" => $shipper_contact
             ],
             "receiverDetails" => [
                 "postalAddress" => $receiver_postal_address,
-                "contactInformation" => [
-                    "email" => $ship_to->email,
-                    "phone" =>  $ship_to->phone,
-                    "companyName" => $ship_to->company_name,
-                    "fullName" =>  $ship_to->fullname,
-                ]
+                "contactInformation" => $receiver_contact
             ]
         ],
         "content" => [
