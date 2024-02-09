@@ -56,7 +56,7 @@ class SquarePaymentController extends Controller
                 $customer_url = 'https://connect.squareup.com/v2/customers';
 
                 $customer_body = [
-                    "company_name" => "Moiz Chauhdry v1",
+                    "company_name" => $package->customer->name,
                     'idempotency_key' => (string) Str::uuid(),
                 ];
 
@@ -69,7 +69,7 @@ class SquarePaymentController extends Controller
 
                 $card_body = [
                     "card" => [
-                        "cardholder_name" => "Moiz Chauhdry",
+                        "cardholder_name" => $package->customer->name,
                         "customer_id" => $customer_response['customer']['id']
                     ],
                     'idempotency_key' => (string) Str::uuid(),
