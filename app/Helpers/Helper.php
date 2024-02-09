@@ -11,6 +11,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Webklex\PDFMerger\Facades\PDFMergerFacade as PDFMerger;
 use GuzzleHttp\Client;
+use Illuminate\Support\Str;
 
 function format_number($number)
 {
@@ -85,7 +86,7 @@ function commercialInvoiceForLabel($id)
     $pdf = PDF::loadView('pdfs.commercial-invoice');
     $pdf->setPaper('A4', 'portrait');
 
-    $filename = $package->id . '.pdf';
+    $filename = $package->label_access_code . '.pdf';
     Storage::disk('commercial-invoices')->put($filename, $pdf->output());
     return response()->download('storage/commercial-invoices/' . $filename);
 }
@@ -95,6 +96,7 @@ function generateLabelFedex($id)
     $package = Package::where('id', $id)->first();
     $ship_from = Address::where('id', $package->ship_from)->first();
     $ship_to = Address::where('id', $package->ship_to)->first();
+    $package->update(['label_access_code' => Str::uuid() . '-' . $package->id]);
 
     $commodities = [];
     if ($package->pkg_ship_type == 'international') {
@@ -258,7 +260,7 @@ function generateLabelFedex($id)
     }
 
     $oMerger = PDFMerger::init();
-    $filename1 = $package->id;
+    $filename1 = $package->label_access_code;
     $count = 1;
     foreach ($encoded_labels as $key => $encoded_label) {
         $filename2 = $filename1 . '-' . $count . '.pdf';
@@ -300,6 +302,7 @@ function generateLabelUps($id)
     $package = Package::where('id', $id)->first();
     $ship_from = Address::where('id', $package->ship_from)->first();
     $ship_to = Address::where('id', $package->ship_to)->first();
+    $package->update(['label_access_code' => Str::uuid() . '-' . $package->id]);
 
     $curl = curl_init();
     $payload = "grant_type=client_credentials";
@@ -458,7 +461,7 @@ function generateLabelUps($id)
     }
 
     $oMerger = PDFMerger::init();
-    $filename1 = $package->id;
+    $filename1 = $package->label_access_code;
     $count = 1;
     // foreach ($results as $key => $result) {
     // return $result;
@@ -509,6 +512,7 @@ function generateLabelDhl($id)
     $package = Package::where('id', $id)->first();
     $ship_from = Address::where('id', $package->ship_from)->first();
     $ship_to = Address::where('id', $package->ship_to)->first();
+    $package->update(['label_access_code' => Str::uuid() . '-' . $package->id]);
 
     $client = new Client();
 
@@ -697,7 +701,7 @@ function generateLabelDhl($id)
 
     commercialInvoiceForLabel($package->id);
     $oMerger = PDFMerger::init();
-    $filename1 = $package->id;
+    $filename1 = $package->label_access_code;
     $count = 1;
     foreach ($results as $key => $result) {
         $filename2 = $filename1 . '-' . $count . '.pdf';

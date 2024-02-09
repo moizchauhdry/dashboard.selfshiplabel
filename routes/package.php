@@ -29,5 +29,6 @@ Route::middleware(['auth'])->group(function () {
         Route::post('destroy', 'PackageController@destroy')->name('packages.destroy');
         Route::post('upload-file', 'PackageController@uploadFile')->name('packages.upload-file');
         Route::post('generate-label', 'PackageController@generateLabel')->name('packages.generate-label');
+        Route::post('print-label', 'PackageController@printLabel')->name('packages.print-label');
     });
 });
