@@ -20,10 +20,10 @@ class Payment extends Model
         return $this->belongsTo(Order::class, 'order_id');
     }
 
-    public function package()
-    {
-        return $this->belongsTo(Package::class, 'package_id');
-    }
+    // public function package()
+    // {
+    //     return $this->belongsTo(Package::class, 'package_id');
+    // }
 
     public function additionalRequest()
     {

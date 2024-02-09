@@ -13,6 +13,7 @@ use App\Models\InsuranceRequest;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Package;
+use App\Models\PackageBox;
 use App\Models\Payment;
 use App\Models\SiteSetting;
 use App\Models\Warehouse;
@@ -719,15 +720,23 @@ class PaymentController extends Controller
     public function invoice($id)
     {
         $payment = Payment::find($id);
+
+        if ($payment->charged_at == NULL) {
+            abort(403);
+        }
+
         $package = Package::where('id', $payment->payment_module_id)->first();
         $ship_from = Address::find($package->ship_from);
         $ship_to = Address::find($package->ship_to);
+
+        $package_box = PackageBox::where('package_id',$package->id)->first();
 
         view()->share([
             'payment' => $payment,
             'package' => $package,
             'ship_from' => $ship_from,
-            'ship_to' => $ship_to
+            'ship_to' => $ship_to,
+            'package_box' => $package_box,
         ]);
 
         $pdf = PDF::loadView('pdfs.payment-invoice');

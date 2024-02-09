@@ -53,10 +53,13 @@
             <td style="padding: 5px" width="50%">
                 <h4>{{ strtoupper('Shipped From') }}:</h4><br>
                 <strong>Contact Name</strong> : {{ $ship_from->fullname}}<br>
+                @if ($ship_from->company_name)
+                <strong>Company Name</strong> : {{$ship_to->company_name}}<br>
+                @endif
                 <strong>EORI:</strong><br>
                 <strong>Phone</strong> : {{ $ship_from->phone}}<br>
                 <strong>E-mail</strong> : {{ $ship_from->email}}<br>
-                <strong>Company / Address</strong> :<br>
+                <strong>Address</strong> :<br>
                 {{ $ship_from->address}},{{ $ship_from->city }},<br>
                 {{ $ship_from->state }}, {{ $ship_from->zip_code}} <br><br>
                 <strong>Country</strong> : {{ $ship_from->country->nicename }}<br>
@@ -74,9 +77,12 @@
             <td style="padding: 5px" width="50%">
                 <h4>{{ strtoupper('Shipped To') }}:</h4><br>
                 <strong>Contact Name</strong> : {{$ship_to->fullname}}<br>
+                @if ($ship_to->company_name)
+                <strong>Company Name</strong> : {{$ship_to->company_name}}<br>
+                @endif
                 <strong>Phone</strong> : {{ $ship_to->phone ?? ''}}<br>
                 <strong>E-mail</strong> : {{ $ship_to->email ?? ''}}<br>
-                <strong>Company / Address</strong> :<br>
+                <strong>Address</strong> :<br>
                 {{ $ship_to->address ?? ''}} <br>
                 {{ $ship_to->address_2 ?? ''}} <br>
                 {{ $ship_to->address_3 ?? ''}} <br>

@@ -31,7 +31,7 @@
 
         th {
             font-weight: bolder;
-            text-align: center;
+            /* text-align: center; */
         }
 
 
@@ -44,43 +44,79 @@
 
 <body>
 
-    <h5 style="text-align:center;"> PAYMENT INVOICE </h5>
+    <div style="text-align:center;">
+        <img src="{{asset('images/logo.png')}}" alt="" width="85px">
+        <h5>PAYMENT INVOICE </h5>
+    </div>
 
     <h5><strong>INVOICE NUMBER: {{ $payment->id }} </strong></h5>
     <table class="border" style="width: 100%">
         <tr>
             <td colspan="4">
-                <h3>Invoiced From</h3>
-                <strong>{{$ship_from->fullname}}</strong><br>
+                <h3>Ship From:</h3>
+                <strong>Name:</strong> {{$ship_from->fullname}}<br>
+                @if ($ship_from->company_name)
+                <strong>Company:</strong> {{$ship_from->company_name}}<br>
+                @endif
                 <strong>Phone</strong>: {{ $ship_from->phone ?? ''}}<br>
                 <strong>E-mail</strong>: {{ $ship_from->email ?? ''}}<br>
                 <strong>Address</strong>:<br>
                 {{ $ship_from->address ?? ''}} <br>
+                @if ($ship_from->address_2)
                 {{ $ship_from->address_2 ?? ''}} <br>
+                @endif
+                @if ($ship_from->address_3)
                 {{ $ship_from->address_3 ?? ''}} <br>
+                @endif
+                <strong>City</strong>: {{ $ship_from->city ?? ''}} <br>
+                <strong>State</strong>: {{ $ship_from->state ?? ''}} <br>
+                <strong>ZIP Code</strong>: {{ $ship_from->zip_code ?? ''}} <br>
+                <strong>Country</strong>: {{ $ship_from->country->name ?? '' }}
             </td>
         </tr>
         <tr>
             <td colspan="2">
-                <h3>Invoice To:</h3>
-                <strong>{{$ship_to->fullname}}</strong><br>
+                <h3>Ship To:</h3>
+                <strong>Name:</strong> {{$ship_to->fullname}}<br>
+                @if ($ship_to->company_name)
+                <strong>Company:</strong> {{$ship_to->company_name}}<br>
+                @endif
                 <strong>Phone</strong>: {{ $ship_to->phone ?? ''}}<br>
                 <strong>E-mail</strong>: {{ $ship_to->email ?? ''}}<br>
                 <strong>Address</strong>:<br>
                 {{ $ship_to->address ?? ''}} <br>
+                @if ($ship_to->address_2)
                 {{ $ship_to->address_2 ?? ''}} <br>
+                @endif
+                @if ($ship_to->address_3)
                 {{ $ship_to->address_3 ?? ''}} <br>
+                @endif
+                <strong>City</strong>: {{ $ship_to->city ?? ''}} <br>
+                <strong>State</strong>: {{ $ship_to->state ?? ''}} <br>
+                <strong>ZIP Code</strong>: {{ $ship_to->zip_code ?? ''}} <br>
+                <strong>Country</strong>: {{ $ship_to->country->name ?? '' }}
             </td>
             <td colspan="2">
                 <h3>Bill To:</h3>
 
-                <strong>{{$ship_to->fullname}}</strong><br>
+                <strong>Name:</strong> {{$ship_to->fullname}}<br>
+                @if ($ship_to->company_name)
+                <strong>Company:</strong> {{$ship_to->company_name}}<br>
+                @endif
                 <strong>Phone</strong>: {{ $ship_to->phone ?? ''}}<br>
                 <strong>E-mail</strong>: {{ $ship_to->email ?? ''}}<br>
                 <strong>Address</strong>:<br>
                 {{ $ship_to->address ?? ''}} <br>
+                @if ($ship_to->address_2)
                 {{ $ship_to->address_2 ?? ''}} <br>
+                @endif
+                @if ($ship_to->address_3)
                 {{ $ship_to->address_3 ?? ''}} <br>
+                @endif
+                <strong>City</strong>: {{ $ship_to->city ?? ''}} <br>
+                <strong>State</strong>: {{ $ship_to->state ?? ''}} <br>
+                <strong>ZIP Code</strong>: {{ $ship_to->zip_code ?? ''}} <br>
+                <strong>Country</strong>: {{ $ship_to->country->name ?? '' }}
             </td>
         </tr>
     </table>
@@ -108,7 +144,7 @@
                 @if ($payment->discount > 0)
                 Discount : ${{ format_number($payment->discount) }} <br>
                 @endif
-              
+
                 Grand Total : ${{format_number($payment->charged_amount) }}
             </th>
         </tr>
@@ -124,13 +160,17 @@
         </tr>
         <tr>
             <td>
-                @if (isset($payment->package->boxes[0]->tracking_out))
-                Tracking Number: {{$payment->package->boxes[0]->tracking_out}} <br>
+                @if (isset($package_box->tracking_out))
+                Tracking Number: {{$package_box->tracking_out}} <br>
                 @endif
                 Transaction ID: {{$payment->transaction_id}} <br>
             </td>
-            <td>{{ date('d-m-Y',strtotime($payment->charged_at)) }}</td>
-            <td>Paid</td>
+            <td>
+                @if ($payment->charged_at)
+                {{ date('d-m-Y',strtotime($payment->charged_at)) }}
+                @endif
+            </td>
+            <td>{{$payment->charged_at ? 'Paid': "Unpaid"}}</td>
             <td>${{ format_number($payment->charged_amount) }}</td>
         </tr>
     </table>
