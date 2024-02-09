@@ -37,7 +37,7 @@ class AddressController extends BaseController
                 'phone' => 'required|string|digits:10',
                 'email' => 'required|email|string',
                 'address' => 'required|string|max:35|regex:/^[A-Za-z0-9\s]+$/',
-                'address_2' => 'required|string|max:35',
+                'address_2' => 'nullable|string|max:35',
                 'address_3' => 'nullable|string|max:35',
                 'tax_no' => 'nullable|max:100',
                 'type' => 'required|in:ship_from,ship_to',

@@ -47,7 +47,12 @@
 </head>
 
 <body>
-    <h5 style="text-align:center;"> COMMERCIAL INVOICE </h5>
+    {{-- <h5 style="text-align:center;"> COMMERCIAL INVOICE </h5> --}}
+    <div style="text-align:center;">
+        <img src="https://dashboard.selfshiplabel.com/images/logo.png" alt="" width="85px">
+        <h5>COMMERCIAL INVOICE </h5>
+    </div>
+
     <table style="margin-bottom: 30px; text-transform: capitalize;">
         <tr>
             <td style="padding: 5px" width="50%">

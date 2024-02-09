@@ -563,19 +563,53 @@ function generateLabelDhl($id)
     $shipment_date = $shipment_date->addDays(1);
     $shipment_date = $shipment_date->format('Y-m-d');
 
+    $shipper_postal_address = [
+        "postalCode" => $ship_from->zip_code,
+        "cityName" => $ship_from->city,
+        "countryCode" => $ship_from->country_code,
+        "provinceCode" => $ship_from->state,
+        "addressLine1" => $ship_from->address,
+    ];
+
+    if ($ship_from->address_2) {
+        $shipper_postal_address += [
+            "addressLine2" => $ship_from->address_2,
+        ];
+    }
+
+    if ($ship_from->address_3) {
+        $shipper_postal_address += [
+            "addressLine3" => $ship_from->address_3,
+        ];
+    }
+
+
+    $receiver_postal_address = [
+        "postalCode" => $ship_to->zip_code,
+        "cityName" => $ship_to->city,
+        "countryCode" => $ship_to->country->iso,
+        "addressLine1" =>  $ship_to->address,
+    ];
+
+
+    if ($ship_to->address_2) {
+        $receiver_postal_address += [
+            "addressLine2" => $ship_to->address_2,
+        ];
+    }
+
+    if ($ship_to->address_3) {
+        $receiver_postal_address += [
+            "addressLine3" => $ship_to->address_3,
+        ];
+    }
+
     $body = [
         "plannedShippingDateAndTime" => $shipment_date . "T11:00:00GMT-08:00",
         "productCode" => "P",
         "customerDetails" => [
             "shipperDetails" => [
-                "postalAddress" => [
-                    "postalCode" => $ship_from->zip_code,
-                    "cityName" => $ship_from->city,
-                    "countryCode" => $ship_from->country_code,
-                    "provinceCode" => $ship_from->state,
-                    "addressLine1" => $ship_from->address,
-                    "addressLine2" => $ship_from->address_2,
-                ],
+                "postalAddress" => $shipper_postal_address,
                 "contactInformation" => [
                     "email" => $ship_from->email,
                     "phone" => $ship_from->phone,
@@ -584,13 +618,7 @@ function generateLabelDhl($id)
                 ]
             ],
             "receiverDetails" => [
-                "postalAddress" => [
-                    "postalCode" => $ship_to->zip_code,
-                    "cityName" => $ship_to->city,
-                    "countryCode" => $ship_to->country->iso,
-                    "addressLine1" =>  $ship_to->address,
-                    "addressLine2" =>  $ship_to->address_2,
-                ],
+                "postalAddress" => $receiver_postal_address,
                 "contactInformation" => [
                     "email" => $ship_to->email,
                     "phone" =>  $ship_to->phone,
