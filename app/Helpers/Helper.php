@@ -611,7 +611,6 @@ function generateLabelDhl($id)
     $shipper_contact = [
         "email" => $ship_from->email,
         "phone" => $ship_from->phone,
-        "companyName" => $ship_from->company_name,
         "fullName" => $ship_from->fullname
     ];
 
