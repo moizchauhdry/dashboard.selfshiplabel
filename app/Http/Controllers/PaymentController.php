@@ -511,39 +511,39 @@ class PaymentController extends Controller
         ]);
     }
 
-    public function getPayments(Request $request)
-    {
-        $user = Auth::user();
+    // public function getPayments(Request $request)
+    // {
+    //     $user = Auth::user();
 
-        $payments = Payment::with(['customer', 'package' => function ($query) {
-            $query->with('address', function ($qry) {
-                $qry->with('country');
-            });
-        }, 'order'])
-            ->when($user->type == 'customer', function ($qry) use ($user) {
-                $qry->where('customer_id', $user->id);
-            })
-            ->orderBy('id', 'desc');
-
-
-        if ($request->isMethod('post')) {
-
-            $payments = $this->searchPayments($request, $payments);
-
-            $perPage = 10;
-
-            if ($request->has('per_page') && $request->get('per_page') != NULL) {
-                $perPage = $request->get('per_page');
-            }
-
-            return response([
-                'payments' => $payments->paginate($perPage),
-            ]);
-        }
+    //     $payments = Payment::with(['customer', 'package' => function ($query) {
+    //         $query->with('address', function ($qry) {
+    //             $qry->with('country');
+    //         });
+    //     }, 'order'])
+    //         ->when($user->type == 'customer', function ($qry) use ($user) {
+    //             $qry->where('customer_id', $user->id);
+    //         })
+    //         ->orderBy('id', 'desc');
 
 
-        return Inertia::render('Payment/Index', ['payments' => $payments->paginate(10)]);
-    }
+    //     if ($request->isMethod('post')) {
+
+    //         $payments = $this->searchPayments($request, $payments);
+
+    //         $perPage = 10;
+
+    //         if ($request->has('per_page') && $request->get('per_page') != NULL) {
+    //             $perPage = $request->get('per_page');
+    //         }
+
+    //         return response([
+    //             'payments' => $payments->paginate($perPage),
+    //         ]);
+    //     }
+
+
+    //     return Inertia::render('Payment/Index', ['payments' => $payments->paginate(10)]);
+    // }
 
     // PAYMENT SUCCESS PAGE FOR BOTH PAYPAL & AUTHORIZE 
     public function paymentSuccess($id)
@@ -650,71 +650,71 @@ class PaymentController extends Controller
         }
     }
 
-    public function searchPayments(Request $request, $payments)
-    {
-        $search_invoice_no = $request->search_invoice_no;
-        $search_suit_no = $request->search_suit_no;
+    // public function searchPayments(Request $request, $payments)
+    // {
+    //     $search_invoice_no = $request->search_invoice_no;
+    //     $search_suit_no = $request->search_suit_no;
 
-        $payments->when($search_invoice_no && !empty($search_invoice_no), function ($qry) use ($search_invoice_no) {
-            $qry->where('id', $search_invoice_no);
-        });
+    //     $payments->when($search_invoice_no && !empty($search_invoice_no), function ($qry) use ($search_invoice_no) {
+    //         $qry->where('id', $search_invoice_no);
+    //     });
 
-        $payments->when($search_suit_no && !empty($search_suit_no), function ($qry) use ($search_suit_no) {
-            $suit_no = (int) $search_suit_no;
-            $suit_no = $suit_no - 4000;
-            $qry->whereHas('customer', function ($q) use ($suit_no) {
-                $q->where('id', $suit_no);
-            });
-        });
+    //     $payments->when($search_suit_no && !empty($search_suit_no), function ($qry) use ($search_suit_no) {
+    //         $suit_no = (int) $search_suit_no;
+    //         $suit_no = $suit_no - 4000;
+    //         $qry->whereHas('customer', function ($q) use ($suit_no) {
+    //             $q->where('id', $suit_no);
+    //         });
+    //     });
 
-        // $payments->where(function ($query) use ($search) {
-        //     $query->where('id', 'LIKE', "%$search%")
-        //         ->orWhere('transaction_id', 'LIKE', "%$search%")
-        //         ->orWhere('package_id', 'LIKE', "%$search%")
-        //         ->orWhere('invoice_id', 'LIKE', "%$search%")
-        //         ->orWhere('charged_amount', 'LIKE', "%$search%");
-        // })->orWhereHas('customer', function ($qry) use ($search) {
-        //     $qry->where('name', 'LIKE', '%' . $search . '%');
-        //     if (is_numeric($search)) {
-        //         $s = (int)$search;
-        //         $s = $s - 4000;
-        //         $qry->orWhere('id', 'LIKE', '%' . $s . '%');
-        //     }
-        // })->orWhereHas('package', function ($qry) use ($search) {
-        //     $qry->where('payment_status', 'LIKE', "%$search%")
-        //         ->orWhere('service_label', 'LIKE', "%$search%")
-        //         ->orWhere('shipping_charges', 'LIKE', "%$search%");
-        // })->orWhereHas('order', function ($qry) use ($search) {
-        //     $qry->where('id', 'LIKE', '%' . $search . '%');
-        // });
+    //     // $payments->where(function ($query) use ($search) {
+    //     //     $query->where('id', 'LIKE', "%$search%")
+    //     //         ->orWhere('transaction_id', 'LIKE', "%$search%")
+    //     //         ->orWhere('package_id', 'LIKE', "%$search%")
+    //     //         ->orWhere('invoice_id', 'LIKE', "%$search%")
+    //     //         ->orWhere('charged_amount', 'LIKE', "%$search%");
+    //     // })->orWhereHas('customer', function ($qry) use ($search) {
+    //     //     $qry->where('name', 'LIKE', '%' . $search . '%');
+    //     //     if (is_numeric($search)) {
+    //     //         $s = (int)$search;
+    //     //         $s = $s - 4000;
+    //     //         $qry->orWhere('id', 'LIKE', '%' . $s . '%');
+    //     //     }
+    //     // })->orWhereHas('package', function ($qry) use ($search) {
+    //     //     $qry->where('payment_status', 'LIKE', "%$search%")
+    //     //         ->orWhere('service_label', 'LIKE', "%$search%")
+    //     //         ->orWhere('shipping_charges', 'LIKE', "%$search%");
+    //     // })->orWhereHas('order', function ($qry) use ($search) {
+    //     //     $qry->where('id', 'LIKE', '%' . $search . '%');
+    //     // });
 
-        if ($request->has('date_selection') && $request->get('date_selection') != NULL) {
-            if ($request->get('date_selection') == '1') {
-                $payments->whereDate('created_at', Carbon::today());
-            }
-            if ($request->get('date_selection') == '2') {
-                $payments->whereDate('created_at', Carbon::yesterday());
-            }
-            if ($request->get('date_selection') == '3') {
-                $date = Carbon::now()->subDays(7);
-                $payments->where('created_at', '>=', $date);
-            }
-            if ($request->get('date_selection') == '4') {
-                $date = Carbon::now()->subDays(30);
-                $payments->where('created_at', '>=', $date);
-            }
-            if ($request->date_selection == 5) {
-                if ($request->get('date_range')) {
-                    $dateRange = explode(' - ', $request->date_range);
-                    $from = date("Y-m-d", strtotime($dateRange[0]));
-                    $to = date("Y-m-d", strtotime($dateRange[1]));
-                    $payments->whereBetween('created_at', [$from, $to]);
-                }
-            }
-        }
+    //     if ($request->has('date_selection') && $request->get('date_selection') != NULL) {
+    //         if ($request->get('date_selection') == '1') {
+    //             $payments->whereDate('created_at', Carbon::today());
+    //         }
+    //         if ($request->get('date_selection') == '2') {
+    //             $payments->whereDate('created_at', Carbon::yesterday());
+    //         }
+    //         if ($request->get('date_selection') == '3') {
+    //             $date = Carbon::now()->subDays(7);
+    //             $payments->where('created_at', '>=', $date);
+    //         }
+    //         if ($request->get('date_selection') == '4') {
+    //             $date = Carbon::now()->subDays(30);
+    //             $payments->where('created_at', '>=', $date);
+    //         }
+    //         if ($request->date_selection == 5) {
+    //             if ($request->get('date_range')) {
+    //                 $dateRange = explode(' - ', $request->date_range);
+    //                 $from = date("Y-m-d", strtotime($dateRange[0]));
+    //                 $to = date("Y-m-d", strtotime($dateRange[1]));
+    //                 $payments->whereBetween('created_at', [$from, $to]);
+    //             }
+    //         }
+    //     }
 
-        return $payments;
-    }
+    //     return $payments;
+    // }
 
     public function invoice($id)
     {
@@ -857,45 +857,111 @@ class PaymentController extends Controller
         try {
             $payment = Payment::where('payment_module', 'package')->where('payment_module_id', $request->package_id)->first();
 
-        // CREATE PAYMENT
-        // $payment_url = 'https://connect.squareupsandbox.com/v2/payments';
-        $payment_url = 'https://connect.squareup.com/v2/payments';
+            // CREATE PAYMENT
+            // $payment_url = 'https://connect.squareupsandbox.com/v2/payments';
+            $payment_url = 'https://connect.squareup.com/v2/payments';
 
-        $payment_body = [
-            'amount_money' => [
-                'amount' => (float) $request->amount * 100,
-                'currency' => 'USD',
-            ],
-            'idempotency_key' => (string) Str::uuid(),
-            'source_id' => $payment->sq_card_id,
-            'customer_id' => $payment->sq_customer_id,
-        ];
+            $payment_body = [
+                'amount_money' => [
+                    'amount' => (float) $request->amount * 100,
+                    'currency' => 'USD',
+                ],
+                'idempotency_key' => (string) Str::uuid(),
+                'source_id' => $payment->sq_card_id,
+                'customer_id' => $payment->sq_customer_id,
+            ];
 
-        $headers = [
-            'Authorization' => 'Bearer EAAAFIT1m3W_vYnBwzTr1M2OktU_vMDVT2tTm1OcNIcFSPa1X5oABXlHYx2P4kxN'
-        ];
+            $headers = [
+                'Authorization' => 'Bearer EAAAFIT1m3W_vYnBwzTr1M2OktU_vMDVT2tTm1OcNIcFSPa1X5oABXlHYx2P4kxN'
+            ];
 
-        $payment_response = Http::withHeaders($headers)->post($payment_url, $payment_body);
-        $payment_response = json_decode($payment_response->getBody(), true);
+            $payment_response = Http::withHeaders($headers)->post($payment_url, $payment_body);
+            $payment_response = json_decode($payment_response->getBody(), true);
 
-        $data = [
-            'payment_module' => 'package',
-            'payment_module_id' => $payment->payment_module_id,
-            'customer_id' => $payment->customer_id,
-            'transaction_id' => $payment_response['payment']['id'],
-            'payment_method' => 'square',
-            'charged_amount' => $payment_response['payment']['amount_money']['amount'] / 100,
-            'charged_at' => Carbon::now(),
-            'sq_payment_id' => $payment_response['payment']['id'],
-            'sq_payment_response' => json_encode($payment_response),
-        ];
+            $data = [
+                'payment_module' => 'package',
+                'payment_module_id' => $payment->payment_module_id,
+                'customer_id' => $payment->customer_id,
+                'transaction_id' => $payment_response['payment']['id'],
+                'payment_method' => 'square',
+                'charged_amount' => $payment_response['payment']['amount_money']['amount'] / 100,
+                'charged_at' => Carbon::now(),
+                'sq_payment_id' => $payment_response['payment']['id'],
+                'sq_payment_response' => json_encode($payment_response),
+            ];
 
-        Payment::create($data);
+            Payment::create($data);
 
-        return redirect()->back()->with('success', 'charge success');
+            return redirect()->back()->with('success', 'charge success');
         } catch (\Throwable $th) {
-            return redirect()->back()->with('error', 'payment error');
-
+            return redirect()->back()->with('error', $th->getMessage());
         }
+    }
+
+    public function getPayments(Request $request)
+    {
+        $user = Auth::user();
+        $search_invoice_no = $request->search_invoice_no;
+        $search_suit_no = $request->search_suit_no;
+        $search_tracking_no = $request->search_tracking_no;
+
+        $query = Payment::query();
+
+        $query->select(
+            'u.id as u_id',
+            'u.name as u_name',
+            'payments.id as p_id',
+            'payments.transaction_id as t_id',
+            'payments.payment_method as p_method',
+            'payments.charged_amount as charged_amount',
+            'payments.charged_at as charged_at',
+            'pkg.id as pkg_id',
+            'pkg.service_label as pkg_service_label',
+            'payments.payment_module as p_module',
+            'payments.payment_module_id as p_module_id',
+        );
+
+        $query->join('packages as pkg', function ($join) {
+            $join->on('pkg.id', 'payments.payment_module_id');
+            $join->where('payments.payment_module', 'package');
+        });
+
+        $query->join('users as u', 'u.id', 'payments.customer_id');
+
+        $query->when($user->type === 'customer', function ($qry) use ($user) {
+            $qry->where('payments.customer_id', $user->id);
+        });
+
+        $query->when($search_invoice_no && !empty($search_invoice_no), function ($qry) use ($search_invoice_no) {
+            $qry->where('payments.id', $search_invoice_no);
+        });
+
+        $query->when($search_tracking_no && !empty($search_tracking_no), function ($qry) use ($search_tracking_no) {
+            $qry->join('package_boxes as pb', 'pb.package_id', 'pkg.id');
+            $qry->where('pb.tracking_out', $search_tracking_no);
+        });
+
+        $query->when($search_suit_no && !empty($search_suit_no), function ($qry) use ($search_suit_no) {
+            $qry->where('u.id', $search_suit_no);
+        });
+
+        $query->when($request->date_range && !empty($request->date_range), function ($qry) use ($request) {
+            $range = explode(' - ', $request->date_range);
+            $from = date("Y-m-d", strtotime($range[0]));
+            $to = date("Y-m-d", strtotime($range[1]));
+            $qry->whereDate('charged_at', '>=', $from)->whereDate('charged_at', '<=', $to);
+        });
+
+        $payments = $query->orderBy('payments.id', 'desc')->paginate(10)->withQueryString();
+
+        return Inertia::render('Payment/Index', [
+            'payments' => $payments,
+            'filters' => [
+                'search_invoice_no' => $search_invoice_no ?? "",
+                'search_suit_no' => $search_suit_no ?? "",
+                'search_tracking_no' => $request->search_tracking_no ?? "",
+                'date_range' => $request->date_range ?? "",
+            ]
+        ]);
     }
 }

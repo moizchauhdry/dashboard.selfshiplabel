@@ -1,13 +1,13 @@
 <template>
     <div class="card mt-2">
         <div class="card-header">
-            <h3 class="text-uppercase">Package Detail - Self Service</h3>
+            <h3 class="text-uppercase">Package Payments & Files</h3>
         </div>
         <div class="card-body">
             <div class="table-responsive">
                 <table class="table table-striped table-bordered table-sm">
                     <tr>
-                        <th colspan="6" class="text-center bg-warning">
+                        <th colspan="6" class="bg-warning">
                             <h3>Package Payments</h3>
                         </th>
                     </tr>
@@ -37,7 +37,7 @@
             <div class="table-responsive">
                 <table class="table table-striped table-bordered table-sm">
                     <tr>
-                        <th colspan="6" class="text-center bg-warning text-white">
+                        <th colspan="6" class="bg-warning text-white">
                             <h3>Package Files</h3>
                         </th>
                     </tr>
@@ -73,19 +73,19 @@
 export default {
     name: "Self Service Component",
     props: {
-        packag: Object,
+        record: Object,
         payments: Array,
         package_files: Array,
     },
     data() {
         return {
             self_service_charge_form: this.$inertia.form({
-                package_id: this.packag.id,
+                package_id: this.record.id,
                 payment_module: 'package',
                 amount: 0,
             }),
             self_service_file_form: {
-                package_id: this.packag.id,
+                package_id: this.record.id,
                 image: "",
             },
             selected_file: null,
@@ -105,7 +105,7 @@ export default {
         uploadFile() {
             let form_data = new FormData();
             form_data.append('file', this.selected_file);
-            form_data.append('package_id', this.packag.id);
+            form_data.append('package_id', this.record.id);
 
             this.$inertia.post(route("packages.upload-file"), form_data).then(() => {
                 // 

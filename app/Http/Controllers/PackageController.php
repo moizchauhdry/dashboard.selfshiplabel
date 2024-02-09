@@ -93,170 +93,51 @@ class PackageController extends Controller
 
     public function show($id)
     {
-        $this->calculate_storage_fee($id);
+        $package = Package::query()
+            ->select(
+                'packages.id as pkg_id',
+                'packages.customer_id as pkg_customer_id',
+                'u.name as u_name',
 
-        $packag = Package::with('orders', 'address', 'warehouse', 'customer', 'images', 'serviceRequests', 'child_packages', 'order', 'boxes', 'coupon')
-            ->when(Auth::user()->type == 'customer', function ($qry) {
-                $qry->where('customer_id', Auth::user()->id);
-            })
-            ->findOrFail($id);
+                'pb.weight as pb_weight',
+                'pb.weight_unit as pb_weight_unit',
+                'pb.length as pb_length',
+                'pb.width as pb_width',
+                'pb.height as pb_height',
+                'pb.dim_unit as pb_dim_unit',
 
-        if ($packag->storage_days > 80) {
-            abort(403, 'The package has exceeded 80 days, so it has been terminated and has become the property of ShippingXPS.');
-        }
+                'ship_from.company_name as from_company',
+                'ship_from.fullname as from_name',
+                'ship_from.address as from_address',
+                'ship_from.address_2 as from_address_2',
+                'ship_from.address_3 as from_address_3',
+                'ship_from.city as from_city',
+                'ship_from.state as from_state',
+                'ship_from.country_code as from_country_code',
+                'ship_from.zip_code as from_zip_code',
+                'ship_from.phone as from_phone',
+                'ship_from.email as from_email',
 
-        $child_package_orders = [];
-        foreach ($packag->child_packages as $key => $child_package) {
-            if ($child_package->order) {
-                $child_package_orders[] = [
-                    'pkg_id' => $child_package->id,
-                    'order_id' => $child_package->order->id,
-                    'weight' => $child_package->order->package_weight,
-                    'weight_unit' => $child_package->order->weight_unit,
-                    'dim_unit' => $child_package->order->dim_unit,
-                    'height' => $child_package->order->package_height,
-                    'width' => $child_package->order->package_width,
-                    'length' => $child_package->order->package_length,
-                    'warehouse' => $child_package->order->warehouse->name,
-                    'tracking_in' => $child_package->order->tracking_number_in,
-                    'images' => $child_package->order->images,
-                    'status' => $child_package->status,
-                ];
-            }
-        }
-
-        $services = Service::where('status', '=', '1')->get();
-        $serviceRequest = ServiceRequest::where('package_id', $packag->id)->where('service_id', 1)->where('status', 'pending')->first();
-
-        $service_requests = [];
-        foreach ($packag->serviceRequests as $req) {
-            if ($req->service) {
-                $service_requests[] = [
-                    'id' => $req->id,
-                    'service_title' => $req->service->title,
-                    'service_description' => $req->service->description,
-                    'status' => $req->status,
-                    'customer_message' => $req->customer_message,
-                    'admin_message' => $req->admin_message,
-                    'price' => $req->price,
-                    'date' => $req->created_at,
-                ];
-            }
-        }
-
-        $service_requests_service_ids = [];
-        foreach ($packag->serviceRequests as $request) {
-            $service_requests_service_ids[] = $request->service_id;
-        }
-
-        $images = [];
-        foreach ($packag->images as $image) {
-            $images[] = [
-                'order_id' => $image->order_id,
-                'img_url' => $image->image,
-            ];
-        }
-
-        $pickup_service_charges = SiteSetting::getByName('pickup_service_charges');
-        $order_charges = [];
-        foreach ($packag->orders as $order) {
-            if ($order->order_origin == 'pickup') {
-                $total = 0;
-                foreach ($order->items as $item) {
-                    $total = $item->unit_price * $item->quantity;
-                }
-                $sales_tax = ($order->sales_tax / 100) * $total;
-                $sub_total = $total + $sales_tax;
-                $service_charges = ($pickup_service_charges / 100) * $sub_total;
-                $order_charges[] = [
-                    'total' => $total,
-                    'sales_tax' => $sales_tax,
-                    'sub_total' => $sub_total,
-                    'service_charges' => $service_charges
-                ];
-            }
-        }
-
-        $subtotal = 0;
-        $package_service_requests = [];
-        foreach ($packag->serviceRequests as $key => $service_request) {
-            if ($service_request->status == 'served') {
-                $package_service_requests[] = [
-                    'id' => $service_request->id,
-                    'name' => $service_request->service->title,
-                    'price' => $service_request->price,
-                    'amount' => $service_request->price,
-                    'child_package_id' => $service_request->child_package_id,
-                ];
-                $subtotal = $subtotal + $service_request->price;
-            }
-        }
-
-        $total = $subtotal + $packag->shipping_charges + (float) SiteSetting::getByName('mailout_fee') + $packag->storage_fee + $packag->consolidation_fee - $packag->discount;
-
-        $eei_charges = 0;
-        if ($packag->shipping_total >= 2500 || (isset($packag->address->country) && in_array($packag->address->country->iso, ['CN', 'HK', 'RU', 'VE']))) {
-            $eei_charges = (float) SiteSetting::getByName('eei_charges');
-            $total = $total + $eei_charges;
-        }
-
-        $label_charges = 0;
-        if ($packag->return_label == 1) {
-            $label_charges = (float) SiteSetting::getByName('label_charges');
-            $total = $total + $label_charges;
-        }
-
-        $shipping_address = Address::where('user_id', Auth::user()->id)->get();
-
-        $packag->update(['grand_total' => $total]);
-
-        $package_boxes = [];
-        foreach ($packag->boxes as $pkg_box) {
-            $package_boxes[] = [
-                'id' => $pkg_box->id,
-                'weight_unit' => $pkg_box->weight_unit,
-                'dim_unit' => $pkg_box->dim_unit,
-                'weight' => $pkg_box->weight,
-                'length' => $pkg_box->length,
-                'width' => $pkg_box->width,
-                'height' => $pkg_box->height,
-            ];
-        }
-
-        $countries = Country::get(['id', 'nicename as name', 'iso'])->toArray();
-        $service_request_pending_count = ServiceRequest::where('package_id', $packag->id)->where('status', 'pending')->count();
-
-        if ($packag->status == 'shipping_service_selected') {
-            $packag->update(['status' => 'checkout']);
-            event(new PackageShippingServiceSelected($packag));
-        }
-
-        $payments = [];
-        $payments = Payment::where('payment_module', 'package')->where('payment_module_id', $packag->id)->get();
-        $package_files = [];
-        $package_files = PackageFile::where('package_id', $packag->id)->get();
+                'ship_to.company_name as to_company',
+                'ship_to.fullname as to_name',
+                'ship_to.address as to_address',
+                'ship_to.address_2 as to_address_2',
+                'ship_to.address_3 as to_address_3',
+                'ship_to.city as to_city',
+                'ship_to.state as to_state',
+                'ship_to.country_code as to_country_code',
+                'ship_to.zip_code as to_zip_code',
+                'ship_to.phone as to_phone',
+                'ship_to.email as to_email',
+            )
+            ->join('package_boxes as pb', 'pb.package_id', 'packages.id')
+            ->join('users as u', 'u.id', 'packages.customer_id')
+            ->join('addresses as ship_from', 'ship_from.id', 'packages.ship_from')
+            ->join('addresses as ship_to', 'ship_to.id', 'packages.ship_to')
+            ->find($id);
 
         return Inertia::render('Packages/Show', [
-            'packag' => $packag,
-            'child_package_orders' => $child_package_orders,
-            'services' => $services,
-            'service_requests' => $service_requests,
-            'images' => $images,
-            'shipping_services' => Shipping::getShippingServices(),
-            'package_service_requests' => $package_service_requests,
-            'shipping_address' => $shipping_address,
-            'package_boxes' => $package_boxes,
-            'countries' => $countries,
-            'service_requests_service_ids' => $service_requests_service_ids,
-            'service_request_pending_count' => $service_request_pending_count,
-            'total' => $total,
-            'subtotal' => $subtotal,
-            'order_charges' => $order_charges,
-            'mailout_fee' => (float) SiteSetting::getByName('mailout_fee'),
-            'eei_charges' => $eei_charges,
-            'label_charges' => (float) $label_charges,
-            'payments' => $payments,
-            'package_files' => $package_files,
+            'record' => $package
         ]);
     }
 

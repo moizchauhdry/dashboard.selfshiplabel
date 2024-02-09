@@ -6,9 +6,10 @@
 					<th scope="col">SR #</th>
 					<th scope="col">Package ID</th>
 					<th scope="col">Tracking Number</th>
+					<th scope="col">Status</th>
 					<th scope="col">Customer</th>
 					<th scope="col">Created Date</th>
-					<th scope="col"></th>
+					<th scope="col">Action</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -33,12 +34,15 @@
 									target="_blank" v-if="pkg.carrier_code == 'usps'">
 									{{ box.tracking_out }}</a>
 							</span>
-							<span v-else>-</span>
 						</div>
 					</td>
 					<td>
-						<span class="badge badge-success text-uppercase mr-1"
-							v-if="pkg.payment_status == 'Paid'">Paid</span>
+						<template v-if="pkg.payment_status == 'Paid'">
+							<span class="badge badge-success text-uppercase mr-1">Paid</span>
+						</template>
+						<template v-else>
+							<span class="badge badge-pending text-uppercase mr-1">Payment {{pkg.payment_status}}</span>
+						</template>
 					</td>
 					<td>
 						<inertia-link :href="route('customers.show', pkg?.customer?.id)" class="btn btn-link">
