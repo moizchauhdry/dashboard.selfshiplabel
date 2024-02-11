@@ -35,12 +35,14 @@
 								<th>Weight</th>
 								<th>Ship From</th>
 								<th>Ship To</th>
+								<th>Tracking Number</th>
+								<th></th>
 							</tr>
 						</thead>
 						<tbody>
 							<tr>
 								<td>
-									<span class="badge badge-primary text-sm">PKG #{{ record.pkg_id }}</span>
+									<span class="badge badge-primary text-sm">PKG #{{ record.pkg_id }}</span> <br>
 								</td>
 								<td>
 									{{ record.pb_length }}
@@ -82,7 +84,18 @@
 									<p>Phone: {{ record.to_phone }}</p>
 									<p>Email: {{ record.to_email }}</p>
 								</td>
-								<!-- <td>{{ box.tracking_in }}</td> -->
+								<td>
+									{{ record.pb_tracking_out }} <br>
+
+									<u v-if="record.pkg_label_url">
+										<a :href="labelURL(record.pkg_label_url)" target="_blank"
+											class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Print
+											Label</a>
+									</u>
+								</td>
+								<td>
+
+								</td>
 							</tr>
 						</tbody>
 					</table>
@@ -138,9 +151,9 @@ export default {
 		// imgURL(url) {
 		// 	return "/public/uploads/" + url;
 		// },
-		// labelURL(url) {
-		// 	return "/" + url;
-		// },
+		labelURL(url) {
+			return "/" + url;
+		},
 		// viewImage(event) {
 		// 	console.log(event.target.src);
 		// 	var modal = document.getElementById("imageViewer");

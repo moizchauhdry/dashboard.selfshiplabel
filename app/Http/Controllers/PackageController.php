@@ -40,11 +40,11 @@ use PDF;
 
 class PackageController extends Controller
 {
-    private function calculate_storage_fee($id)
-    {
-        $package = Package::find($id);
-        calulate_storage($package);
-    }
+    // private function calculate_storage_fee($id)
+    // {
+    //     $package = Package::find($id);
+    //     calulate_storage($package);
+    // }
 
     public function index(Request $request)
     {
@@ -97,6 +97,7 @@ class PackageController extends Controller
             ->select(
                 'packages.id as pkg_id',
                 'packages.customer_id as pkg_customer_id',
+                'packages.label_url as pkg_label_url',
                 'u.name as u_name',
 
                 'pb.weight as pb_weight',
@@ -105,6 +106,7 @@ class PackageController extends Controller
                 'pb.width as pb_width',
                 'pb.height as pb_height',
                 'pb.dim_unit as pb_dim_unit',
+                'pb.tracking_out as pb_tracking_out',
 
                 'ship_from.company_name as from_company',
                 'ship_from.fullname as from_name',
@@ -136,8 +138,14 @@ class PackageController extends Controller
             ->join('addresses as ship_to', 'ship_to.id', 'packages.ship_to')
             ->find($id);
 
+
+        $payments  = Payment::where('payment_module', 'package')->where('payment_module_id', $package->pkg_id)->get();
+        $package_files  = PackageFile::where('package_id', $package->pkg_id)->get();
+
         return Inertia::render('Packages/Show', [
-            'record' => $package
+            'record' => $package,
+            'payments' => $payments,
+            'package_files' => $package_files,
         ]);
     }
 
@@ -941,7 +949,6 @@ class PackageController extends Controller
 
     public function uploadFile(Request $request)
     {
-        // dd($request->all());
         try {
             $path = $request->file('file')->store('package-files', 'public');
             PackageFile::create([
