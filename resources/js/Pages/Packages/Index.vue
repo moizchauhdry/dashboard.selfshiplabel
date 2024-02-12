@@ -28,7 +28,7 @@
 								</div>
 								<div class="form-group">
 									<label for="">Tracking Number</label>
-									<input type="text" v-model="form.tracking_no" class="form-control" />
+									<input type="text" v-model="form.tracking_out" class="form-control" />
 								</div>
 								<div class="form-group">
 									<label for="">Date Range</label>
@@ -93,7 +93,7 @@ export default {
 				pkg_type: this.filters.pkg_type,
 				payment_status: this.filters.payment_status,
 				auctioned: this.filters.auctioned,
-				tracking_no: this.filters.tracking_no,
+				tracking_out: this.filters.tracking_out,
 				date_range: this.filters.date_range,
 			},
 		};
@@ -115,6 +115,7 @@ export default {
 			this.form.pkg_type = "";
 			this.form.payment_status = "";
 			this.form.date_range = "";
+			this.form.tracking_out = "";
 			this.date = "";
 			this.submit();
 		},

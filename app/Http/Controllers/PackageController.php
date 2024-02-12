@@ -63,6 +63,9 @@ class PackageController extends Controller
             ->when($request->payment_status && !empty($request->payment_status), function ($qry) use ($request) {
                 $qry->where('payment_status', $request->payment_status);
             })
+            ->when($request->tracking_out && !empty($request->tracking_out), function ($qry) use ($request) {
+                $qry->where('tracking_number_out', $request->tracking_out);
+            })
             ->when($request->date_range && !empty($request->date_range), function ($qry) use ($request) {
                 $range = explode(' - ', $request->date_range);
                 $from = date("Y-m-d", strtotime($range[0]));
@@ -86,7 +89,7 @@ class PackageController extends Controller
                 'suit_no' => $request->suit_no ?? "",
                 'payment_status' => $request->payment_status ?? "",
                 'date_range' => $request->date_range ?? "",
-                'tracking_no' => $request->tracking_no ?? "",
+                'tracking_out' => $request->tracking_out ?? "",
             ]
         ]);
     }
