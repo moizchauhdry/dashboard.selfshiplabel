@@ -19,8 +19,8 @@ class RateController extends BaseController
             [
                 'ship_from_country_code' => 'required',
                 'ship_to_country_code' => 'required',
-                'ship_from_postal_code' => Rule::requiredIf($request->ship_from_country_code === $request->ship_to_country_code),
-                'ship_to_postal_code' => Rule::requiredIf($request->ship_from_country_code === $request->ship_to_country_code),
+                'ship_from_postal_code' => 'nullable',
+                'ship_to_postal_code' => 'nullable',
                 'dimensions' => 'required|array',
                 'dimensions.*.weight' => 'required',
                 'dimensions.*.length' => 'required',

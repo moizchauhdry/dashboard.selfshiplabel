@@ -250,7 +250,7 @@ class ShippingRatesController extends Controller
                 "packages" => $packages
             ];
 
-            $request = $client->post('https://express.api.dhl.com/mydhlapi/test/rates', [
+            $request = $client->post('https://express.api.dhl.com/mydhlapi/rates', [
                 'headers' => $headers,
                 'body' => json_encode($body)
             ]);
@@ -279,6 +279,7 @@ class ShippingRatesController extends Controller
 
             return $rates;
         } catch (\Throwable $th) {
+            return $th;
             return [];
         }
     }
