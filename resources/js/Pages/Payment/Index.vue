@@ -37,11 +37,10 @@
 								<th>SR.No.</th>
 								<th>Invoive ID</th>
 								<th>Customer</th>
-								<th>Payment Type</th>
-								<th>Tracking Number</th>
-								<!-- <th>Transaction ID</th> -->
-								<th>Payment Method</th>
-								<th>Shipping Service</th>
+								<th>Tracking Out</th>
+								<th>Service</th>
+								<th>Method</th>
+								<th>Transaction ID</th>
 								<th>Amount</th>
 								<th>Charged Date</th>
 								<th>Action</th>
@@ -53,16 +52,18 @@
 								<td>{{ payment.p_id }}</td>
 								<td>{{ payment.u_name }} - {{ payment.u_id }}</td>
 								<td>
-									<u>
+									{{ payment.pkg_tracking_out }} <br>
+
+									<span class="font-bold text-primary underline">
 										<inertia-link v-if="payment.p_module === 'package'"
 											:href="route('packages.show', payment.p_module_id)">
 											{{ payment.p_module }} - {{ payment.p_module_id }}
 										</inertia-link>
-									</u>
+									</span>
 								</td>
-								<td>{{ payment.pb_tracking_out }}</td>
-								<td>{{ payment.p_method }}</td>
 								<td>{{ payment.pkg_service_label }}</td>
+								<td>{{ payment.p_method }}</td>
+								<td>{{ payment.t_id }}</td>
 								<td>${{ payment.charged_amount }}</td>
 								<td>{{ payment.charged_at }}</td>
 								<td>

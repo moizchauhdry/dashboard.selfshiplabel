@@ -95,10 +95,11 @@ class PackageController extends Controller
     {
         $package = Package::query()
             ->select(
+                'u.name as u_name',
                 'packages.id as pkg_id',
                 'packages.customer_id as pkg_customer_id',
                 'packages.label_url as pkg_label_url',
-                'u.name as u_name',
+                'packages.tracking_number_out as pkg_tracking_out',
 
                 'pb.weight as pb_weight',
                 'pb.weight_unit as pb_weight_unit',
@@ -106,7 +107,6 @@ class PackageController extends Controller
                 'pb.width as pb_width',
                 'pb.height as pb_height',
                 'pb.dim_unit as pb_dim_unit',
-                'pb.tracking_out as pb_tracking_out',
 
                 'ship_from.company_name as from_company',
                 'ship_from.fullname as from_name',

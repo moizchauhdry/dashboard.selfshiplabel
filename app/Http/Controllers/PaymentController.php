@@ -917,18 +917,18 @@ class PaymentController extends Controller
         $query = Payment::query();
 
         $query->select(
-            'u.id as u_id',
-            'u.name as u_name',
             'payments.id as p_id',
             'payments.transaction_id as t_id',
             'payments.payment_method as p_method',
             'payments.charged_amount as charged_amount',
             'payments.charged_at as charged_at',
-            'pkg.id as pkg_id',
-            'pkg.service_label as pkg_service_label',
             'payments.payment_module as p_module',
             'payments.payment_module_id as p_module_id',
-            'pb.tracking_out as pb_tracking_out',
+            'u.id as u_id',
+            'u.name as u_name',
+            'pkg.id as pkg_id',
+            'pkg.service_label as pkg_service_label',
+            'pkg.tracking_number_out as pkg_tracking_out',
         );
 
         $query->join('packages as pkg', function ($join) {
@@ -936,7 +936,6 @@ class PaymentController extends Controller
             $join->where('payments.payment_module', 'package');
         });
 
-        $query->join('package_boxes as pb', 'pb.package_id', 'pkg.id');
         $query->join('users as u', 'u.id', 'payments.customer_id');
 
         $query->when($user->type === 'customer', function ($qry) use ($user) {
@@ -948,7 +947,7 @@ class PaymentController extends Controller
         });
 
         $query->when($search_tracking_no && !empty($search_tracking_no), function ($qry) use ($search_tracking_no) {
-            $qry->where('pb.tracking_out', $search_tracking_no);
+            $qry->where('pkg.tracking_number_out', $search_tracking_no);
         });
 
         $query->when($search_suit_no && !empty($search_suit_no), function ($qry) use ($search_suit_no) {

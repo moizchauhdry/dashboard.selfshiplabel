@@ -36,7 +36,6 @@
 								<th>Ship From</th>
 								<th>Ship To</th>
 								<th>Tracking Number</th>
-								<th></th>
 							</tr>
 						</thead>
 						<tbody>
@@ -85,16 +84,13 @@
 									<p>Email: {{ record.to_email }}</p>
 								</td>
 								<td>
-									{{ record.pb_tracking_out }} <br>
+									{{ record.pkg_tracking_out }} <br>
 
 									<u v-if="record.pkg_label_url">
 										<a :href="labelURL(record.pkg_label_url)" target="_blank"
 											class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Print
 											Label</a>
 									</u>
-								</td>
-								<td>
-
 								</td>
 							</tr>
 						</tbody>
