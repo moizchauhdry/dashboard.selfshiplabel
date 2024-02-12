@@ -14,7 +14,7 @@
 							<input type="text" class="form-control" v-model="form.search_suit_no" />
 						</div>
 						<div class="form-group">
-							<label for="">Tracking ID</label>
+							<label for="">Tracking Number</label>
 							<input type="text" class="form-control" v-model="form.search_tracking_no" />
 						</div>
 						<div class="form-group">
@@ -38,6 +38,7 @@
 								<th>Invoive ID</th>
 								<th>Customer</th>
 								<th>Payment Type</th>
+								<th>Tracking Number</th>
 								<!-- <th>Transaction ID</th> -->
 								<th>Payment Method</th>
 								<th>Shipping Service</th>
@@ -59,7 +60,7 @@
 										</inertia-link>
 									</u>
 								</td>
-								<!-- <td>{{ payment.t_id }}</td> -->
+								<td>{{ payment.pb_tracking_out }}</td>
 								<td>{{ payment.p_method }}</td>
 								<td>{{ payment.pkg_service_label }}</td>
 								<td>${{ payment.charged_amount }}</td>

@@ -729,7 +729,7 @@ class PaymentController extends Controller
         $ship_from = Address::find($package->ship_from);
         $ship_to = Address::find($package->ship_to);
 
-        $package_box = PackageBox::where('package_id',$package->id)->first();
+        $package_box = PackageBox::where('package_id', $package->id)->first();
 
         view()->share([
             'payment' => $payment,
@@ -928,6 +928,7 @@ class PaymentController extends Controller
             'pkg.service_label as pkg_service_label',
             'payments.payment_module as p_module',
             'payments.payment_module_id as p_module_id',
+            'pb.tracking_out as pb_tracking_out',
         );
 
         $query->join('packages as pkg', function ($join) {
@@ -935,6 +936,7 @@ class PaymentController extends Controller
             $join->where('payments.payment_module', 'package');
         });
 
+        $query->join('package_boxes as pb', 'pb.package_id', 'pkg.id');
         $query->join('users as u', 'u.id', 'payments.customer_id');
 
         $query->when($user->type === 'customer', function ($qry) use ($user) {
@@ -946,7 +948,6 @@ class PaymentController extends Controller
         });
 
         $query->when($search_tracking_no && !empty($search_tracking_no), function ($qry) use ($search_tracking_no) {
-            $qry->join('package_boxes as pb', 'pb.package_id', 'pkg.id');
             $qry->where('pb.tracking_out', $search_tracking_no);
         });
 
