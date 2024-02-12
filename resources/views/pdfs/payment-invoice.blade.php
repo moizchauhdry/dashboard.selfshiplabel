@@ -177,10 +177,29 @@
 
     <br>
 
-    <p style="font-size: 10px">
-        I possess an electronic signature confirming both the initiation and authorization of the payment, which was
-        made by me.
-    </p>
+    <ul style="font-size: 10px">
+        <li>
+            I possess an electronic signature confirming both the initiation and authorization of the payment, which was
+            made by me.
+        </li>
+        <li>
+            I hereby acknowledge and accept the terms and conditions of Self Ship Label for my purchase.
+        </li>
+        <li>
+            I confirm there are no restricted, prohibited, hazardous materials, or dangerous goods in this shipment.
+        </li>
+        <li>
+            I understand that if an item in my shipment is undeclared, restricted, prohibited, hazardous or a dangerous
+            good, it will be discarded without reimbursement.
+        </li>
+        <li>
+            I understand I may be billed more if the package exceeds the weight and dimensions I provided.
+        </li>
+        <li>
+            I understand that the recipient may be charged for duties and taxes upon delivery. Final costs are
+            determined by customs authorities at time of import into the destination country.
+        </li>
+    </ul>
 </body>
 
 </html>
