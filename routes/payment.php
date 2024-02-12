@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\SquarePaymentController;
 
 Route::prefix('payment')->group(function () {
     Route::any('setup', [PaymentController::class, 'index'])->name('payment.index');
@@ -16,5 +17,5 @@ Route::prefix('payment')->group(function () {
     Route::any('generateReportList', [PaymentController::class, 'generateReportList'])->name('generateReportList');
     Route::post('add', [PaymentController::class, 'add_payment'])->middleware(['auth'])->name('payment.add');
     // Route::post('stripe-charge-later', [PaymentController::class, 'stripeChargeLater'])->middleware(['auth'])->name('payment.stripe-charge-later');
-    Route::post('square-charge-later', [PaymentController::class, 'squareChargeLater'])->middleware(['auth'])->name('payment.square-charge-later');
+    Route::post('square-charge-later', [SquarePaymentController::class, 'laterCharge'])->middleware(['auth'])->name('payment.square-charge-later');
 });

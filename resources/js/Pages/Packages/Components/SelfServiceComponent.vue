@@ -14,13 +14,31 @@
                             </th>
                         </tr>
                         <tr>
-                            <td>
-                                <input type="text" class="form-control" v-model="self_service_charge_form.amount">
+                            <td style="width: 30%;" class="p-4">
+                                <div class="form-group">
+                                    <label for="">Amount</label>
+                                    <input type="text" class="form-control" v-model="self_service_charge_form.amount">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="">Reason</label>
+                                    <textarea v-model="self_service_charge_form.charged_reason"
+                                        class="form-control"></textarea>
+                                </div>
+
+                                <div class="form-group">
+                                    <button type="button" class="btn btn-success btn-sm" @click="charge()">Charge
+                                        Amount</button>
+                                </div>
                             </td>
-                            <td>
-                                <button type="button" class="btn btn-success btn-sm" @click="charge()">Charge
-                                    Amount</button>
+
+                            <td colspan="4" class="p-4">
+                                <b>
+                                    Note: The "Charge Later" option is used to charge the customer directly once their card
+                                    is saved or at least one payment transaction is completed by the customer.
+                                </b>
                             </td>
+
                         </tr>
                         <tr class="text-uppercase">
                             <th>Sr.no.</th>
@@ -96,6 +114,7 @@ export default {
             self_service_charge_form: this.$inertia.form({
                 package_id: this.record.pkg_id,
                 payment_module: 'package',
+                charged_reason: "",
                 amount: 0,
             }),
             self_service_file_form: {

@@ -160,4 +160,52 @@ class SquarePaymentController extends Controller
     {
         return view('square.success');
     }
+
+    public function laterCharge(Request $request)
+    {
+        try {
+            
+            $payment = Payment::where('payment_module', 'package')->where('payment_module_id', $request->package_id)->first();
+
+            // CREATE PAYMENT
+            // $payment_url = 'https://connect.squareupsandbox.com/v2/payments';
+            $payment_url = 'https://connect.squareup.com/v2/payments';
+
+            $payment_body = [
+                'amount_money' => [
+                    'amount' => (float) $request->amount * 100,
+                    'currency' => 'USD',
+                ],
+                'idempotency_key' => (string) Str::uuid(),
+                'source_id' => $payment->sq_card_id,
+                'customer_id' => $payment->sq_customer_id,
+            ];
+
+            $headers = [
+                'Authorization' => 'Bearer EAAAFIT1m3W_vYnBwzTr1M2OktU_vMDVT2tTm1OcNIcFSPa1X5oABXlHYx2P4kxN'
+            ];
+
+            $payment_response = Http::withHeaders($headers)->post($payment_url, $payment_body);
+            $payment_response = json_decode($payment_response->getBody(), true);
+
+            $data = [
+                'payment_module' => 'package',
+                'payment_module_id' => $payment->payment_module_id,
+                'customer_id' => $payment->customer_id,
+                'transaction_id' => $payment_response['payment']['id'],
+                'payment_method' => 'square',
+                'charged_amount' => $payment_response['payment']['amount_money']['amount'] / 100,
+                'charged_at' => Carbon::now(),
+                'charged_reason' => $request->charged_reason,
+                'sq_payment_id' => $payment_response['payment']['id'],
+                'sq_payment_response' => json_encode($payment_response),
+            ];
+
+            Payment::create($data);
+
+            return redirect()->back()->with('success', 'charge success');
+        } catch (\Throwable $th) {
+            return redirect()->back()->with('error', $th->getMessage());
+        }
+    }
 }
