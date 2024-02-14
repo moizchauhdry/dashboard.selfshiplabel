@@ -208,9 +208,7 @@ class CustomerController extends Controller
      */
     public function show($id)
     {
-        $customer = User::with(['orders' => function ($q) {
-            $q->orderBy('id', 'desc');
-        }, 'orders.warehouse'])->find($id);
+        $customer = User::find($id);
         return Inertia::render('CustomerDetail', ['customer' => $customer]);
     }
 

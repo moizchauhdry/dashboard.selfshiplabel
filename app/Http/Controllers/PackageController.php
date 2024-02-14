@@ -135,12 +135,11 @@ class PackageController extends Controller
                 'ship_to.phone as to_phone',
                 'ship_to.email as to_email',
             )
-            ->join('package_boxes as pb', 'pb.package_id', 'packages.id')
+            ->leftJoin('package_boxes as pb', 'pb.package_id', 'packages.id')
             ->join('users as u', 'u.id', 'packages.customer_id')
-            ->join('addresses as ship_from', 'ship_from.id', 'packages.ship_from')
-            ->join('addresses as ship_to', 'ship_to.id', 'packages.ship_to')
+            ->leftJoin('addresses as ship_from', 'ship_from.id', 'packages.ship_from')
+            ->leftJoin('addresses as ship_to', 'ship_to.id', 'packages.ship_to')
             ->find($id);
-
 
         $payments  = Payment::where('payment_module', 'package')->where('payment_module_id', $package->pkg_id)->get();
         $package_files  = PackageFile::where('package_id', $package->pkg_id)->get();
