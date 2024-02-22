@@ -173,6 +173,13 @@
             <td>{{$payment->charged_at ? 'Paid': "Unpaid"}}</td>
             <td>${{ format_number($payment->charged_amount) }}</td>
         </tr>
+        @if ($payment->charged_reason)
+        <tr>
+            <td colspan="4">
+                <b>Charged Reason:</b> {{$payment->charged_reason}}
+            </td>
+        </tr>
+        @endif
     </table>
 
     <br>
