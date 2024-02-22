@@ -127,8 +127,16 @@
     <table class="border" style="width: 100%">
         @if ($package->shipping_charges > 0)
         <tr>
+            @if ($payment->recharged == 1)
+            <td style="width:85%">
+                Recharged {{$package->tracking_number_out ? 'Tracking Number: '.$package->tracking_number_out : ""}} <br>
+                Reason: {{$payment->charged_reason}}
+            </td>
+            <td style="width:15%">${{ format_number($payment->charged_amount) }}</td>
+            @else
             <td style="width:85%">Shipping Service - {{ $package->service_label }}</td>
             <td style="width:15%">${{ format_number($package->shipping_charges) }}</td>
+            @endif
         </tr>
         @endif
     </table>
@@ -173,13 +181,6 @@
             <td>{{$payment->charged_at ? 'Paid': "Unpaid"}}</td>
             <td>${{ format_number($payment->charged_amount) }}</td>
         </tr>
-        @if ($payment->charged_reason)
-        <tr>
-            <td colspan="4">
-                <b>Charged Reason:</b> {{$payment->charged_reason}}
-            </td>
-        </tr>
-        @endif
     </table>
 
     <br>
