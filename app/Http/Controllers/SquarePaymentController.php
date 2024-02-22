@@ -199,8 +199,8 @@ class SquarePaymentController extends Controller
                 'charged_reason' => $request->charged_reason,
                 'sq_payment_id' => $payment_response['payment']['id'],
                 'sq_payment_response' => json_encode($payment_response),
-                'direct_charged' => true,
-                'direct_charged_by' => auth()->id(),
+                'recharged' => true,
+                'recharged_by' => auth()->id(),
             ];
 
             Payment::create($data);
