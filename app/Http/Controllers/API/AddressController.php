@@ -35,7 +35,7 @@ class AddressController extends BaseController
                 'city' => 'required|regex:/^[A-Za-z0-9\s]+$/|',
                 'zip_code' => 'required|regex:/^[A-Za-z0-9\s]+$/|',
                 // 'phone' => 'required|string|digits:10',
-                'phone' => 'required|string',
+                'phone' => 'required|string|numeric',
                 'email' => 'required|email|string',
                 'address' => 'required|string|max:35|regex:/^[A-Za-z0-9\s]+$/',
                 'address_2' => 'nullable|string|max:35',
