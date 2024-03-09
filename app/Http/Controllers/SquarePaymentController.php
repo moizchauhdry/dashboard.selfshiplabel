@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\OrderItem;
 use App\Models\Package;
 use App\Models\Payment;
 use Carbon\Carbon;
@@ -11,9 +12,27 @@ use Illuminate\Support\Str;
 
 class SquarePaymentController extends Controller
 {
+    private function paymentRules($package)
+    {
+        if ($package->pkg_ship_type == 'international') {
+            if ($package->custom_form_status == 0) {
+                abort('403', 'The package type is international but custom form is not submited.');
+            }
+
+            if ($package->custom_form_status == 1) {
+                $oi_count = OrderItem::where('package_id', $package->id)->count();
+                
+                if ($oi_count == 0) {
+                    abort('403', 'The package custom item altest one');
+                }
+            }
+        }
+    }
+
     public function payment(Request $request)
     {
         $package = Package::find($request->package_id);
+        $this->paymentRules($package);
 
         if ($package->grand_total > 0) {
             $data = [
@@ -33,6 +52,8 @@ class SquarePaymentController extends Controller
     public function index($id)
     {
         $package = Package::find($id);
+        $this->paymentRules($package);
+
         return view('square.index', compact('package'));
     }
 
@@ -40,6 +61,7 @@ class SquarePaymentController extends Controller
     {
         try {
             $package = Package::find($request->package_id);
+            $this->paymentRules($package);
 
             if ($package->payment_status == 'Pending') {
                 $grand_total = $package->grand_total * 100;
