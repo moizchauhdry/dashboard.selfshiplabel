@@ -167,12 +167,15 @@ class RateController extends BaseController
         $response = $request->getBody()->getContents();
         $response = json_decode($response);
 
-        $markup = SiteSetting::getByName('markup');
+        // $markup = SiteSetting::getByName('markup');
 
         $rates = [];
         foreach ($response->output->rateReplyDetails as $key => $fedex) {
             $price = $fedex->ratedShipmentDetails[0]->totalNetFedExCharge;
-            $markup_amount = $fedex->ratedShipmentDetails[0]->totalNetFedExCharge * ((int)$markup / 100);
+            // $markup_amount = $fedex->ratedShipmentDetails[0]->totalNetFedExCharge * ((int)$markup / 100);
+            $markup = shipping_service_markup($fedex->serviceType);
+            $markup_amount = $price * ((float)$markup / 100);
+
             $total = $price + $markup_amount;
             $total = number_format((float)$total, 2, '.', '');
 
@@ -272,7 +275,9 @@ class RateController extends BaseController
             $response = $request->getBody()->getContents();
             $response = json_decode($response);
 
-            $markup = SiteSetting::getByName('markup');
+            // $markup = SiteSetting::getByName('markup');
+            $markup = shipping_service_markup('EXPRESS_WORLDWIDE');
+
             $price = $response->products[0]->totalPrice[0]->price;
             $markup_amount = $response->products[0]->totalPrice[0]->price * ((int)$markup / 100);
             $total = $price + $markup_amount;
@@ -433,6 +438,8 @@ class RateController extends BaseController
             $rates = [];
             foreach ($rating_response->RateResponse->RatedShipment as $key => $ups) {
                 $price = $ups->NegotiatedRateCharges->TotalCharge->MonetaryValue;
+                // $markup_amount = $price * ((int)$markup / 100);
+                $markup = shipping_service_markup($ups->Service->Code);
                 $markup_amount = $price * ((int)$markup / 100);
                 $total = $price + $markup_amount;
                 $total = number_format((float)$total, 2, '.', '');
