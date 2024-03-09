@@ -16,14 +16,14 @@ class SquarePaymentController extends Controller
     {
         if ($package->pkg_ship_type == 'international') {
             if ($package->custom_form_status == 0) {
-                abort('403', 'The package type is international but custom form is not submited.');
+                abort('403', 'The package type is international, but the customs form has not been submitted.');
             }
 
             if ($package->custom_form_status == 1) {
                 $oi_count = OrderItem::where('package_id', $package->id)->count();
-                
+
                 if ($oi_count == 0) {
-                    abort('403', 'The package custom item altest one');
+                    abort('403', 'At least one item is required in the custom form.');
                 }
             }
         }
