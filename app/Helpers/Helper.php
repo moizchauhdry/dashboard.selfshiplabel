@@ -462,21 +462,32 @@ function generateLabelUps($id)
 
     $oMerger = PDFMerger::init();
     $filename1 = $package->label_access_code;
-    $count = 1;
-    // foreach ($results as $key => $result) {
-    // return $result;
-    $filename2 = $filename1 . '-' . $count . '.png';
-    Storage::disk('labels')->put($filename2, base64_decode($results->ShippingLabel->GraphicImage));
 
-    $pdf = PDF::loadView('pdfs.label', ['imagePath' => 'storage/labels/' . $filename2]);
-    $pdf->setPaper('A4', 'portrait');
-
-    $filename2_pdf = $filename1 . '-' . $count . '.pdf';
-    Storage::disk('ups-labels')->put($filename2_pdf, $pdf->output());
-    response()->download('storage/ups-labels/' . $filename2_pdf);
-    $oMerger->addPDF('storage/ups-labels/' . $filename2_pdf, 'all');
-    $count++;
-    // }
+    if (count($package_boxes) > 1) {
+        $count = 1;
+        foreach ($results as $key => $result) {
+            $filename2 = $filename1 . '-' . $count . '.png';
+            Storage::disk('labels')->put($filename2, base64_decode($result->ShippingLabel->GraphicImage));
+            $pdf = PDF::loadView('pdfs.label', ['imagePath' => 'storage/labels/' . $filename2]);
+            $pdf->setPaper('A4', 'portrait');
+            $filename2_pdf = $filename1 . '-' . $count . '.pdf';
+            Storage::disk('ups-labels')->put($filename2_pdf, $pdf->output());
+            response()->download('storage/ups-labels/' . $filename2_pdf);
+            $oMerger->addPDF('storage/ups-labels/' . $filename2_pdf, 'all');
+            $count++;
+        }
+    } else {
+        $count = 1;
+        $filename2 = $filename1 . '-' . $count . '.png';
+        Storage::disk('labels')->put($filename2, base64_decode($results->ShippingLabel->GraphicImage));
+        $pdf = PDF::loadView('pdfs.label', ['imagePath' => 'storage/labels/' . $filename2]);
+        $pdf->setPaper('A4', 'portrait');
+        $filename2_pdf = $filename1 . '-' . $count . '.pdf';
+        Storage::disk('ups-labels')->put($filename2_pdf, $pdf->output());
+        response()->download('storage/ups-labels/' . $filename2_pdf);
+        $oMerger->addPDF('storage/ups-labels/' . $filename2_pdf, 'all');
+        $count++;
+    }
 
     if ($package->pkg_ship_type == 'international') {
         $oMerger->addPDF('storage/commercial-invoices/' . $filename1 . '.pdf', 'all');
@@ -487,7 +498,9 @@ function generateLabelUps($id)
     $oMerger->save($label_url);
 
     // Master Tracking Number
-    $master_tracking_no = $response->ShipmentResponse->ShipmentResults->PackageResults->TrackingNumber;
+    // $master_tracking_no = $response->ShipmentResponse->ShipmentResults->PackageResults->TrackingNumber;
+    $master_tracking_no = $response->ShipmentResponse;
+    return $response;
 
     $package->update([
         'label_generated_at' => Carbon::now(),

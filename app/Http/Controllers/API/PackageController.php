@@ -45,8 +45,9 @@ class PackageController extends BaseController
 
         $package = Package::updateOrCreate(['customer_id' => $user->id, 'cart' => 1], $data);
 
+        PackageBox::where('package_id', $package->id)->delete();
         foreach ($request->dimensions as $key => $dimension) {
-            PackageBox::updateOrCreate(['package_id' => $package->id], [
+            PackageBox::create([
                 'package_id' => $package->id,
                 'pkg_type' => $package->pkg_type,
                 'weight_unit' => 'lb',
@@ -117,11 +118,11 @@ class PackageController extends BaseController
                     if ($package->carrier_code == 'fedex') {
                         $data['fedex_label'] = generateLabelFedex($package->id);
                     }
-                    
+
                     if ($package->carrier_code == 'ups') {
                         $data['ups_label'] = generateLabelUps($package->id);
                     }
-                    
+
                     if ($package->carrier_code == 'dhl') {
                         $data['dhl_label'] = generateLabelDhl($package->id);
                     }
