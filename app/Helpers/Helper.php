@@ -454,9 +454,11 @@ function generateLabelUps($id)
 
     $response = curl_exec($curl);
     $response = json_decode($response);
-    $results = $response->ShipmentResponse->ShipmentResults->PackageResults;
 
     return $response;
+
+    $results = $response->ShipmentResponse->ShipmentResults->PackageResults;
+
 
     if ($package->pkg_ship_type == 'international') {
         commercialInvoiceForLabel($package->id);
