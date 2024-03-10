@@ -356,7 +356,7 @@ function generateLabelUps($id)
             "Shipment" => [
                 "Description" => "SELF_SHIP_LABEL",
                 "Shipper" => [
-                    "Name" => $ship_from->company_name,
+                    "Name" => $ship_from->company_name ?? $ship_from->fullname,
                     "AttentionName" => $ship_from->fullname,
                     "ShipperNumber" => "WY2291",
                     "Phone" => [
@@ -374,7 +374,7 @@ function generateLabelUps($id)
                     ]
                 ],
                 "ShipTo" => [
-                    "Name" => $ship_to->company_name,
+                    "Name" => $ship_to->company_name ?? $ship_to->fullname,
                     "AttentionName" => $ship_to->fullname,
                     "Phone" => [
                         "Number" => $ship_to->phone
@@ -454,11 +454,7 @@ function generateLabelUps($id)
 
     $response = curl_exec($curl);
     $response = json_decode($response);
-
-    return $response;
-
     $results = $response->ShipmentResponse->ShipmentResults->PackageResults;
-
 
     if ($package->pkg_ship_type == 'international') {
         commercialInvoiceForLabel($package->id);
