@@ -45,7 +45,12 @@ class AddressController extends BaseController
 
             if (in_array($request->country_id, [226])) { // 226, 138, 38
                 $rules += [
-                    'state' => ['required'],
+                    // 'state' => ['required'],
+                    'state' => ['required', 'min:2', 'max:2'],
+                ];
+            } else {
+                $rules += [
+                    'state' => ['nullable', 'min:2', 'max:2'],
                 ];
             }
 
