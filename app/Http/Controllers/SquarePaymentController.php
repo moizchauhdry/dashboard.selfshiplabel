@@ -27,6 +27,10 @@ class SquarePaymentController extends Controller
                 }
             }
         }
+
+        if ($package->ship_from == NULL || $package->ship_to == NULL) {
+            abort('403', 'The package ship from address & ship to address is required.');
+        }
     }
 
     public function payment(Request $request)
