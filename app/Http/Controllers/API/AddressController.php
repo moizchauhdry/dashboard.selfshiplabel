@@ -164,16 +164,16 @@ class AddressController extends BaseController
                 $address = Address::find($request->address_id);
                 $address->update($data);
             } else {
-                $address = Address::where('user_id', $user->id)
-                    ->where('address', $request->address)
-                    ->where('type', $request->type)
-                    ->first();
+                // $address = Address::where('user_id', $user->id)
+                //     ->where('address', $request->address)
+                //     ->where('type', $request->type)
+                //     ->first();
 
-                if ($address) {
-                    return $this->sendError('This address is already added.');
-                } else {
+                // if ($address) {
+                //     return $this->sendError('This address is already added.');
+                // } else {
                     $address = Address::create($data);
-                }
+                // }
             }
 
             $message = "The address have been created successfully.";
