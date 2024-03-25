@@ -98,6 +98,11 @@ function generateLabelFedex($id)
     $ship_to = Address::where('id', $package->ship_to)->first();
     $package->update(['label_access_code' => Str::uuid() . '-' . $package->id]);
 
+    $ship_to_state = NULL;
+    if ($package->pkg_ship_type == 'domestic' || in_array($ship_to->country_id, [226, 138, 38])) {
+        $ship_to_state = $ship_to->state;
+    }
+
     $commodities = [];
     if ($package->pkg_ship_type == 'international') {
         $items = OrderItem::with('originCountry')->where('package_id', $package->id)->get();
@@ -200,7 +205,7 @@ function generateLabelFedex($id)
                         ],
                         "city" => $ship_to->city,
                         // "stateOrProvinceCode" => $package->pkg_ship_type == 'domestic' ? $ship_to->state : NULL,
-                        "stateOrProvinceCode" => $ship_to->state ?? NULL,
+                        "stateOrProvinceCode" => $ship_to_state,
                         "postalCode" => $ship_to->zip_code,
                         "countryCode" => $ship_to->country->iso,
                         "residential" => $ship_to->is_residential
