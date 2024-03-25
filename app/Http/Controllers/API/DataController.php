@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\API\BaseController as BaseController;
 use App\Models\Address;
 use App\Models\Country;
+use App\Models\SignatureType;
 use App\Models\State;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -16,10 +17,12 @@ class DataController extends BaseController
     {
         $countries = Country::orderBy('name', 'asc')->get();
         $states = State::where('country_id', 226)->orderBy('name', 'asc')->get();
+        $signature_types = SignatureType::orderBy('id', 'asc')->get();
 
         $data = [
             'countries' => $countries,
             'states' => $states,
+            'signature_types' => $signature_types,
         ];
 
         return response()->json([

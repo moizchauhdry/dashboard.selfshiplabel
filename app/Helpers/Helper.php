@@ -103,6 +103,21 @@ function generateLabelFedex($id)
         $ship_to_state = $ship_to->state;
     }
 
+    if ($ship_to->signature_type_id == 1) {
+        $signature_type = "SERVICE_DEFAULT";
+    } else if ($ship_to->signature_type_id == 2) {
+        $signature_type = "NO_SIGNATURE_REQUIRED";
+    } else if ($ship_to->signature_type_id == 3) {
+        $signature_type = "INDIRECT";
+    } else if ($ship_to->signature_type_id == 4) {
+        $signature_type = "DIRECT";
+    } else if ($ship_to->signature_type_id == 5) {
+        $signature_type = "ADULT";
+    } else {
+        $signature_type = "SERVICE_DEFAULT";
+    }
+
+
     $commodities = [];
     if ($package->pkg_ship_type == 'international') {
         $items = OrderItem::with('originCountry')->where('package_id', $package->id)->get();
@@ -141,6 +156,13 @@ function generateLabelFedex($id)
                 "width" => $box->width,
                 "height" => $box->height,
                 "units" => "IN"
+            ],
+            "packageSpecialServices" => [
+                "specialServiceTypes" => [
+                    "ALCOHOL",
+                    "NON_STANDARD_CONTAINER"
+                ],
+                "signatureOptionType" => $signature_type
             ]
         ];
     }
