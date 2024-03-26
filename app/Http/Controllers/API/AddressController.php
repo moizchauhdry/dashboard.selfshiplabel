@@ -34,7 +34,6 @@ class AddressController extends BaseController
                 'country_id' => 'required',
                 'city' => 'required|regex:/^[A-Za-z0-9\s]+$/|',
                 'zip_code' => 'required|regex:/^[A-Za-z0-9\s]+$/|',
-                'phone' => 'required|string|numeric|digits:10',
                 'email' => 'required|email|string',
                 'address' => 'required|string|max:35|regex:/^[A-Za-z0-9\s]+$/',
                 'address_2' => 'nullable|string|max:35',
@@ -47,6 +46,16 @@ class AddressController extends BaseController
             if (in_array($request->country_id, [226, 138, 38])) { // 226, 138, 38
                 $rules += [
                     'state' => ['required', 'min:2', 'max:2'],
+                ];
+            }
+
+            if (in_array($request->country_id, [226])) {
+                $rules += [
+                    'phone' => 'required|numeric|digits:10',
+                ];
+            } else {
+                $rules += [
+                    'phone' => 'required|numeric',
                 ];
             }
 
