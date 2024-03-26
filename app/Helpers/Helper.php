@@ -159,7 +159,6 @@ function generateLabelFedex($id)
             ],
             "packageSpecialServices" => [
                 "specialServiceTypes" => [
-                    "ALCOHOL",
                     "NON_STANDARD_CONTAINER"
                 ],
                 "signatureOptionType" => $signature_type
