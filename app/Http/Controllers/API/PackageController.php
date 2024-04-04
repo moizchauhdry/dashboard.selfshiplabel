@@ -93,13 +93,22 @@ class PackageController extends BaseController
     {
         try {
             $package = Package::cart()->first();
-
+            
             if ($request->type == 'ship_from') {
                 $package->update(['ship_from' => $request->id]);
             }
 
             if ($request->type == 'ship_to') {
-                $package->update(['ship_to' => $request->id]);
+
+                $ship_to_address = Address::find($request->id);
+
+                if ($ship_to_address->country_code != $request->selected_country_code) {
+                    $package->update(['ship_to' => NULL]);
+                    abort('403','address mistmatch');
+                } else {
+                    $package->update(['ship_to' => $request->id]);
+                }
+
             }
 
             $ship_from = Address::find($package->ship_from);
