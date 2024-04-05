@@ -117,7 +117,6 @@ function generateLabelFedex($id)
         $signature_type = "SERVICE_DEFAULT";
     }
 
-
     $commodities = [];
     if ($package->pkg_ship_type == 'international') {
         $items = OrderItem::with('originCountry')->where('package_id', $package->id)->get();
@@ -159,7 +158,7 @@ function generateLabelFedex($id)
             ],
             "packageSpecialServices" => [
                 "specialServiceTypes" => [
-                    "NON_STANDARD_CONTAINER"
+                    // "NON_STANDARD_CONTAINER"
                 ],
                 "signatureOptionType" => $signature_type
             ]
@@ -307,11 +306,22 @@ function generateLabelFedex($id)
     // Master Tracking Number
     $master_tracking_no = $response->output->transactionShipments[0]->masterTrackingNumber;
 
+    // Label Shipping Charges
+    $final_shipping_charges = $response->output->transactionShipments[0]->completedShipmentDetail->shipmentRating->shipmentRateDetails[0]->totalNetCharge;
+    $service_type = $response->output->transactionShipments[0]->serviceType;
+    $markup = shipping_service_markup($service_type);
+    $markup_amount = $final_shipping_charges * ((float)$markup / 100);
+    $total_shipping_charges = $final_shipping_charges + $markup_amount;
+    $total_shipping_charges = number_format((float)$total_shipping_charges, 2, '.', '');
+
     $package->update([
         'label_generated_at' => Carbon::now(),
         'label_generated_by' => auth()->id(),
         'label_url' => $label_url,
-        'tracking_number_out' => $master_tracking_no
+        'tracking_number_out' => $master_tracking_no,
+        'shipping_charges' => $final_shipping_charges,
+        'markup_fee' => $markup_amount,
+        'grand_total' => $total_shipping_charges,
     ]);
 
     // DELETE ADDITIONAL FILES

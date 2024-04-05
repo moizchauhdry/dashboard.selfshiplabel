@@ -93,7 +93,7 @@ class PackageController extends BaseController
     {
         try {
             $package = Package::cart()->first();
-            
+
             if ($request->type == 'ship_from') {
                 $package->update(['ship_from' => $request->id]);
             }
@@ -104,11 +104,10 @@ class PackageController extends BaseController
 
                 if ($ship_to_address->country_code != $request->selected_country_code) {
                     $package->update(['ship_to' => NULL]);
-                    abort('403','address mistmatch');
+                    abort('403', 'The selected country is "' . $request->selected_country_code . '", and only shipping addresses for this country will be accepted.');
                 } else {
                     $package->update(['ship_to' => $request->id]);
                 }
-
             }
 
             $ship_from = Address::find($package->ship_from);
@@ -122,26 +121,27 @@ class PackageController extends BaseController
                     $package->update(['pkg_ship_type' => 'international']);
                 }
 
-                if ($package->pkg_ship_type == 'domestic') {
+                // if ($package->pkg_ship_type == 'domestic') {
 
-                    if ($package->carrier_code == 'fedex') {
-                        $data['fedex_label'] = generateLabelFedex($package->id);
-                    }
-
-                    if ($package->carrier_code == 'ups') {
-                        $data['ups_label'] = generateLabelUps($package->id);
-                    }
-
-                    if ($package->carrier_code == 'dhl') {
-                        $data['dhl_label'] = generateLabelDhl($package->id);
-                    }
-
-                    $package->update(['grand_total' => $package->shipping_charges]);
+                if ($package->carrier_code == 'fedex') {
+                    $data['fedex_label'] = generateLabelFedex($package->id);
                 }
+
+                if ($package->carrier_code == 'ups') {
+                    $data['ups_label'] = generateLabelUps($package->id);
+                }
+
+                if ($package->carrier_code == 'dhl') {
+                    $data['dhl_label'] = generateLabelDhl($package->id);
+                }
+
+                // $package->update(['grand_total' => $package->shipping_charges]);
+                // }
             }
 
             return $this->sendResponse('success', 'success');
         } catch (\Throwable $th) {
+            $package->update(['ship_to' => NULL]);
             return $this->error($th->getMessage());
         }
     }
@@ -174,14 +174,14 @@ class PackageController extends BaseController
                 return $this->sendError('validation error', $validator->errors());
             }
 
-            $grand_total =  $package->shipping_charges;
+            // $grand_total =  $package->shipping_charges;
 
             $package->update([
                 'custom_form_status' => true,
                 'status' => "filled",
                 'package_type' => $request->package_type,
-                'shipping_total' => $request->shipping_total,
-                'grand_total' => $grand_total,
+                // 'shipping_total' => $request->shipping_total,
+                // 'grand_total' => $grand_total,
                 'itn' => $request->itn,
             ]);
 
