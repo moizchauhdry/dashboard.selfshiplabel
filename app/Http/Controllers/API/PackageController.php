@@ -37,10 +37,12 @@ class PackageController extends BaseController
             'service_label' => $request->rate['name'],
             'markup_fee' => $request->rate['markup'],
             'shipping_charges' => $request->rate['total'],
+            'grand_total' => $request->rate['total'],
             'currency' => "USD",
             'pkg_dim_status' => "done",
             'project_id' => 2,
             'cart' => true,
+            'ship_to' => NULL,
         ];
 
         $package = Package::updateOrCreate(['customer_id' => $user->id, 'cart' => 1], $data);
@@ -102,11 +104,15 @@ class PackageController extends BaseController
 
                 $ship_to_address = Address::find($request->id);
 
-                if ($ship_to_address->country_code != $request->selected_country_code) {
-                    $package->update(['ship_to' => NULL]);
-                    abort('403', 'The selected country is "' . $request->selected_country_code . '", and only shipping addresses for this country will be accepted.');
+                if ($ship_to_address) {
+                    if ($ship_to_address->country_code != $request->selected_country_code) {
+                        $package->update(['ship_to' => NULL]);
+                        abort('403', 'The selected country is "' . $request->selected_country_code . '", and only shipping addresses for this country will be accepted.');
+                    } else {
+                        $package->update(['ship_to' => $request->id]);
+                    }
                 } else {
-                    $package->update(['ship_to' => $request->id]);
+                    $package->update(['ship_to' => NULL]);
                 }
             }
 

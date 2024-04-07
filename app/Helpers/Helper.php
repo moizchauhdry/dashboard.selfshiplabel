@@ -536,14 +536,15 @@ function generateLabelUps($id)
 
     // Master Tracking Number
     // $master_tracking_no = $response->ShipmentResponse->ShipmentResults->PackageResults->TrackingNumber;
-    $master_tracking_no = $response->ShipmentResponse;
-    return $response;
+    // $master_tracking_no = $response->ShipmentResponse;
 
     $package->update([
         'label_generated_at' => Carbon::now(),
         'label_generated_by' => auth()->id(),
         'label_url' => $label_url,
-        'tracking_number_out' => $master_tracking_no,
+        'tracking_number_out' => NULL,
+        'shipping_charges' => $package->shipping_charges - $package->markup_fee,
+        'grand_total' => $package->shipping_charges,
     ]);
 
 
@@ -769,6 +770,8 @@ function generateLabelDhl($id)
         'label_generated_at' => Carbon::now(),
         'label_generated_by' => auth()->id(),
         'label_url' => $label_url,
+        'shipping_charges' => $package->shipping_charges - $package->markup_fee,
+        'grand_total' => $package->shipping_charges,
     ]);
 
     // DELETE ADDITIONAL FILES
