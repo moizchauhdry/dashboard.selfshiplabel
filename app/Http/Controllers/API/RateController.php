@@ -19,6 +19,7 @@ class RateController extends BaseController
             [
                 'ship_from_country_code' => 'required',
                 'ship_to_country_code' => 'required',
+                'insurance_amount' => 'nullable',
                 'ship_from_postal_code' => 'nullable',
                 'ship_to_postal_code' => 'nullable',
                 'dimensions' => 'required|array',
@@ -62,6 +63,7 @@ class RateController extends BaseController
             $data = [
                 'ship_from_postal_code' => $ship_from_postal_code,
                 'ship_from_country_code' => $request->ship_from_country_code,
+                'insurance_amount' => $request->insurance_amount,
                 'ship_from_city' => "Anaheim",
                 'ship_from_state' => "CA",
                 'ship_to_postal_code' => $ship_to_postal_code,

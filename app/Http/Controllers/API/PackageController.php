@@ -43,6 +43,7 @@ class PackageController extends BaseController
             'project_id' => 2,
             'cart' => true,
             'ship_to' => NULL,
+            'insurance_amount' => $request->insurance_amount,
         ];
 
         $package = Package::updateOrCreate(['customer_id' => $user->id, 'cart' => 1], $data);
