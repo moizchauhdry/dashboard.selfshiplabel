@@ -105,6 +105,15 @@
 
 					<div class="accordion-content">
 						<inertia-link v-if="$page.props.auth.user.type == 'admin'" class="nav-link"
+							:href="route('project.index')" :class="{ active: route().current('project.index') }"
+							:active="route().current('project.index')">
+							<i class="fas fa-list"></i>
+							<span>Projects</span>
+						</inertia-link>
+					</div>
+
+					<div class="accordion-content">
+						<inertia-link v-if="$page.props.auth.user.type == 'admin'" class="nav-link"
 							:href="route('settings')" :class="{ active: route().current('settings') }"
 							:active="route().current('settings')">
 							<i class="fas fa-list"></i>

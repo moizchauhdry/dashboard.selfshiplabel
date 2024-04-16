@@ -14,14 +14,16 @@ class ProjectSeeder extends Seeder
      */
     public function run()
     {
+        Project::truncate();
+
         $projects = [
             [
                 "id" => 1,
-                "name" => 'ShippingXPS',
+                "name" => 'Self Ship Label',
             ],
             [
                 "id" => 2,
-                "name" => 'Self Service',
+                "name" => 'Self Ship Label - External',
             ],
         ];
 

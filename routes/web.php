@@ -4,7 +4,9 @@ use App\Http\Controllers\AuctionController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\MarkupController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ShippingCalculatorController;
 use App\Http\Controllers\ShippingRatesController;
 use App\Http\Controllers\SquarePaymentController;
@@ -77,20 +79,26 @@ Route::get('/warehouses/{id}/edit', 'WarehouseController@edit')->name('warehouse
 Route::post('/warehouses', 'WarehouseController@update')->name('warehouses.update')->middleware('auth');
 Route::delete('/warehouses{id}', 'WarehouseController@destroy')->name('warehouses.destroy')->middleware('auth');
 
-Route::group(['prefix' => 'auctions-a','middleware' => 'auth','as' => 'auctions.'],function (){
-   Route::get('listing',[AuctionController::class,'listing'])->name('listing');
-   Route::get('create',[AuctionController::class,'create'])->name('create');
-   Route::post('store',[AuctionController::class,'store'])->name('store');
-   Route::get('show/{id}',[AuctionController::class,'show'])->name('show');
-   Route::get('edit/{id}',[AuctionController::class,'edit'])->name('edit');
-   Route::post('update/{id}',[AuctionController::class,'update'])->name('update');
-   Route::post('delete-image',[AuctionController::class,'deleteImage'])->name('delete-image');
-   Route::post('select-bid',[AuctionController::class,'selectBidder'])->name('select-bid');
-   Route::post('update-status',[AuctionController::class,'updateStatus'])->name('update-status');
+Route::group(['prefix' => 'auctions-a', 'middleware' => 'auth', 'as' => 'auctions.'], function () {
+    Route::get('listing', [AuctionController::class, 'listing'])->name('listing');
+    Route::get('create', [AuctionController::class, 'create'])->name('create');
+    Route::post('store', [AuctionController::class, 'store'])->name('store');
+    Route::get('show/{id}', [AuctionController::class, 'show'])->name('show');
+    Route::get('edit/{id}', [AuctionController::class, 'edit'])->name('edit');
+    Route::post('update/{id}', [AuctionController::class, 'update'])->name('update');
+    Route::post('delete-image', [AuctionController::class, 'deleteImage'])->name('delete-image');
+    Route::post('select-bid', [AuctionController::class, 'selectBidder'])->name('select-bid');
+    Route::post('update-status', [AuctionController::class, 'updateStatus'])->name('update-status');
 });
 
 Route::get('/settings', 'SettingsController@index')->name('settings')->middleware('auth');
 Route::post('/settings', 'SettingsController@update')->name('settings.update')->middleware('auth');
+
+Route::group(['prefix' => 'project', 'middleware' => 'auth', 'as' => 'project.'], function () {
+    Route::get('/', [ProjectController::class, 'index'])->name('index');
+    Route::get('/markup/{project_id}', [ProjectController::class, 'markup'])->name('markup');
+    Route::post('/markup/update', [ProjectController::class, 'updateMarkup'])->name('markup-update');
+});
 
 Route::get('/contact-customer-service', 'ContactUs@index')->name('contact-customer-service');
 
