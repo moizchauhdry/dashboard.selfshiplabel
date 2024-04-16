@@ -10,19 +10,21 @@
                 <flash-messages></flash-messages>
 
                 <form @submit.prevent="submit">
-                    <div>
-                        <input type="submit" value="Update Settings" class="btn btn-success float-right" />
-                    </div>
                     <div class="table-responsive">
-                        <table class="table table-bordered table-striped">
+                        <table class="table table-bordered table-striped table-sm">
                             <thead>
+                                <tr>
+                                    <th colspan="3">PROJECT #{{ project_id }}</th>
+                                    <th> 
+                                        <input type="submit" value="Update Settings"
+                                            class="btn btn-success btn-sm float-right" />
+                                    </th>
+                                </tr>
                                 <tr>
                                     <th scope="col">SR.NO.</th>
                                     <th scope="col">Service Name</th>
                                     <th scope="col">Service Code</th>
                                     <th scope="col">Markup Percentage</th>
-                                    <th scope="col">Project ID</th>
-                                    <th scope="col"></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -30,7 +32,6 @@
                                     <td>{{ ++index }}</td>
                                     <td>{{ service.service_name }}</td>
                                     <td>{{ service.service_code }}</td>
-                                    <td>{{ service.project_id }}</td>
                                     <td>
                                         <input type="text" class="form-control" placeholder="Markup Percentage"
                                             v-model="service.markup_percentage" required />
