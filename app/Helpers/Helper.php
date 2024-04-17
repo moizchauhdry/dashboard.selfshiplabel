@@ -261,6 +261,10 @@ function generateLabelFedex($id)
                     "amount" => $package->insurance_amount,
                     "currency" => "USD"
                 ],
+                "totalCustomsValue" => [
+                    "amount" => $package->shipping_total,
+                    "currency" => "USD"
+                ],
                 "exportDetail" => $package->shipping_total > 2500 ? [
                     "exportComplianceStatement" => 'AES ' . $package->itn
                 ] : NULL

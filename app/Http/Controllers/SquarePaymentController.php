@@ -35,21 +35,45 @@ class SquarePaymentController extends Controller
 
     public function payment(Request $request)
     {
-        $package = Package::find($request->package_id);
-        $this->paymentRules($package);
+        try {
+            $package = Package::find($request->package_id);
+            $this->paymentRules($package);
 
-        if ($package->grand_total > 0) {
-            $data = [
-                'package_id' => $package->id,
-                'customer_id' => $package->customer_id,
-                'payment_type' => 'stripe',
-                'charged_amount' => 0,
-                'transaction_id' => 0
+            if ($package->grand_total > 0) {
+                $data = [
+                    'package_id' => $package->id,
+                    'customer_id' => $package->customer_id,
+                    'payment_type' => 'stripe',
+                    'charged_amount' => 0,
+                    'transaction_id' => 0
+                ];
+
+
+                if ($package->carrier_code == 'fedex') {
+                    $data['fedex_label'] = generateLabelFedex($package->id);
+                }
+
+                if ($package->carrier_code == 'ups') {
+                    $data['ups_label'] = generateLabelUps($package->id);
+                }
+
+                if ($package->carrier_code == 'dhl') {
+                    $data['dhl_label'] = generateLabelDhl($package->id);
+                }
+
+                return $this->sendResponse($data, 'success');
+            } else {
+                // return $this->error('The value must be greater then 0',);
+            }
+        } catch (\Throwable $th) {
+            $response = [
+                'success' => false,
+                'message' => $th->getMessage(),
             ];
 
-            return $this->sendResponse($data, 'success');
-        } else {
-            // return $this->error('The value must be greater then 0',);
+            $response['errors'] = $th->getMessage();
+
+            return response()->json($response, 403);
         }
     }
 
