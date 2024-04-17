@@ -94,14 +94,14 @@
 						</inertia-link>
 					</div>
 
-					<div class="accordion-content">
+					<!-- <div class="accordion-content">
 						<inertia-link class="nav-link" :href="route('dashboard.shipping-calculator.index')"
 							:class="{ active: route().current('dashboard.shipping-calculator.index'), }"
 							:active="route().current('dashboard.shipping-calculator.index')">
 							<i class="fas fa-list"></i>
 							<span>Calculator</span>
 						</inertia-link>
-					</div>
+					</div> -->
 
 					<div class="accordion-content">
 						<inertia-link v-if="$page.props.auth.user.type == 'admin'" class="nav-link"
@@ -112,14 +112,14 @@
 						</inertia-link>
 					</div>
 
-					<div class="accordion-content">
+					<!-- <div class="accordion-content">
 						<inertia-link v-if="$page.props.auth.user.type == 'admin'" class="nav-link"
 							:href="route('settings')" :class="{ active: route().current('settings') }"
 							:active="route().current('settings')">
 							<i class="fas fa-list"></i>
 							<span>Settings</span>
 						</inertia-link>
-					</div>
+					</div> -->
 				</div>
 			</div>
 
