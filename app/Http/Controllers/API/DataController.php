@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\API\BaseController as BaseController;
 use App\Models\Address;
 use App\Models\Country;
+use App\Models\ShippingService;
 use App\Models\SignatureType;
 use App\Models\State;
 use App\Models\User;
@@ -23,6 +24,27 @@ class DataController extends BaseController
             'countries' => $countries,
             'states' => $states,
             'signature_types' => $signature_types,
+        ];
+
+        return response()->json([
+            'status' => true,
+            'message' => 'success',
+            'data' => $data,
+        ]);
+    }
+
+    public function index2()
+    {
+        $countries = Country::select('id','iso','name')->orderBy('name', 'asc')->get();
+        $states = State::select('id','name','country_id')->where('country_id', 226)->orderBy('name', 'asc')->get();
+        $signature_types = SignatureType::select('id','name')->orderBy('id', 'asc')->get();
+        $shipping_services = ShippingService::select('id','service_name','service_code','project_id')->where('project_id',2)->orderBy('id', 'asc')->get();
+
+        $data = [
+            'countries' => $countries,
+            'states' => $states,
+            'signature_types' => $signature_types,
+            'shipping_services' => $shipping_services,
         ];
 
         return response()->json([
