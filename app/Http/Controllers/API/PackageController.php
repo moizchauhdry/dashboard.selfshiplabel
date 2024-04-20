@@ -42,7 +42,7 @@ class PackageController extends BaseController
             'grand_total' => $request->rate['total'],
             'currency' => "USD",
             'pkg_dim_status' => "done",
-            'project_id' => 2,
+            'project_id' => 1,
             'cart' => true,
             'ship_to' => NULL,
             'insurance_amount' => $request->insurance_amount,
@@ -306,132 +306,131 @@ class PackageController extends BaseController
             return $this->sendError('Validation Failed!', $validator->errors());
         }
 
-        // try {
-        //     DB::beginTransaction();
+        try {
+            DB::beginTransaction();
 
-        $ship_from_country = Country::where('iso', $request->ship_from['country'])->first();
-        $ship_from_data = [
-            'user_id' => 3,
-            'type' => 'ship_from',
-            'company_name' => $request->ship_from['company'],
-            'fullname' => $request->ship_from['name'],
-            'country_id' => $ship_from_country->id,
-            'country_code' => $request->ship_from['country'],
-            'state' => $request->ship_from['state'],
-            'city' => $request->ship_from['city'],
-            'zip_code' => $request->ship_from['zip'],
-            'phone' => $request->ship_from['phone'],
-            'email' => $request->ship_from['email'],
-            'address' => $request->ship_from['address1'],
-            'address_2' => $request->ship_from['address2'],
-            'address_3' =>  $request->ship_from['address3'],
-            'is_residential' => $request->ship_from['residential'],
-            'tax_no' => $request->ship_from['tax_no'],
-            'signature_type_id' => $request->ship_from['signature_type_id']
-        ];
-        $ship_from_address = Address::create($ship_from_data);
-
-        $ship_to_country = Country::where('iso', $request->ship_to['country'])->first();
-        $ship_to_data = [
-            'user_id' => 3,
-            'type' => 'ship_to',
-            'company_name' => $request->ship_to['company'],
-            'fullname' => $request->ship_to['name'],
-            'country_id' => $ship_to_country->id,
-            'country_code' => $request->ship_to['country'],
-            'state' => $request->ship_to['state'],
-            'city' => $request->ship_to['city'],
-            'zip_code' => $request->ship_to['zip'],
-            'phone' => $request->ship_to['phone'],
-            'email' => $request->ship_to['email'],
-            'address' => $request->ship_to['address1'],
-            'address_2' => $request->ship_to['address2'],
-            'address_3' =>  $request->ship_to['address3'],
-            'is_residential' => $request->ship_to['residential'],
-            'tax_no' => $request->ship_to['tax_no'],
-            'signature_type_id' => $request->ship_to['signature_type_id'],
-        ];
-        $ship_to_address = Address::create($ship_to_data);
-
-        $package_data = [
-            'customer_id' => 3,
-            'status' => 'open',
-            'pkg_type' => 'single',
-            'warehouse_id' => 1,
-            'carrier_code' => $request->carrier_code,
-            'service_code' => $request->service_code,
-            'package_type_code' => "YOUR_PACKAGING",
-            'service_label' => "TEST",
-            'markup_fee' => 0,
-            'shipping_charges' => 0,
-            'grand_total' => 0,
-            'currency' => "USD",
-            'pkg_dim_status' => "done",
-            'project_id' => 2,
-            'cart' => true,
-            'ship_to' => NULL,
-            // 'insurance_amount' => $request->insurance_amount,
-            'ship_from' => $ship_from_address->id,
-            'ship_to' => $ship_to_address->id,
-        ];
-
-        $package = Package::create($package_data);
-
-        if ($ship_from_country->id == $ship_to_country->id) {
-            $package->update(['pkg_ship_type' => 'domestic']);
-        } else {
-            $package->update(['pkg_ship_type' => 'international']);
-        }
-
-        PackageBox::where('package_id', $package->id)->delete();
-        foreach ($request->dimensions as $key => $dimension) {
-            PackageBox::create([
-                'package_id' => $package->id,
-                'pkg_type' => $package->pkg_type,
-                'weight_unit' => 'lb',
-                'dim_unit' => 'in',
-                'weight' => $dimension['weight'],
-                'length' => $dimension['length'],
-                'width' => $dimension['width'],
-                'height' => $dimension['height'],
-            ]);
-        }
-
-        OrderItem::where('package_id', $package->id)->delete();
-        foreach ($request->items as $key => $item) {
-            $origin_country = Country::where('iso', $item['origin_country'])->first();
-            $order_item = new OrderItem();
-            $order_item->package_id = $package->id;
-            $order_item->origin_country = $origin_country->id;
-            $order_item->hs_code = isset($item['hs_code']) ? $item['hs_code'] : NULL;
-            $order_item->description = $item['description'];
-            $order_item->quantity = $item['quantity'];
-            $order_item->unit_price = $item['unit_price'];
-            $order_item->batteries = isset($item['batteries']) ? $item['batteries'] : NULL;
-            $order_item->save();
-        }
-
-        if ($package->carrier_code == 'fedex') {
-            $data['fedex_label'] = generateLabelFedex($package->id);
-            $data['fedex_label'] = [
-                'label_url' => config('app.url') . '/' . generateLabelFedex($package->id)['label_url'],
+            $ship_from_country = Country::where('iso', $request->ship_from['country'])->first();
+            $ship_from_data = [
+                'user_id' => 3,
+                'type' => 'ship_from',
+                'company_name' => $request->ship_from['company'],
+                'fullname' => $request->ship_from['name'],
+                'country_id' => $ship_from_country->id,
+                'country_code' => $request->ship_from['country'],
+                'state' => $request->ship_from['state'],
+                'city' => $request->ship_from['city'],
+                'zip_code' => $request->ship_from['zip'],
+                'phone' => $request->ship_from['phone'],
+                'email' => $request->ship_from['email'],
+                'address' => $request->ship_from['address1'],
+                'address_2' => $request->ship_from['address2'],
+                'address_3' =>  $request->ship_from['address3'],
+                'is_residential' => $request->ship_from['residential'],
+                'tax_no' => $request->ship_from['tax_no'],
+                'signature_type_id' => $request->ship_from['signature_type_id']
             ];
-        }
+            $ship_from_address = Address::create($ship_from_data);
 
-        if ($package->carrier_code == 'ups') {
-            $data['ups_label'] = generateLabelUps($package->id);
-        }
+            $ship_to_country = Country::where('iso', $request->ship_to['country'])->first();
+            $ship_to_data = [
+                'user_id' => 3,
+                'type' => 'ship_to',
+                'company_name' => $request->ship_to['company'],
+                'fullname' => $request->ship_to['name'],
+                'country_id' => $ship_to_country->id,
+                'country_code' => $request->ship_to['country'],
+                'state' => $request->ship_to['state'],
+                'city' => $request->ship_to['city'],
+                'zip_code' => $request->ship_to['zip'],
+                'phone' => $request->ship_to['phone'],
+                'email' => $request->ship_to['email'],
+                'address' => $request->ship_to['address1'],
+                'address_2' => $request->ship_to['address2'],
+                'address_3' =>  $request->ship_to['address3'],
+                'is_residential' => $request->ship_to['residential'],
+                'tax_no' => $request->ship_to['tax_no'],
+                'signature_type_id' => $request->ship_to['signature_type_id'],
+            ];
+            $ship_to_address = Address::create($ship_to_data);
 
-        if ($package->carrier_code == 'dhl') {
-            $data['dhl_label'] = generateLabelDhl($package->id);
-        }
+            $package_data = [
+                'customer_id' => 3,
+                'status' => 'open',
+                'pkg_type' => 'single',
+                'warehouse_id' => 1,
+                'carrier_code' => $request->carrier_code,
+                'service_code' => $request->service_code,
+                'package_type_code' => "YOUR_PACKAGING",
+                'service_label' => "TEST",
+                'markup_fee' => 0,
+                'shipping_charges' => 0,
+                'grand_total' => 0,
+                'currency' => "USD",
+                'pkg_dim_status' => "done",
+                'project_id' => 2,
+                'cart' => true,
+                'ship_to' => NULL,
+                // 'insurance_amount' => $request->insurance_amount,
+                'ship_from' => $ship_from_address->id,
+                'ship_to' => $ship_to_address->id,
+            ];
 
-        // DB::commit();
-        return $this->sendResponse($data, 'SUCCESS');
-        // } catch (\Throwable $th) {
-        //     DB::rollBack();
-        //     dd($th);
-        //     return $this->error($th->getMessage());
-        // }
+            $package = Package::create($package_data);
+
+            if ($ship_from_country->id == $ship_to_country->id) {
+                $package->update(['pkg_ship_type' => 'domestic']);
+            } else {
+                $package->update(['pkg_ship_type' => 'international']);
+            }
+
+            PackageBox::where('package_id', $package->id)->delete();
+            foreach ($request->dimensions as $key => $dimension) {
+                PackageBox::create([
+                    'package_id' => $package->id,
+                    'pkg_type' => $package->pkg_type,
+                    'weight_unit' => 'lb',
+                    'dim_unit' => 'in',
+                    'weight' => $dimension['weight'],
+                    'length' => $dimension['length'],
+                    'width' => $dimension['width'],
+                    'height' => $dimension['height'],
+                ]);
+            }
+
+            OrderItem::where('package_id', $package->id)->delete();
+            foreach ($request->items as $key => $item) {
+                $origin_country = Country::where('iso', $item['origin_country'])->first();
+                $order_item = new OrderItem();
+                $order_item->package_id = $package->id;
+                $order_item->origin_country = $origin_country->id;
+                $order_item->hs_code = isset($item['hs_code']) ? $item['hs_code'] : NULL;
+                $order_item->description = $item['description'];
+                $order_item->quantity = $item['quantity'];
+                $order_item->unit_price = $item['unit_price'];
+                $order_item->batteries = isset($item['batteries']) ? $item['batteries'] : NULL;
+                $order_item->save();
+            }
+
+            if ($package->carrier_code == 'fedex') {
+                $data['fedex_label'] = generateLabelFedex($package->id);
+                $data['fedex_label'] = [
+                    'label_url' => config('app.url') . '/' . generateLabelFedex($package->id)['label_url'],
+                ];
+            }
+
+            if ($package->carrier_code == 'ups') {
+                $data['ups_label'] = generateLabelUps($package->id);
+            }
+
+            if ($package->carrier_code == 'dhl') {
+                $data['dhl_label'] = generateLabelDhl($package->id);
+            }
+
+            DB::commit();
+            return $this->sendResponse($data, 'SUCCESS');
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return $this->error($th->getMessage());
+        }
     }
 }
