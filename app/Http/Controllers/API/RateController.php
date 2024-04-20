@@ -7,6 +7,7 @@ use App\Models\SiteSetting;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
@@ -77,9 +78,9 @@ class RateController extends BaseController
                 'dimensions' => $request->dimensions,
             ];
 
-            $fedex_rates = $this->fedex($data);
-            $dhl_rates = $this->dhl($data);
-            $ups_rates = $this->ups($data);
+            $fedex_rates = $this->fedex($data, 1);
+            $dhl_rates = $this->dhl($data, 1);
+            $ups_rates = $this->ups($data, 1);
 
             $rates = array_merge($fedex_rates, $dhl_rates, $ups_rates);
 
@@ -97,7 +98,84 @@ class RateController extends BaseController
         }
     }
 
-    public function fedex($data)
+    public function index2(Request $request)
+    {
+        $validator = Validator::make(
+            $request->all(),
+            [
+                'ship_from_country_code' => 'required',
+                'ship_to_country_code' => 'required',
+                'insurance_amount' => 'required',
+                'ship_from_postal_code' => 'required',
+                'ship_to_postal_code' => 'required',
+                'is_residential' => 'required',
+                'dimensions' => 'required|array',
+                'dimensions.*.weight' => 'required',
+                'dimensions.*.length' => 'required',
+                'dimensions.*.width' => 'required',
+                'dimensions.*.height' => 'required',
+            ],
+            [
+                'dimensions.*.weight.required' => 'The weight field is required.',
+                'dimensions.*.length.required' => 'The length field is required.',
+                'dimensions.*.width.required' => 'The width field is required.',
+                'dimensions.*.height.required' => 'The height field is required.',
+                'ship_from_postal_code.required' => 'The field is required.',
+                'ship_to_postal_code.required' => 'The field is required.',
+            ]
+        );
+
+        if ($validator->fails()) {
+            return $this->sendError('validation error', $validator->errors());
+        }
+
+        try {
+
+            $ship_from_postal_code = $request->ship_from_postal_code;
+            $ship_to_postal_code = $request->ship_to_postal_code;
+
+            $weight_units = 'LB';
+            $dimension_units = 'IN';
+            $measurement_unit = 'imperial';
+
+            $data = [
+                'ship_from_postal_code' => $ship_from_postal_code,
+                'ship_from_country_code' => $request->ship_from_country_code,
+                'insurance_amount' => $request->insurance_amount,
+                'ship_from_city' => "Anaheim",
+                'ship_from_state' => "CA",
+                'ship_to_postal_code' => $ship_to_postal_code,
+                'ship_to_country_code' => $request->ship_to_country_code,
+                'ship_to_city' => $request->ship_to_city,
+                'weight_units' => $weight_units,
+                'dimension_units' => $dimension_units,
+                'measurement_unit' => $measurement_unit,
+                'customs_value' => $request->customs_value,
+                'residential' => $request->is_residential,
+                'dimensions' => $request->dimensions,
+            ];
+
+            $fedex_rates = $this->fedex($data, 2);
+            $dhl_rates = $this->dhl($data, 2);
+            $ups_rates = $this->ups($data, 2);
+
+            $rates = array_merge($fedex_rates, $dhl_rates, $ups_rates);
+
+            return response()->json([
+                'status' => true,
+                'message' => 'success',
+                'data' => $rates,
+            ]);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'message' => $th->getMessage(),
+                'data' => [],
+            ]);
+        }
+    }
+
+    public function fedex($data, $project_id = null)
     {
         $client = new Client();
 
@@ -168,14 +246,10 @@ class RateController extends BaseController
 
         $response = $request->getBody()->getContents();
         $response = json_decode($response);
-
-        // $markup = SiteSetting::getByName('markup');
-
         $rates = [];
         foreach ($response->output->rateReplyDetails as $key => $fedex) {
             $price = $fedex->ratedShipmentDetails[0]->totalNetFedExCharge;
-            // $markup_amount = $fedex->ratedShipmentDetails[0]->totalNetFedExCharge * ((int)$markup / 100);
-            $markup = shipping_service_markup($fedex->serviceType);
+            $markup = shipping_service_markup($fedex->serviceType, $project_id);
             $markup_amount = $price * ((float)$markup / 100);
 
             $total = $price + $markup_amount;
@@ -195,7 +269,7 @@ class RateController extends BaseController
         return $rates;
     }
 
-    public function dhl($data)
+    public function dhl($data, $project_id = null)
     {
         try {
             $packages = [];
@@ -277,9 +351,7 @@ class RateController extends BaseController
             $response = $request->getBody()->getContents();
             $response = json_decode($response);
 
-            // $markup = SiteSetting::getByName('markup');
-            $markup = shipping_service_markup('EXPRESS_WORLDWIDE');
-
+            $markup = shipping_service_markup('EXPRESS_WORLDWIDE', $project_id);
             $price = $response->products[0]->totalPrice[0]->price;
             $markup_amount = $response->products[0]->totalPrice[0]->price * ((int)$markup / 100);
             $total = $price + $markup_amount;
@@ -302,7 +374,7 @@ class RateController extends BaseController
         }
     }
 
-    public function ups($data)
+    public function ups($data, $project_id = null)
     {
         try {
 
@@ -440,8 +512,7 @@ class RateController extends BaseController
             $rates = [];
             foreach ($rating_response->RateResponse->RatedShipment as $key => $ups) {
                 $price = $ups->NegotiatedRateCharges->TotalCharge->MonetaryValue;
-                // $markup_amount = $price * ((int)$markup / 100);
-                $markup = shipping_service_markup($ups->Service->Code);
+                $markup = shipping_service_markup($ups->Service->Code, $project_id);
                 $markup_amount = $price * ((int)$markup / 100);
                 $total = $price + $markup_amount;
                 $total = number_format((float)$total, 2, '.', '');

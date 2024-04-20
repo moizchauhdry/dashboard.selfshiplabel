@@ -156,7 +156,7 @@ class ShippingRatesController extends Controller
         foreach ($response->output->rateReplyDetails as $key => $fedex) {
             $price = $fedex->ratedShipmentDetails[0]->totalNetFedExCharge;
             // $markup_amount = $fedex->ratedShipmentDetails[0]->totalNetFedExCharge * ((int)$markup / 100);
-            $markup = shipping_service_markup($fedex->serviceType);
+            $markup = shipping_service_markup($fedex->serviceType,1);
             $markup_amount = $price * ((float)$markup / 100);
 
             $total = $price + $markup_amount;
@@ -259,7 +259,7 @@ class ShippingRatesController extends Controller
             $response = json_decode($response);
 
             // $markup = SiteSetting::getByName('markup');
-            $markup = shipping_service_markup('EXPRESS_WORLDWIDE');
+            $markup = shipping_service_markup('EXPRESS_WORLDWIDE',1);
 
             $price = $response->products[0]->totalPrice[0]->price;
             $markup_amount = $response->products[0]->totalPrice[0]->price * ((int)$markup / 100);
@@ -423,7 +423,7 @@ class ShippingRatesController extends Controller
             foreach ($rating_response->RateResponse->RatedShipment as $key => $ups) {
                 $price = $ups->NegotiatedRateCharges->TotalCharge->MonetaryValue;
 
-                $markup = shipping_service_markup($ups->Service->Code);
+                $markup = shipping_service_markup($ups->Service->Code,1);
                 $markup_amount = $price * ((int)$markup / 100);
                 $total = $price + $markup_amount;
                 $total = number_format((float)$total, 2, '.', '');
@@ -573,7 +573,7 @@ class ShippingRatesController extends Controller
             $rates = [];
             foreach ($response->quotes as $key => $usps) {
                 $price = $usps->totalAmount;
-                $markup = shipping_service_markup($usps->serviceCode);
+                $markup = shipping_service_markup($usps->serviceCode,1);
                 $markup_amount = $price * ((float)$markup / 100);
 
                 $total = $price + $markup_amount;

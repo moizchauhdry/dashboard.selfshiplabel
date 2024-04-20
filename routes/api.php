@@ -38,3 +38,10 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::post('package/payment', [SquarePaymentController::class, 'payment']);
     Route::post('package/square-payment', [SquarePaymentController::class, 'index']);
 });
+
+
+// Project ID: 2
+Route::middleware('auth.basic')->group(function () {
+    Route::post('rates/v2', [RateController::class, 'index2']);
+    Route::post('package/v2', [PackageController::class, 'createPackageForExternal']);
+});

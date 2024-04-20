@@ -53,10 +53,10 @@ function calulate_storage($package)
     return true;
 }
 
-function shipping_service_markup($type)
+function shipping_service_markup($type, $project_id)
 {
     $percentage = 0;
-    $service = ShippingService::where('service_code', $type)->first();
+    $service = ShippingService::where('project_id', $project_id)->where('service_code', $type)->first();
     if ($service) {
         $percentage = $service->markup_percentage;
     }
@@ -317,7 +317,7 @@ function generateLabelFedex($id)
     // Label Shipping Charges
     $final_shipping_charges = $response->output->transactionShipments[0]->completedShipmentDetail->shipmentRating->shipmentRateDetails[0]->totalNetCharge;
     $service_type = $response->output->transactionShipments[0]->serviceType;
-    $markup = shipping_service_markup($service_type);
+    $markup = shipping_service_markup($service_type,1);
     $markup_amount = $final_shipping_charges * ((float)$markup / 100);
     $total_shipping_charges = $final_shipping_charges + $markup_amount;
     $total_shipping_charges = number_format((float)$total_shipping_charges, 2, '.', '');
@@ -340,6 +340,8 @@ function generateLabelFedex($id)
         Storage::disk('labels')->delete($box->package_id . '-' . $count . '.pdf');
         $count++;
     }
+
+    return $package;
 }
 
 function generateLabelUps($id)
