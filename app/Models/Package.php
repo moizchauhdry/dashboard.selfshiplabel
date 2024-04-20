@@ -120,7 +120,7 @@ class Package extends Model
 
     public function scopeCart($query)
     {
-        return $query->where('project_id', 2)->where('customer_id', auth()->id())->orderBy('id', 'desc')->where('cart', 1);
+        return $query->where('project_id', 1)->where('customer_id', auth()->id())->orderBy('id', 'desc')->where('cart', 1);
     }
 
     public function payments()

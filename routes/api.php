@@ -43,5 +43,5 @@ Route::group(['middleware' => 'auth:api'], function () {
 Route::middleware('auth.basic')->group(function () {
     Route::post('v2/rates', [RateController::class, 'index2']);
     Route::post('v2/package', [PackageController::class, 'createPackageForExternal']);
-    Route::post('/v2/data', [DataController::class, 'index2']);
+    Route::post('v2/data', [DataController::class, 'index2']);
 });
