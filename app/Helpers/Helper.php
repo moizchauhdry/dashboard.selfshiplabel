@@ -566,6 +566,8 @@ function generateLabelUps($id)
         Storage::disk('labels')->delete($box->package_id . '-' . $count . '.png');
         $count++;
     }
+
+    return $package;
 }
 
 function generateLabelDhl($id)
@@ -792,6 +794,8 @@ function generateLabelDhl($id)
         Storage::disk('labels')->delete($box->package_id . '-' . $count . '.pdf');
         $count++;
     }
+
+    return $package;
 }
 
 function paymentInvoiceForLabel($id)

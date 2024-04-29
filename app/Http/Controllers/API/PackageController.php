@@ -412,18 +412,30 @@ class PackageController extends BaseController
             }
 
             if ($package->carrier_code == 'fedex') {
-                $data['fedex_label'] = generateLabelFedex($package->id);
+                $fedex = generateLabelFedex($package->id);
                 $data['fedex_label'] = [
-                    'label_url' => config('app.url') . '/' . generateLabelFedex($package->id)['label_url'],
+                    'label_url' => config('app.url') . '/' . $fedex['label_url'],
+                    'package_id' => $fedex['id'],
+                    'grand_total' => $fedex['grand_total']
                 ];
             }
 
             if ($package->carrier_code == 'ups') {
-                $data['ups_label'] = generateLabelUps($package->id);
+                $ups = generateLabelUps($package->id);
+                $data['ups_label'] = [
+                    'label_url' => config('app.url') . '/' . $ups['label_url'],
+                    'package_id' => $ups['id'],
+                    'grand_total' => $ups['grand_total']
+                ];
             }
 
             if ($package->carrier_code == 'dhl') {
-                $data['dhl_label'] = generateLabelDhl($package->id);
+                $dhl = generateLabelDhl($package->id);
+                $data['dhl_label'] = [
+                    'label_url' => config('app.url') . '/' . $dhl['label_url'],
+                    'package_id' => $dhl['id'],
+                    'grand_total' => $dhl['grand_total']
+                ];
             }
 
             DB::commit();
