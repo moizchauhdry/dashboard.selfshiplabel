@@ -250,6 +250,7 @@ class PackageController extends BaseController
             'ship_date' => 'required',
             'carrier_code' => 'required',
             'service_code' => 'required',
+            'itn' => 'nullable',
 
             'items' => 'required|array',
             'items.*.description' => 'required',
@@ -258,7 +259,6 @@ class PackageController extends BaseController
             'items.*.origin_country' => 'required',
             // 'items.*.batteries' => 'nullable',
             'items.*.hs_code' => 'nullable',
-            // 'itn' => [Rule::requiredIf($request->shipping_total > 2500)],
 
             'dimensions' => 'required|array',
             'dimensions.*.weight' => 'required',
@@ -371,6 +371,7 @@ class PackageController extends BaseController
                 'cart' => true,
                 'ship_to' => NULL,
                 // 'insurance_amount' => $request->insurance_amount,
+                'itn' => $request->itn,
                 'ship_from' => $ship_from_address->id,
                 'ship_to' => $ship_to_address->id,
             ];
