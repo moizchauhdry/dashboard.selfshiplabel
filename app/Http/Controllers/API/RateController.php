@@ -131,28 +131,27 @@ class RateController extends BaseController
 
         try {
 
-            $ship_from_postal_code = $request->ship_from_postal_code;
-            $ship_to_postal_code = $request->ship_to_postal_code;
-
             $weight_units = 'LB';
             $dimension_units = 'IN';
             $measurement_unit = 'imperial';
 
             $data = [
-                'ship_from_postal_code' => $ship_from_postal_code,
+                'ship_from_postal_code' => $request->ship_from_postal_code,
                 'ship_from_country_code' => $request->ship_from_country_code,
-                'insurance_amount' => $request->insurance_amount,
-                'ship_from_city' => "Anaheim",
-                'ship_from_state' => "CA",
-                'ship_to_postal_code' => $ship_to_postal_code,
+                'ship_from_city' => $request->ship_from_city,
+                'ship_from_state' => $request->ship_from_state,
+                
+                'ship_to_postal_code' => $request->ship_to_postal_code,
                 'ship_to_country_code' => $request->ship_to_country_code,
                 'ship_to_city' => $request->ship_to_city,
+                
                 'weight_units' => $weight_units,
                 'dimension_units' => $dimension_units,
                 'measurement_unit' => $measurement_unit,
+                'dimensions' => $request->dimensions,
                 'customs_value' => $request->customs_value,
                 'residential' => $request->is_residential,
-                'dimensions' => $request->dimensions,
+                'insurance_amount' => $request->insurance_amount,
             ];
 
             $fedex_rates = $this->fedex($data, 2);
