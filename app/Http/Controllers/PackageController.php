@@ -971,15 +971,15 @@ class PackageController extends Controller
             $package = Package::where('id', $request->package_id)->first();
 
             if ($package->carrier_code == 'fedex') {
-                generateLabelFedex($package->id);
+                generateLabelFedex($package->id, 1);
             }
 
             if ($package->carrier_code == 'ups') {
-                generateLabelUps($package->id);
+                generateLabelUps($package->id, 1);
             }
 
             if ($package->carrier_code == 'dhl') {
-                generateLabelDhl($package->id);
+                generateLabelDhl($package->id, 1);
             }
 
             return redirect()->back()->with('success', 'The label has been generated successfully.');

@@ -50,15 +50,15 @@ class SquarePaymentController extends Controller
 
 
                 if ($package->carrier_code == 'fedex') {
-                    $data['fedex_label'] = generateLabelFedex($package->id);
+                    $data['fedex_label'] = generateLabelFedex($package->id, 1);
                 }
 
                 if ($package->carrier_code == 'ups') {
-                    $data['ups_label'] = generateLabelUps($package->id);
+                    $data['ups_label'] = generateLabelUps($package->id, 1);
                 }
 
                 if ($package->carrier_code == 'dhl') {
-                    $data['dhl_label'] = generateLabelDhl($package->id);
+                    $data['dhl_label'] = generateLabelDhl($package->id, 1);
                 }
 
                 return $this->sendResponse($data, 'success');

@@ -412,7 +412,7 @@ class PackageController extends BaseController
             }
 
             if ($package->carrier_code == 'fedex') {
-                $fedex = generateLabelFedex($package->id);
+                $fedex = generateLabelFedex($package->id, 2); // Package ID, Project ID
                 $data['fedex_label'] = [
                     'label_url' => config('app.url') . '/' . $fedex['label_url'],
                     'package_id' => $fedex['id'],
@@ -421,7 +421,7 @@ class PackageController extends BaseController
             }
 
             if ($package->carrier_code == 'ups') {
-                $ups = generateLabelUps($package->id);
+                $ups = generateLabelUps($package->id, 2);  // Package ID, Project ID
                 $data['ups_label'] = [
                     'label_url' => config('app.url') . '/' . $ups['label_url'],
                     'package_id' => $ups['id'],
@@ -430,7 +430,7 @@ class PackageController extends BaseController
             }
 
             if ($package->carrier_code == 'dhl') {
-                $dhl = generateLabelDhl($package->id);
+                $dhl = generateLabelDhl($package->id, 2);  // Package ID, Project ID
                 $data['dhl_label'] = [
                     'label_url' => config('app.url') . '/' . $dhl['label_url'],
                     'package_id' => $dhl['id'],

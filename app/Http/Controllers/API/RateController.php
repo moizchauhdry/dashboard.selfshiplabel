@@ -174,7 +174,7 @@ class RateController extends BaseController
         }
     }
 
-    public function fedex($data, $project_id = null)
+    public function fedex($data, $project_id)
     {
         $client = new Client();
 
@@ -268,7 +268,7 @@ class RateController extends BaseController
         return $rates;
     }
 
-    public function dhl($data, $project_id = null)
+    public function dhl($data, $project_id)
     {
         try {
             $packages = [];
@@ -373,7 +373,7 @@ class RateController extends BaseController
         }
     }
 
-    public function ups($data, $project_id = null)
+    public function ups($data, $project_id)
     {
         try {
 

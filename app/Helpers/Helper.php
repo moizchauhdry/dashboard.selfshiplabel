@@ -91,7 +91,7 @@ function commercialInvoiceForLabel($id)
     return response()->download('storage/commercial-invoices/' . $filename);
 }
 
-function generateLabelFedex($id)
+function generateLabelFedex($id, $project_id)
 {
     $package = Package::where('id', $id)->first();
     $ship_from = Address::where('id', $package->ship_from)->first();
@@ -317,7 +317,7 @@ function generateLabelFedex($id)
     // Label Shipping Charges
     $final_shipping_charges = $response->output->transactionShipments[0]->completedShipmentDetail->shipmentRating->shipmentRateDetails[0]->totalNetCharge;
     $service_type = $response->output->transactionShipments[0]->serviceType;
-    $markup = shipping_service_markup($service_type,1);
+    $markup = shipping_service_markup($service_type, $project_id);
     $markup_amount = $final_shipping_charges * ((float)$markup / 100);
     $total_shipping_charges = $final_shipping_charges + $markup_amount;
     $total_shipping_charges = number_format((float)$total_shipping_charges, 2, '.', '');
@@ -344,7 +344,7 @@ function generateLabelFedex($id)
     return $package;
 }
 
-function generateLabelUps($id)
+function generateLabelUps($id, $project_id)
 {
     $package = Package::where('id', $id)->first();
     $ship_from = Address::where('id', $package->ship_from)->first();
@@ -545,16 +545,26 @@ function generateLabelUps($id)
     $oMerger->save($label_url);
 
     // Master Tracking Number
+    $master_tracking_no = NULL;
     // $master_tracking_no = $response->ShipmentResponse->ShipmentResults->PackageResults->TrackingNumber;
     // $master_tracking_no = $response->ShipmentResponse;
+
+    // Label Shipping Charges
+    $final_shipping_charges = $response->ShipmentResponse->ShipmentResults->ShipmentCharges->TotalCharges->MonetaryValue;
+    $service_type = $package->service_code;
+    $markup = shipping_service_markup($service_type, $project_id);
+    $markup_amount = $final_shipping_charges * ((float)$markup / 100);
+    $total_shipping_charges = $final_shipping_charges + $markup_amount;
+    $total_shipping_charges = number_format((float)$total_shipping_charges, 2, '.', '');
 
     $package->update([
         'label_generated_at' => Carbon::now(),
         'label_generated_by' => auth()->id(),
         'label_url' => $label_url,
-        'tracking_number_out' => NULL,
-        'shipping_charges' => $package->shipping_charges - $package->markup_fee,
-        'grand_total' => $package->shipping_charges,
+        'tracking_number_out' => $master_tracking_no,
+        'shipping_charges' => $final_shipping_charges,
+        'markup_fee' => $markup_amount,
+        'grand_total' => $total_shipping_charges,
     ]);
 
 
@@ -570,7 +580,7 @@ function generateLabelUps($id)
     return $package;
 }
 
-function generateLabelDhl($id)
+function generateLabelDhl($id, $project_id)
 {
     $package = Package::where('id', $id)->first();
     $ship_from = Address::where('id', $package->ship_from)->first();
