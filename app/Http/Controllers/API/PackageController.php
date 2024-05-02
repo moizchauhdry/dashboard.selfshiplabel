@@ -251,6 +251,7 @@ class PackageController extends BaseController
             'carrier_code' => 'required',
             'service_code' => 'required',
             'itn' => 'nullable',
+            'insurance_amount' => 'nullable',
 
             'items' => 'required|array',
             'items.*.description' => 'required',
@@ -370,7 +371,7 @@ class PackageController extends BaseController
                 'project_id' => 2,
                 'cart' => true,
                 'ship_to' => NULL,
-                // 'insurance_amount' => $request->insurance_amount,
+                'insurance_amount' => $request->insurance_amount,
                 'itn' => $request->itn,
                 'ship_from' => $ship_from_address->id,
                 'ship_to' => $ship_to_address->id,
@@ -410,6 +411,16 @@ class PackageController extends BaseController
                 $order_item->unit_price = $item['unit_price'];
                 $order_item->batteries = isset($item['batteries']) ? $item['batteries'] : NULL;
                 $order_item->save();
+            }
+
+            $custom_items = OrderItem::where('package_id', $package->id)->get();
+            if ($custom_items) {
+                $custom_total = $custom_items->sum('unit_price');
+                if ($custom_total > 0) {
+                    $package->update([
+                        'shipping_total' => $custom_total
+                    ]);
+                }
             }
 
             if ($package->carrier_code == 'fedex') {
