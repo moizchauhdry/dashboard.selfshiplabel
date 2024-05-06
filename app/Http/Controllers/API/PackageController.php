@@ -465,6 +465,16 @@ class PackageController extends BaseController
                 ];
             }
 
+            if ($package->carrier_code == 'usps') {
+                $usps = generateLabelUsps($package->id, 2);  // Package ID, Project ID
+                dd($usps);
+                // $data['usps_label'] = [
+                //     'label_url' => config('app.url') . '/' . $usps['label_url'],
+                //     'package_id' => $usps['id'],
+                //     'grand_total' => $usps['grand_total']
+                // ];
+            }
+
             DB::commit();
             return $this->sendResponse($data, 'SUCCESS');
         } catch (\Throwable $th) {
@@ -472,4 +482,26 @@ class PackageController extends BaseController
             return $this->error($th->getMessage());
         }
     }
+
+    public function processLabel(Request $request) {
+        dd($request->all());
+        // Get label metadata and label image from the request
+        $labelMetadata = json_decode($request->input('labelMetadata'), true);
+        $labelImage = $request->file('labelImage');
+    
+        // Extract relevant information from label metadata
+        $trackingNumber = $labelMetadata['trackingNumber'];
+        $commitmentDate = $labelMetadata['commitment']['scheduleDeliveryDate'];
+    
+        // Save the label image to a folder in your Laravel app
+        // You may need to adjust the path and file name according to your requirements
+        $labelImagePath = 'path/to/save/' . $trackingNumber . '_' . $commitmentDate . '.pdf';
+        $labelImage->move(public_path('labels'), $labelImagePath);
+    
+        // Process the label image further if needed
+        // For example, you can generate a download link or display it in your application
+    
+        return response()->json(['message' => 'Label image processed successfully']);
+    }
 }
+

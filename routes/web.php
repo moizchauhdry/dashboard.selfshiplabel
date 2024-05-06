@@ -156,3 +156,5 @@ Route::get('stripe-success', [HomeController::class, 'stripeSuccess']);
 Route::get('square-payment/{id}', [SquarePaymentController::class, 'index'])->name('package.square-payment');
 Route::post('square-payment-success', [SquarePaymentController::class, 'squarePaymentSuccess'])->name('package.square-payment.success');
 Route::get('square-payment-complete', [SquarePaymentController::class, 'complete'])->name('square.complete');
+
+Route::get('decode-pdf', [HomeController::class, 'decodePdf']);

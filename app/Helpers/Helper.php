@@ -829,3 +829,151 @@ function paymentInvoiceForLabel($id)
     Storage::disk('payment-invoices')->put($filename, $pdf->output());
     return response()->download('storage/payment-invoices/' . $filename);
 }
+
+function generateLabelUsps($id, $project_id)
+{
+    $client_id = "mTtS4LMHtz1zM3TeKP01SNyuDvpWy3zu";
+    $client_secret = "22UYwV1lmgMQY06l";
+
+    // Authorization API
+    $token_url = "https://api-cat.usps.com/oauth2/v3/token";
+    $params = [
+        "client_id" => $client_id,
+        "client_secret" => $client_secret,
+        "grant_type" => "client_credentials"
+    ];
+
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $token_url);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($params));
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    $response = curl_exec($ch);
+    curl_close($ch);
+
+    $response = json_decode($response, true);
+    $access_token = $response['access_token'];
+
+    // Payment API
+    $token = $access_token;
+    $url = "https://api-cat.usps.com/payments/v3/payment-authorization";
+
+    $headers = array(
+        "Authorization: Bearer $token",
+        "Content-Type: application/json"
+    );
+
+    $data = '{
+        "roles": [
+            {
+                "roleName": "PAYER",
+                "CRID": "94879959",
+                "MID": "901097701",
+                "manifestMID": "901097699",
+                "accountType": "EPS",
+                "accountNumber": "1000005549",
+                "permitNumber": "",
+                "permitZipCode": ""
+            },
+            {
+                "roleName": "LABEL_OWNER",
+                "CRID": "94879959",
+                "MID": "901097701",
+                "manifestMID": "901097699",
+                "accountType": "EPS",
+                "accountNumber": "1000005549",
+                "permitNumber": "",
+                "permitZipCode": ""
+            }
+        ]
+    }';
+
+    $ch = curl_init($url);
+    curl_setopt($ch, CURLOPT_POST, 1);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+    $response = curl_exec($ch);
+    curl_close($ch);
+
+    $response = json_decode($response, true);
+    $payment_token = $response['paymentAuthorizationToken'];
+
+    // Domestic Label API
+    $headers = [
+        'X-locale' => 'en_US',
+        'Content-Type' => 'application/json',
+        'Authorization' => 'Bearer ' . $access_token,
+        'X-Payment-Authorization-Token' => $payment_token,
+    ];
+
+    $body = [
+        "imageInfo" => [
+            "imageType" => "PDF",
+            "receiptOption" => "NONE",
+            "suppressPostage" => true,
+            "suppressMailDate" => true
+        ],
+        "toAddress" => [
+            "firstName" => "Leroy",
+            "lastName" => "Brown",
+            "streetAddress" => "1100 Wyoming",
+            "city" => "St. Louis",
+            "state" => "MO",
+            "ZIPCode" => "63118",
+            "ignoreBadAddress" => true
+        ],
+        "fromAddress" => [
+            "firstName" => "John",
+            "lastName" => "Smith",
+            "streetAddress" => "4120 Bingham",
+            "secondaryAddress" => "Apt 1",
+            "city" => "St. Louis",
+            "state" => "MO",
+            "ZIPCode" => "63116",
+            "ignoreBadAddress" => true
+        ],
+        "packageDescription" => [
+            "mailClass" => "PRIORITY_MAIL",
+            "rateIndicator" => "SP",
+            "weightUOM" => "lb",
+            "weight" => 20,
+            "dimensionsUOM" => "in",
+            "length" => 5.0,
+            "width" => 5.0,
+            "height" => 5.0,
+            "processingCategory" => "NON_MACHINABLE",
+            "mailingDate" => "2024-05-06",
+            "extraServices" => [
+                920
+            ],
+            "packageOptions" => [
+                "packageValue" => 100
+            ],
+            "destinationEntryFacilityType" => "NONE",
+            "destinationEntryFacilityAddress" => [
+                "streetAddress" => "1100 Wyoming",
+                "city" => "St. Louis",
+                "state" => "MO",
+                "ZIPCode" => "63116"
+            ]
+        ]
+    ];
+
+    $client = new Client();
+    $request = $client->post('https://api-cat.usps.com/labels/v3/label', [
+        'headers' => $headers,
+        'body' => json_encode($body)
+    ]);
+
+    $response = $request->getBody()->getContents();
+
+    $parts = explode("labelImage", $response);
+    $code = explode("\r\n", $parts[2]);
+    $code[2];
+
+    $filename = 'test.pdf';
+    Storage::disk('usps-labels')->put($filename, base64_decode($code[2]));
+
+}

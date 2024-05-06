@@ -95,6 +95,13 @@ return [
             'visibility' => 'public',
         ],
 
+        'usps-labels' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public/usps-labels'),
+            'url' => env('APP_URL') . '/storage/usps-labels',
+            'visibility' => 'public',
+        ],
+
     ],
 
     /*
