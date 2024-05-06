@@ -246,26 +246,22 @@ class PackageController extends BaseController
 
     public function createPackageForExternal(Request $request)
     {
+        $ship_from_country = Country::where('iso', $request->ship_from['country'])->first();
+        if (!$ship_from_country) {
+            return $this->error('The ship from country code is invalid');
+        }
+
+        $ship_to_country = Country::where('iso', $request->ship_to['country'])->first();
+        if (!$ship_to_country) {
+            return $this->error('The ship to country code is invalid');
+        }
+
         $rules = [
             'ship_date' => 'required',
             'carrier_code' => 'required',
             'service_code' => 'required',
             'itn' => 'nullable',
             'insurance_amount' => 'nullable',
-
-            'items' => 'required|array',
-            'items.*.description' => 'required',
-            'items.*.quantity' => 'required|gt:0',
-            'items.*.unit_price' => 'required|gt:0|numeric',
-            'items.*.origin_country' => 'required',
-            // 'items.*.batteries' => 'nullable',
-            'items.*.hs_code' => 'nullable',
-
-            'dimensions' => 'required|array',
-            'dimensions.*.weight' => 'required',
-            'dimensions.*.length' => 'required',
-            'dimensions.*.width' => 'required',
-            'dimensions.*.height' => 'required',
 
             'ship_from.company' => 'nullable|max:100',
             'ship_from.name' => 'required|regex:/^[A-Za-z0-9\s]+$/',
@@ -296,10 +292,28 @@ class PackageController extends BaseController
             'ship_to.address3' => 'nullable|string|max:35',
             'ship_to.tax_no' => 'nullable|max:100',
             'ship_to.signature_type_id' => 'required',
+
+            'dimensions' => 'required|array',
+            'dimensions.*.weight' => 'required',
+            'dimensions.*.length' => 'required',
+            'dimensions.*.width' => 'required',
+            'dimensions.*.height' => 'required',
         ];
 
+        if ($ship_from_country != $ship_to_country) {
+            $rules += [
+                'items' => 'required|array',
+                'items.*.description' => 'required',
+                'items.*.quantity' => 'required|gt:0',
+                'items.*.unit_price' => 'required|gt:0|numeric',
+                'items.*.origin_country' => 'required',
+                'items.*.batteries' => 'nullable',
+                'items.*.hs_code' => 'nullable',
+            ];
+        }
+
         $messages = [
-            'regex' => 'The :attribute must only contain letters (english) and numbers.'
+            'regex' => 'The :attribute must only contain letters (english) and numbers.',
         ];
 
         $validator = Validator::make($request->all(), $rules, $messages);
@@ -310,7 +324,6 @@ class PackageController extends BaseController
         try {
             DB::beginTransaction();
 
-            $ship_from_country = Country::where('iso', $request->ship_from['country'])->first();
             $ship_from_data = [
                 'user_id' => 3,
                 'type' => 'ship_from',
@@ -332,7 +345,6 @@ class PackageController extends BaseController
             ];
             $ship_from_address = Address::create($ship_from_data);
 
-            $ship_to_country = Country::where('iso', $request->ship_to['country'])->first();
             $ship_to_data = [
                 'user_id' => 3,
                 'type' => 'ship_to',
@@ -399,28 +411,30 @@ class PackageController extends BaseController
                 ]);
             }
 
-            OrderItem::where('package_id', $package->id)->delete();
-            foreach ($request->items as $key => $item) {
-                $origin_country = Country::where('iso', $item['origin_country'])->first();
-                $order_item = new OrderItem();
-                $order_item->package_id = $package->id;
-                $order_item->origin_country = $origin_country->id;
-                $order_item->hs_code = isset($item['hs_code']) ? $item['hs_code'] : NULL;
-                $order_item->description = $item['description'];
-                $order_item->quantity = $item['quantity'];
-                $order_item->unit_price = $item['unit_price'];
-                $order_item->sub_total = $item['unit_price'] * $item['quantity'];
-                $order_item->batteries = isset($item['batteries']) ? $item['batteries'] : NULL;
-                $order_item->save();
-            }
+            if ($package->pkg_ship_type == 'international') {
+                OrderItem::where('package_id', $package->id)->delete();
+                foreach ($request->items as $key => $item) {
+                    $origin_country = Country::where('iso', $item['origin_country'])->first();
+                    $order_item = new OrderItem();
+                    $order_item->package_id = $package->id;
+                    $order_item->origin_country = $origin_country->id;
+                    $order_item->hs_code = isset($item['hs_code']) ? $item['hs_code'] : NULL;
+                    $order_item->description = $item['description'];
+                    $order_item->quantity = $item['quantity'];
+                    $order_item->unit_price = $item['unit_price'];
+                    $order_item->sub_total = $item['unit_price'] * $item['quantity'];
+                    $order_item->batteries = isset($item['batteries']) ? $item['batteries'] : NULL;
+                    $order_item->save();
+                }
 
-            $custom_items = OrderItem::where('package_id', $package->id)->get();
-            if ($custom_items) {
-                $custom_total = $custom_items->sum('sub_total');
-                if ($custom_total > 0) {
-                    $package->update([
-                        'shipping_total' => $custom_total
-                    ]);
+                $custom_items = OrderItem::where('package_id', $package->id)->get();
+                if ($custom_items) {
+                    $custom_total = $custom_items->sum('sub_total');
+                    if ($custom_total > 0) {
+                        $package->update([
+                            'shipping_total' => $custom_total
+                        ]);
+                    }
                 }
             }
 
