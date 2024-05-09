@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\API\AddressController;
 use App\Http\Controllers\API\DataController;
+use App\Http\Controllers\API\InquiryController;
 use App\Http\Controllers\API\PackageController;
 use App\Http\Controllers\API\RateController;
 use App\Http\Controllers\API\RegisterController;
@@ -37,6 +38,11 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::post('package/set-custom', [PackageController::class, 'setCustom']);
     Route::post('package/payment', [SquarePaymentController::class, 'payment']);
     Route::post('package/square-payment', [SquarePaymentController::class, 'index']);
+
+    Route::post('inquiry/list', [InquiryController::class, 'list']);
+    Route::post('inquiry/create', [InquiryController::class, 'create']);
+    Route::post('inquiry/message/send', [InquiryController::class, 'messageSend']);
+    Route::post('inquiry/message/list', [InquiryController::class, 'messageList']);
 });
 
 // Project ID: 2
