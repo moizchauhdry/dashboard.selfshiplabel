@@ -16,7 +16,20 @@ class InquiryController extends BaseController
     {
         try {
             $user = Auth::user();
-            $data['inquiries'] = Inquiry::where('user_id', $user->id)->orderBy('id', 'desc')->get();
+            $data['inquiries'] = Inquiry::where('user_id', $user->id)->orderBy('id', 'desc')->paginate(10);
+
+            return $this->sendResponse($data, 'success');
+        } catch (\Throwable $th) {
+            return $this->error($th->getMessage());
+        }
+    }
+
+    public function fetch(Request $request)
+    {
+        try {
+            $user = Auth::user();
+            $data['inquiry'] = Inquiry::where('user_id', $user->id)->where('id', $request->inquiry_id)->orderBy('id', 'desc')->first();
+            $data['inquiry_messages'] = InquiryMessage::where('inquiry_id', $request->inquiry_id)->orderBy('id', 'asc')->paginate(500);
 
             return $this->sendResponse($data, 'success');
         } catch (\Throwable $th) {
@@ -30,7 +43,11 @@ class InquiryController extends BaseController
             $user = Auth::user();
 
             $rules = [
-                'title' => 'required|min:10|max:100'
+                'subject' => 'required|min:3|max:100',
+                'name' => 'required|min:3|max:50',
+                'email' => 'required|max:50|email',
+                'department' => 'required|max:50',
+                'message' => 'required|min:3|max:500',
             ];
 
             $validator = Validator::make($request->all(), $rules);
@@ -40,8 +57,11 @@ class InquiryController extends BaseController
             }
 
             $data = [
-                'title' => $request->title,
-                'user_id' => $user->id
+                'user_id' => $user->id,
+                'subject' => $request->subject,
+                'name' => $request->name,
+                'email' => $request->email,
+                'department' => $request->department,
             ];
 
             $inquiry = Inquiry::create($data);
@@ -97,7 +117,7 @@ class InquiryController extends BaseController
         try {
 
             $user = Auth::user();
-            $response['inquiry_messages'] = InquiryMessage::where('user_id', $user->id)->orderBy('id', 'desc')->get();
+            $response['inquiry_messages'] = InquiryMessage::where('user_id', $user->id)->where('inquiry_id', $request->inquiry_id)->orderBy('id', 'asc')->paginate(1000);
 
             return $this->sendResponse($response, 'success');
         } catch (\Throwable $th) {

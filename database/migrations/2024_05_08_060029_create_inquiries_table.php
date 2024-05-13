@@ -15,8 +15,11 @@ class CreateInquiriesTable extends Migration
     {
         Schema::create('inquiries', function (Blueprint $table) {
             $table->id();
-            $table->string('title', 100);
-            $table->integer('user_id')->unsigned();
+            $table->integer('user_id')->unsigned()->nullable();
+            $table->string('name', 100);
+            $table->string('email', 100);
+            $table->string('subject', 100);
+            $table->string('department', 100);
             $table->enum('status', ['open', 'close'])->default('open');
             $table->timestamps();
         });

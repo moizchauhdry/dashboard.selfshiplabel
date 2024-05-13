@@ -40,6 +40,7 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::post('package/square-payment', [SquarePaymentController::class, 'index']);
 
     Route::post('inquiry/list', [InquiryController::class, 'list']);
+    Route::post('inquiry/fetch', [InquiryController::class, 'fetch']);
     Route::post('inquiry/create', [InquiryController::class, 'create']);
     Route::post('inquiry/message/send', [InquiryController::class, 'messageSend']);
     Route::post('inquiry/message/list', [InquiryController::class, 'messageList']);
