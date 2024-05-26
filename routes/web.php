@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\InquiryController;
 use App\Http\Controllers\AuctionController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CustomerController;
@@ -98,6 +99,13 @@ Route::group(['prefix' => 'project', 'middleware' => 'auth', 'as' => 'project.']
     Route::get('/', [ProjectController::class, 'index'])->name('index');
     Route::get('/markup/{project_id}', [ProjectController::class, 'markup'])->name('markup');
     Route::post('/markup/update', [ProjectController::class, 'updateMarkup'])->name('markup-update');
+});
+Route::group(['prefix' => 'inquirie', 'middleware' => 'auth', 'as' => 'inquirie.'], function () {
+    Route::get('/', [InquiryController::class, 'index'])->name('index');
+    Route::get('/fetch/{user_id}/{track_id}', [InquiryController::class, 'fetch'])->name('fetch');
+    Route::post('inquiry/fetch', [InquiryController::class, 'listfetch'])->name('list-fetch');
+    Route::post('/message/send', [InquiryController::class, 'messageSend'])->name('message-send');
+    Route::post('/message/list', [InquiryController::class, 'messageList'])->name('message-list');
 });
 
 Route::get('/contact-customer-service', 'ContactUs@index')->name('contact-customer-service');

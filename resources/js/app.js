@@ -1,4 +1,6 @@
 require('./bootstrap');
+import './axios';
+import './index.css';
 
 // Import modules...
 import { createApp, h } from 'vue';
