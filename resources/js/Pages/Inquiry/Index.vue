@@ -30,7 +30,7 @@
                                 <td>{{ p.department }}</td>
                                 <td>
                                     <inertia-link :href="route('inquirie.fetch', { user_id: p.user_id ,track_id: p.id })"
-                                        class="btn btn-info btn-sm"><i class="fas fa-dollar"></i> Edit</inertia-link>
+                                        class="btn btn-info btn-sm"><i class="fas fa-edit"></i> Edit</inertia-link>
                                 </td>
                             </tr>
                         </tbody>

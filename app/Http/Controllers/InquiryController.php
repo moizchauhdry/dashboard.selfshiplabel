@@ -33,6 +33,9 @@ class InquiryController extends Controller
         return Inertia::render('Inquiry/InquryChat', [
             'inquiry' => $inquiry,
             'inquiry_messages' => $inquiry_messages,
+            'inquiry_id' => $inquiry->id,
+            'user_id' => $inquiry->user_id,
+
         ]);
     }
 
