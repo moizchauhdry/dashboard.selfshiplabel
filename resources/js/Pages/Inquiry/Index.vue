@@ -18,6 +18,7 @@
                                 <th scope="col">Email</th>
                                 <th scope="col">Subject</th>
                                 <th scope="col">Department</th>
+                                <th scope="col">Status</th>
                                 <th scope="col"></th>
                             </tr>
                         </thead>
@@ -28,9 +29,12 @@
                                 <td>{{ p.email }}</td>
                                 <td>{{ p.subject }}</td>
                                 <td>{{ p.department }}</td>
+                                <td> <span v-if="p.status === 'open'" class=" bg-blue-600 text-white px-4 py-1 rounded-lg text-sm"> Open</span>
+                                        <span v-else class=" bg-red-400 text-white px-4 py-1 rounded-lg text-sm"> Close</span>
+                                    </td>
                                 <td>
-                                    <inertia-link :href="route('inquirie.fetch', { user_id: p.user_id ,track_id: p.id })"
-                                        class="btn btn-info btn-sm"><i class="fas fa-edit"></i> Edit</inertia-link>
+                                    <inertia-link v-if="p.status === 'open' " :href="route('inquirie.fetch', { user_id: p.user_id ,track_id: p.id })"
+                                        class="btn btn-info btn-sm"> <i class="fa-solid fa-message"></i></inertia-link>
                                 </td>
                             </tr>
                         </tbody>

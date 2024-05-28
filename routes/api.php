@@ -44,6 +44,7 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::post('inquiry/create', [InquiryController::class, 'create']);
     Route::post('inquiry/message/send', [InquiryController::class, 'messageSend']);
     Route::post('inquiry/message/list', [InquiryController::class, 'messageList']);
+    Route::post('inquiry/update/status', [InquiryController::class, 'updateStatus']);
 });
 
 // Project ID: 2

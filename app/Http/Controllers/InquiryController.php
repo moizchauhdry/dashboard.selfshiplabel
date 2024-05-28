@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\SendMessage;
 use App\Models\Inquiry;
 use App\Models\InquiryMessage;
 use Illuminate\Http\Request;
@@ -15,7 +16,7 @@ class InquiryController extends Controller
     //
     public function index()
     {
-        $inquiries = Inquiry::paginate(10);
+        $inquiries = Inquiry::where('status','open')->paginate(10);
 
         return Inertia::render('Inquiry/Index', [
             'inquiries' => $inquiries,
@@ -70,6 +71,7 @@ class InquiryController extends Controller
                 return $this->error('Invalid Inquiry');
                 
             }
+            // broadcast(new SendMessage($request->user_id,$response))->toOthers();
             return $this->sendResponse($response, 'success');
         } catch (\Throwable $th) {
             return $this->error($th->getMessage());

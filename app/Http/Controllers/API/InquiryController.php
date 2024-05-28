@@ -16,7 +16,7 @@ class InquiryController extends BaseController
     {
         try {
             $user = Auth::user();
-            $data['inquiries'] = Inquiry::where('user_id', $user->id)->orderBy('id', 'desc')->paginate(10);
+            $data['inquiries'] = Inquiry::where('user_id', $user->id)->where('status','open')->orderBy('id', 'desc')->paginate(10);
 
             return $this->sendResponse($data, 'success');
         } catch (\Throwable $th) {
@@ -120,6 +120,22 @@ class InquiryController extends BaseController
             $response['inquiry_messages'] = InquiryMessage::where('user_id', $user->id)->where('inquiry_id', $request->inquiry_id)->orderBy('id', 'asc')->paginate(1000);
 
             return $this->sendResponse($response, 'success');
+        } catch (\Throwable $th) {
+            return $this->error($th->getMessage());
+        }
+    }
+
+    public function updateStatus(Request $request)
+    {
+        try {
+
+            $response = [];
+
+            $user = Auth::user();
+
+            $inquiry = Inquiry::where('id', $request->inquiry_id)->where('user_id', $user->id)->update(['status'=>'close']);
+
+            return $this->sendResponse($inquiry, 'success');
         } catch (\Throwable $th) {
             return $this->error($th->getMessage());
         }
