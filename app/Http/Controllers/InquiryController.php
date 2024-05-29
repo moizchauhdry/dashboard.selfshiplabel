@@ -16,7 +16,7 @@ class InquiryController extends Controller
     //
     public function index()
     {
-        $inquiries = Inquiry::where('status','open')->paginate(10);
+        $inquiries = Inquiry::paginate(10);
 
         return Inertia::render('Inquiry/Index', [
             'inquiries' => $inquiries,

@@ -28,7 +28,8 @@
                             </li>
                             <li class="text-gray-600 border-b border-gray-100 sm:px-4 px-2 py-1 space-y-1">
                                 <p class="flex items-center gap-2">
-                                    Status<span class="bg-blue-600 text-white px-4 py-1 rounded-lg text-sm">{{ inquiry.status }}</span>
+                                    Status<span v-if="inquiry.status === 'open'" class="bg-blue-600 text-white px-4 py-1 rounded-lg text-sm">Open</span>
+                                    <span v-else class="bg-red-400 text-white px-4 py-1 rounded-lg text-sm">Close</span>
                                 </p>
                             </li>
 
@@ -47,14 +48,14 @@
                                         d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z" />
                                 </svg> <span>Closed</span></button> -->
 
-                                <inertia-link :href="route('inquirie.index')"
+                                <!-- <inertia-link :href="route('inquirie.index')"
                                 class="bg-red-400 w-full px-6 py-2 rounded-lg flex items-center justify-center gap-1 font-semibold">
                                 <svg
                                         class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
                                         <path
                                             d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z" />
                                     </svg> <span>Close</span>
-                            </inertia-link>
+                            </inertia-link> -->
                         </div>
 
                     </div>
@@ -144,11 +145,11 @@
                     <div class="border-t-2 border-gray-200 pt-4 mb-2 sm:mb-0 px-2 sm:px-4">
                         <div class="relative flex">
                             <input type="text" placeholder="Write your message!" v-model="form.message" @keydown.enter.prevent="sendMessage"
-                                class="focus:ring-[#ffb61a] focus:shadow-[#ffb61a] focus:border-[#ffb61a] border-[#ffb61a] w-full focus:outline-none focus:placeholder-gray-400 text-gray-600 placeholder-gray-600 pl-2 bg-gray-100 rounded-md py-3" required>
+                                class="focus:ring-[#ffb61a] focus:shadow-[#ffb61a] focus:border-[#ffb61a] border-[#ffb61a] w-full focus:outline-none focus:placeholder-gray-400 text-gray-600 placeholder-gray-600 pl-2 bg-gray-100 rounded-md py-3" required :readonly="inquiry.status === 'close'">
 
                             <div class="absolute right-0 items-center inset-y-0 hidden sm:flex">
            
-                                <button type="button" @click="sendMessage"
+                                <button :disabled="inquiry.status === 'close'" type="button" @click="sendMessage"
                                     class="inline-flex items-center justify-center rounded-lg px-4 py-3 transition duration-500 ease-in-out text-black bg-warning hover:bg-[#e9ac4b] focus:outline-none">
                                     <span class="font-bold">Send</span>
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
@@ -324,7 +325,13 @@ export default {
         }
     },
     mounted() {
-        this.scrollToBottom();
+        if(this.inquiry.status === 'open'){
+
+            this.intervalId = setInterval(() => {
+                        this.fetchInquiryMessages();
+                    }, 5000);
+            this.scrollToBottom();
+        }
     },
 }
 </script>

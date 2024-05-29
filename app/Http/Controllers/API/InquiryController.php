@@ -16,8 +16,8 @@ class InquiryController extends BaseController
     {
         try {
             $user = Auth::user();
-            $data['inquiries'] = Inquiry::where('user_id', $user->id)->where('status','open')->orderBy('id', 'desc')->paginate(10);
-
+            $data['inquiries'] = Inquiry::where('user_id', $user->id)->orderBy('id', 'desc')->paginate(10);
+            $data['user'] = $user;
             return $this->sendResponse($data, 'success');
         } catch (\Throwable $th) {
             return $this->error($th->getMessage());
@@ -40,6 +40,7 @@ class InquiryController extends BaseController
     public function create(Request $request)
     {
         try {
+            
             $user = Auth::user();
 
             $rules = [
@@ -65,6 +66,14 @@ class InquiryController extends BaseController
             ];
 
             $inquiry = Inquiry::create($data);
+
+            $message_data = [
+                'user_id' => $user->id,
+                'inquiry_id' => $inquiry->id,
+                'user_type' =>'customer',
+                'message' => $request->message,
+            ];
+            InquiryMessage::create($message_data);
 
             return $this->sendResponse($inquiry, 'success');
         } catch (\Throwable $th) {

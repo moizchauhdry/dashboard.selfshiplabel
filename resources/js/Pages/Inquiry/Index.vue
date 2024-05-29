@@ -33,7 +33,7 @@
                                         <span v-else class=" bg-red-400 text-white px-4 py-1 rounded-lg text-sm"> Close</span>
                                     </td>
                                 <td>
-                                    <inertia-link v-if="p.status === 'open' " :href="route('inquirie.fetch', { user_id: p.user_id ,track_id: p.id })"
+                                    <inertia-link :href="route('inquirie.fetch', { user_id: p.user_id ,track_id: p.id })"
                                         class="btn btn-info btn-sm"> <i class="fa-solid fa-message"></i></inertia-link>
                                 </td>
                             </tr>
