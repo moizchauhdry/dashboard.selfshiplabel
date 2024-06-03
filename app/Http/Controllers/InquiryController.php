@@ -71,7 +71,8 @@ class InquiryController extends Controller
                 return $this->error('Invalid Inquiry');
                 
             }
-            // broadcast(new SendMessage($request->user_id,$response))->toOthers();
+               event(new SendMessage($inquiry,$response));
+            //  broadcast(new SendMessage($inquiry,$response))->toOthers();
             return $this->sendResponse($response, 'success');
         } catch (\Throwable $th) {
             return $this->error($th->getMessage());

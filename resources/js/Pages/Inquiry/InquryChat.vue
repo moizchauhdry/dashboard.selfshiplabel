@@ -274,13 +274,13 @@ export default {
                 .post(this.route('inquirie.message-list'), this.form)
                 .then((response) => {
 
-                    this.$inertia.replace(this.$page.url, {
-                        data: {
-                        inquiry_messages: response.data.data.inquiry_messages,
-                        inquiry : response.data.data.inquiry
-                        },
-                        // preserveState: true
-                    });
+                    // this.$inertia.replace(this.$page.url, {
+                    //     data: {
+                    //     inquiry_messages: response.data.data.inquiry_messages,
+                    //     inquiry : response.data.data.inquiry
+                    //     },
+                    //     // preserveState: true
+                    // });
                     this.loading = false;
                 })
                 .catch((error) => {
@@ -325,13 +325,22 @@ export default {
         }
     },
     mounted() {
-        if(this.inquiry.status === 'open'){
 
-            this.intervalId = setInterval(() => {
-                        this.fetchInquiryMessages();
-                    }, 5000);
-            this.scrollToBottom();
-        }
+        window.Echo.private('chat-channel')
+            .listen('SendMessage', (e) => {
+                console.log('ehoooee');
+                console.log(e);
+                this.inquiry_messages.push(e.message);
+            });
+
+
+        // if(this.inquiry.status === 'open'){
+
+        //     this.intervalId = setInterval(() => {
+        //                 this.fetchInquiryMessages();
+        //             }, 5000);
+        //         }
+                this.scrollToBottom();
     },
 }
 </script>

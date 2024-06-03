@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+use App\Events\SendMessage;
 
 class InquiryController extends BaseController
 {
@@ -95,11 +96,11 @@ class InquiryController extends BaseController
             ];
 
             $validator = Validator::make($request->all(), $rules);
-
+            
             if ($validator->fails()) {
                 return $this->sendError('validation failed', $validator->errors());
             }
-
+            
             $inquiry = Inquiry::where('id', $request->inquiry_id)->where('user_id', $user->id)->first();
 
             if ($inquiry) {
@@ -111,6 +112,9 @@ class InquiryController extends BaseController
                 ];
 
                 $response = InquiryMessage::create($data);
+                // broadcast(new SendMessage($inquiry,$response))->toOthers();
+                event(new SendMessage($inquiry,$response));
+                // info('hello');
             } else {
                 return $this->error('Invalid Inquiry');
             }
