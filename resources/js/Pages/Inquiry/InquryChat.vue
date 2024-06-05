@@ -333,13 +333,6 @@ export default {
                 this.inquiry_messages.push(e.message);
             });
 
-
-        // if(this.inquiry.status === 'open'){
-
-        //     this.intervalId = setInterval(() => {
-        //                 this.fetchInquiryMessages();
-        //             }, 5000);
-        //         }
                 this.scrollToBottom();
     },
 }

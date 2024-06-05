@@ -22,10 +22,16 @@ window.Pusher = require('pusher-js');
 
 window.Echo = new Echo({
     broadcaster: 'pusher',
+    // authEndpoint:'http://127.0.0.1:8000/api/broadcasting/auth',
     key: process.env.MIX_PUSHER_APP_KEY,
     cluster: process.env.MIX_PUSHER_APP_CLUSTER,
     forceTLS: false,
     wsHost: window.location.hostname,
     wsPort: 6001,
-    disableStats: false,
+    encrypted: false,
+    // auth: {
+    //     headers: {
+    //         Authorization: 'Bearer ' + localStorage.getItem("token"),
+    //     },
+    // },
 });
