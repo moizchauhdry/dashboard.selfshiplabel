@@ -32,10 +32,10 @@ class InquiryController extends Controller
         $inquiry_messages = InquiryMessage::where('inquiry_id', $track_id)->orderBy('id', 'asc')->get();
 
         return Inertia::render('Inquiry/InquryChat', [
-            'inquiry' => $inquiry,
-            'inquiry_messages' => $inquiry_messages,
-            'inquiry_id' => $inquiry->id,
-            'user_id' => $inquiry->user_id,
+             'inquiry' => $inquiry,
+            // 'inquiry_messages' => $inquiry_messages,
+            // 'inquiry_id' => $inquiry->id,
+            // 'user_id' => $inquiry->user_id,
 
         ]);
     }
@@ -71,7 +71,7 @@ class InquiryController extends Controller
                 return $this->error('Invalid Inquiry');
                 
             }
-               event(new SendMessage($inquiry,$response));
+            //    event(new SendMessage($inquiry,$response));
             //  broadcast(new SendMessage($inquiry,$response))->toOthers();
             return $this->sendResponse($response, 'success');
         } catch (\Throwable $th) {

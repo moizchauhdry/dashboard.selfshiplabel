@@ -74,9 +74,9 @@ class InquiryController extends BaseController
                 'user_type' =>'customer',
                 'message' => $request->message,
             ];
-            InquiryMessage::create($message_data);
+           $message = InquiryMessage::create($message_data);
 
-            return $this->sendResponse($inquiry, 'success');
+            return $this->sendResponse($inquiry,$message, 'success');
         } catch (\Throwable $th) {
             return $this->error($th->getMessage());
         }
@@ -113,7 +113,7 @@ class InquiryController extends BaseController
 
                 $response = InquiryMessage::create($data);
                 // broadcast(new SendMessage($inquiry,$response))->toOthers();
-                event(new SendMessage($inquiry,$response));
+                // event(new SendMessage($inquiry,$response));
                 // info('hello');
             } else {
                 return $this->error('Invalid Inquiry');

@@ -173,6 +173,10 @@ import MainLayout from '@/Layouts/Main'
 import BreezeAuthenticatedLayout from '@/Layouts/Authenticated'
 import Pagination from '@/Components/Pagination'
 import { format } from 'date-fns';
+import { db } from '@/bootstrap';
+
+import { collection, query,addDoc,where, orderBy, onSnapshot,serverTimestamp} from 'firebase/firestore';
+
 
 export default {
     data() {
@@ -183,7 +187,7 @@ export default {
             inquiry: "",
             inquiry_messages: [],
             form: this.$inertia.form({
-                inquiry_messages: this.inquiry_messages,
+                // inquiry_messages: this.inquiry_messages,
                 inquiry: this.inquiry,
             }),
 
@@ -201,7 +205,7 @@ export default {
         Pagination,
     },
     props: {
-        inquiry_messages: Object,
+        // inquiry_messages: Object,
         inquiry: Object,
     },
 
@@ -214,30 +218,25 @@ export default {
     },
     methods: {
         //
-        sendMessage() {
+        async  sendMessage() {
              this.loading = true;
              this.errors = {};
 
                 this.form.inquiry_id = this.inquiry.id;
                 this.form.user_id = this.inquiry.user_id;
-            console.log(this.form.message);
             var checkValue = this.form.message.trim();
            if(checkValue.length > 0){
-               axios
-                   .post(this.route('inquirie.message-send'), this.form,{ replace: true, preserveState: true })
-                   .then((response) => {
-                       console.log(response);
-                       this.form.message = "";
-                       this.fetchInquiryMessages();
-                   })
-                   .catch((error) => {
-                       alert(error);
-                       this.errors = error.response.data.errors;
-                   })
-                   .finally(() => {
-                       this.loading = false;
-                       this.addInquiry = false;
-                   });
+
+            await addDoc(collection(db, 'InquiryMessages'), {
+                inquiry_id: this.form.inquiry_id,
+                user_id: this.form.user_id,
+                user_type: 'admin',
+                message: this.form.message.trim(),
+                created_at: serverTimestamp(),
+                updated_at: serverTimestamp()
+            });
+
+            this.form.message = '';
            }
         },
         //  fetchInquiry() {
@@ -293,7 +292,7 @@ export default {
             messagesDiv.scrollTop = messagesDiv.scrollHeight;
         },
         formatDate(dateString) {
-            const date = new Date(dateString);
+            const date = new Date(dateString.seconds * 1000);
 
             // Format the time
             const hours = date.getHours();
@@ -326,12 +325,24 @@ export default {
     },
     mounted() {
 
-        window.Echo.private('chat-channel')
-            .listen('SendMessage', (e) => {
-                console.log('ehoooee');
-                console.log(e);
-                this.inquiry_messages.push(e.message);
-            });
+        const messagesCollection = collection(db,'InquiryMessages');
+        const messagesQuery = query(messagesCollection,
+        where('inquiry_id', '==', this.inquiry.id),
+        orderBy('created_at'));
+                onSnapshot(messagesQuery, (snapshot) => {
+           let messages = snapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+            }));
+            this.inquiry_messages = messages;
+        });
+
+        // window.Echo.private('chat-channel')
+        //     .listen('SendMessage', (e) => {
+        //         console.log('ehoooee');
+        //         console.log(e);
+        //         this.inquiry_messages.push(e.message);
+        //     });
 
                 this.scrollToBottom();
     },
