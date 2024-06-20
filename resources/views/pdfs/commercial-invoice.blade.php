@@ -59,7 +59,7 @@
                 <h4>{{ strtoupper('Shipped From') }}:</h4><br>
                 <strong>Contact Name</strong> : {{ $ship_from->fullname}}<br>
                 @if ($ship_from->company_name)
-                <strong>Company Name</strong> : {{$ship_to->company_name}}<br>
+                <strong>Company Name</strong> : {{$ship_from->company_name}}<br>
                 @endif
                 <strong>EORI:</strong><br>
                 <strong>Phone</strong> : {{ $ship_from->phone}}<br>
