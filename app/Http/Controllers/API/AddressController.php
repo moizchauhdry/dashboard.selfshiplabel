@@ -19,13 +19,13 @@ class AddressController extends BaseController
 
             $user = Auth::user();
 
-            $address_count = Address::where('user_id', $user->id)
-                ->where('type', $request->type)
-                ->count();
+            // $address_count = Address::where('user_id', $user->id)
+            //     ->where('type', $request->type)
+            //     ->count();
 
-            if ($address_count > 10) {
-                return $this->sendError('The address count is not more than 10.');
-            }
+            // if ($address_count > 10) {
+            //     return $this->sendError('The address count is not more than 10.');
+            // }
 
             $rules = [
                 'company_name' => 'nullable|max:100',
