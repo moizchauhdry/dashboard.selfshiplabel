@@ -229,14 +229,14 @@ export default {
             var checkValue = this.form.message.trim();
             if (checkValue.length > 0) {
 
-                await addDoc(collection(db, 'InquiryMessages'), {
-                    inquiry_id: this.form.inquiry_id,
-                    user_id: this.form.user_id,
-                    user_type: 'admin',
-                    message: this.form.message.trim(),
-                    created_at: serverTimestamp(),
-                    updated_at: serverTimestamp()
-                });
+            await addDoc(collection(db, 'inquiry_messages'), {
+                inquiry_id: this.form.inquiry_id,
+                user_id: this.form.user_id,
+                user_type: 'admin',
+                message: this.form.message.trim(),
+                created_at: serverTimestamp(),
+                updated_at: serverTimestamp()
+            });
 
                 this.form.message = '';
             }
@@ -327,7 +327,7 @@ export default {
     },
     mounted() {
 
-        const messagesCollection = collection(db, 'InquiryMessages');
+        const messagesCollection = collection(db,'inquiry_messages');
         const messagesQuery = query(messagesCollection,
             where('inquiry_id', '==', this.inquiry.id),
             orderBy('created_at'));
