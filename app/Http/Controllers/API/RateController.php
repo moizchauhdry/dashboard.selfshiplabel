@@ -74,7 +74,7 @@ class RateController extends BaseController
                 'dimension_units' => $dimension_units,
                 'measurement_unit' => $measurement_unit,
                 'customs_value' => $request->customs_value,
-                'residential' => $request->address_type,
+                'residential' => $request->is_residential,
                 'dimensions' => $request->dimensions,
             ];
 
