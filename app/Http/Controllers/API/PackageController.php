@@ -25,7 +25,8 @@ class PackageController extends BaseController
 
     public function setRate(Request $request)
     {
-        // return $request;
+        // dd($request->all());
+
         $user = Auth::user();
 
         $data = [
@@ -44,7 +45,7 @@ class PackageController extends BaseController
             'pkg_dim_status' => "done",
             'project_id' => 1,
             'cart' => true,
-            'ship_to' => NULL,
+            // 'ship_to' => NULL,
             'insurance_amount' => $request->insurance_amount,
         ];
 
@@ -96,6 +97,8 @@ class PackageController extends BaseController
 
     public function setAddress(Request $request)
     {
+        // dd($request->all());
+
         try {
             $package = Package::cart()->first();
 
@@ -104,19 +107,17 @@ class PackageController extends BaseController
             }
 
             if ($request->type == 'ship_to') {
-
-                $ship_to_address = Address::find($request->id);
-
-                if ($ship_to_address) {
-                    if ($ship_to_address->country_code != $request->selected_country_code) {
-                        $package->update(['ship_to' => NULL]);
-                        abort('403', 'The selected country is "' . $request->selected_country_code . '", and only shipping addresses for this country will be accepted.');
-                    } else {
+            //     $ship_to_address = Address::find($request->id);
+            //     if ($ship_to_address) {
+            //         if ($ship_to_address->country_code != $request->selected_country_code) {
+            //             $package->update(['ship_to' => NULL]);
+            //             abort('403', 'The selected country is "' . $request->selected_country_code . '", and only shipping addresses for this country will be accepted.');
+            //         } else {
                         $package->update(['ship_to' => $request->id]);
-                    }
-                } else {
-                    $package->update(['ship_to' => NULL]);
-                }
+            //         }
+            //     } else {
+            //         $package->update(['ship_to' => NULL]);
+            //     }
             }
 
             $ship_from = Address::find($package->ship_from);

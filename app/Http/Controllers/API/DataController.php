@@ -56,18 +56,20 @@ class DataController extends BaseController
 
     public function addresses(Request $request)
     {
+        // dd($request->all());
+
         $user = Auth::user();
 
         $search = NULL;
         $type = NULL;
-        
-        if ($request->type == 1) {
-            $type = 'ship_from';
+
+        if ($request->address_type == "ship_from") {
+            $type = $request->address_type;
             $search = $request->search_ship_from;
         }
 
-        if ($request->type == 2) {
-            $type = 'ship_to';
+        if ($request->address_type == "ship_to") {
+            $type = $request->address_type;
             $search = $request->search_ship_to;
         }
 
