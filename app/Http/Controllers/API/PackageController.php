@@ -23,10 +23,33 @@ class PackageController extends BaseController
         return $this->sendResponse($data, 'success');
     }
 
+    public function createPackage()
+    {
+        $user = Auth::user();
+
+        $package = Package::where('customer_id', $user->id)->where('cart', 1)->first();
+
+        if ($package == NULL) {
+            $data = [
+                'customer_id' => $user->id,
+                'status' => 'open',
+                'pkg_type' => 'single',
+                'warehouse_id' => 1,
+                'currency' => "USD",
+                'pkg_dim_status' => "done",
+                'project_id' => 1,
+                'cart' => 1,
+            ];
+
+            Package::create($data);
+        }
+
+        return $this->sendResponse($data, 'success');
+    }
+
+
     public function setRate(Request $request)
     {
-        // dd($request->all());
-
         $user = Auth::user();
 
         $data = [
@@ -107,17 +130,17 @@ class PackageController extends BaseController
             }
 
             if ($request->type == 'ship_to') {
-            //     $ship_to_address = Address::find($request->id);
-            //     if ($ship_to_address) {
-            //         if ($ship_to_address->country_code != $request->selected_country_code) {
-            //             $package->update(['ship_to' => NULL]);
-            //             abort('403', 'The selected country is "' . $request->selected_country_code . '", and only shipping addresses for this country will be accepted.');
-            //         } else {
-                        $package->update(['ship_to' => $request->id]);
-            //         }
-            //     } else {
-            //         $package->update(['ship_to' => NULL]);
-            //     }
+                //     $ship_to_address = Address::find($request->id);
+                //     if ($ship_to_address) {
+                //         if ($ship_to_address->country_code != $request->selected_country_code) {
+                //             $package->update(['ship_to' => NULL]);
+                //             abort('403', 'The selected country is "' . $request->selected_country_code . '", and only shipping addresses for this country will be accepted.');
+                //         } else {
+                $package->update(['ship_to' => $request->id]);
+                //         }
+                //     } else {
+                //         $package->update(['ship_to' => NULL]);
+                //     }
             }
 
             $ship_from = Address::find($package->ship_from);
@@ -484,25 +507,25 @@ class PackageController extends BaseController
         }
     }
 
-    public function processLabel(Request $request) {
+    public function processLabel(Request $request)
+    {
         dd($request->all());
         // Get label metadata and label image from the request
         $labelMetadata = json_decode($request->input('labelMetadata'), true);
         $labelImage = $request->file('labelImage');
-    
+
         // Extract relevant information from label metadata
         $trackingNumber = $labelMetadata['trackingNumber'];
         $commitmentDate = $labelMetadata['commitment']['scheduleDeliveryDate'];
-    
+
         // Save the label image to a folder in your Laravel app
         // You may need to adjust the path and file name according to your requirements
         $labelImagePath = 'path/to/save/' . $trackingNumber . '_' . $commitmentDate . '.pdf';
         $labelImage->move(public_path('labels'), $labelImagePath);
-    
+
         // Process the label image further if needed
         // For example, you can generate a download link or display it in your application
-    
+
         return response()->json(['message' => 'Label image processed successfully']);
     }
 }
-

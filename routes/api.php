@@ -27,10 +27,13 @@ Route::post('data', [DataController::class, 'index']);
 
 Route::group(['middleware' => 'auth:api'], function () {
     Route::post('profile', [DataController::class, 'profile']);
-    Route::post('get-address', [DataController::class, 'getAddress']);
-    Route::post('addresses', [DataController::class, 'addresses']);
+
+    Route::post('fetch-address', [DataController::class, 'fetchAddress']);
+    Route::post('fetch-address-list', [DataController::class, 'fetchAddressList']);
     Route::post('address/store', [AddressController::class, 'store']);
+    
     Route::post('package/index', [PackageController::class, 'index']);
+    Route::post('package/create', [PackageController::class, 'createPackage']);
     Route::post('package/get-package', [PackageController::class, 'getPackage']);
     Route::post('package/set-rate', [PackageController::class, 'setRate']);
     Route::post('package/update-rate', [PackageController::class, 'updateRate']);

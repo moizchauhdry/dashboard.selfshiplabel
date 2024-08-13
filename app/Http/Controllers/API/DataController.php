@@ -54,10 +54,8 @@ class DataController extends BaseController
         ]);
     }
 
-    public function addresses(Request $request)
+    public function fetchAddressList(Request $request)
     {
-        // dd($request->all());
-
         $user = Auth::user();
 
         $search = NULL;
@@ -98,12 +96,12 @@ class DataController extends BaseController
         return $this->sendResponse($data, 'success');
     }
 
-    public function profile()
+    public function fetchAddress(Request $request)
     {
-        $user = User::select('id', 'name', 'email')->where('id', Auth::user()->id)->first();
+        $address = Address::where('id', $request->address_id)->first();
 
         $data = [
-            'user' => $user
+            'address' => $address
         ];
 
         return response()->json([
@@ -113,12 +111,12 @@ class DataController extends BaseController
         ]);
     }
 
-    public function getAddress(Request $request)
+    public function profile()
     {
-        $address = Address::where('id', $request->address_id)->first();
+        $user = User::select('id', 'name', 'email')->where('id', Auth::user()->id)->first();
 
         $data = [
-            'address' => $address
+            'user' => $user
         ];
 
         return response()->json([
