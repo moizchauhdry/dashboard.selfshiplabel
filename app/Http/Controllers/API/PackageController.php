@@ -47,7 +47,6 @@ class PackageController extends BaseController
         return $this->sendResponse($data, 'success');
     }
 
-
     public function setRate(Request $request)
     {
         $user = Auth::user();
@@ -527,5 +526,23 @@ class PackageController extends BaseController
         // For example, you can generate a download link or display it in your application
 
         return response()->json(['message' => 'Label image processed successfully']);
+    }
+
+    public function updateSignature(Request $request)
+    {
+        // dd($request->all());
+        
+        $package = Package::where('id', $request->package_id)->first();
+
+        if ($package) {
+            $package->update(['signature_type_id' => $request->signature_type_id]);
+        }
+
+        $data = [
+            'signature_type_id' => $package->signature_type_id
+        ];
+
+        return $this->sendResponse($data, 'The signature updated successfully.');
+
     }
 }

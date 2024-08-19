@@ -40,7 +40,6 @@ class AddressController extends BaseController
                 'address_3' => 'nullable|string|max:35',
                 'tax_no' => 'nullable|max:100',
                 'type' => 'required|in:ship_from,ship_to',
-                'signature_type_id' => 'required',
             ];
 
             if (in_array($request->country_id, [226, 138, 38])) { // 226, 138, 38
@@ -162,7 +161,6 @@ class AddressController extends BaseController
                 'is_residential' => $request->is_residential,
                 'tax_no' => $request->tax_no,
                 'type' => $request->type,
-                'signature_type_id' => $request->signature_type_id,
             ];
 
 

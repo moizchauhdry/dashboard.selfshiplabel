@@ -39,6 +39,8 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::post('package/update-rate', [PackageController::class, 'updateRate']);
     Route::post('package/set-address', [PackageController::class, 'setAddress']);
     Route::post('package/set-custom', [PackageController::class, 'setCustom']);
+    Route::post('package/update-signature', [PackageController::class, 'updateSignature']);
+
     Route::post('package/payment', [SquarePaymentController::class, 'payment']);
     Route::post('package/square-payment', [SquarePaymentController::class, 'index']);
 

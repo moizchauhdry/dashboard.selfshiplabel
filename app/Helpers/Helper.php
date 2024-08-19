@@ -103,15 +103,15 @@ function generateLabelFedex($id, $project_id)
         $ship_to_state = $ship_to->state;
     }
 
-    if ($ship_to->signature_type_id == 1) {
+    if ($package->signature_type_id == 1) {
         $signature_type = "SERVICE_DEFAULT";
-    } else if ($ship_to->signature_type_id == 2) {
+    } else if ($package->signature_type_id == 2) {
         $signature_type = "NO_SIGNATURE_REQUIRED";
-    } else if ($ship_to->signature_type_id == 3) {
+    } else if ($package->signature_type_id == 3) {
         $signature_type = "INDIRECT";
-    } else if ($ship_to->signature_type_id == 4) {
+    } else if ($package->signature_type_id == 4) {
         $signature_type = "DIRECT";
-    } else if ($ship_to->signature_type_id == 5) {
+    } else if ($package->signature_type_id == 5) {
         $signature_type = "ADULT";
     } else {
         $signature_type = "SERVICE_DEFAULT";
