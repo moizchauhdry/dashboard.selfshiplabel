@@ -832,11 +832,16 @@ function paymentInvoiceForLabel($id)
 
 function generateLabelUsps($id, $project_id)
 {
-    $client_id = "mTtS4LMHtz1zM3TeKP01SNyuDvpWy3zu";
-    $client_secret = "22UYwV1lmgMQY06l";
+    $package = Package::where('id', $id)->first();
+    $ship_from = Address::where('id', $package->ship_from)->first();
+    $ship_to = Address::where('id', $package->ship_to)->first();
+    $package->update(['label_access_code' => Str::uuid() . '-' . $package->id]);
+
+    $client_id = "IflzdSXAAtl33158BLidVum089HXVWR9";
+    $client_secret = "HAa6nqXQgP1zkNvS";
 
     // Authorization API
-    $token_url = "https://api-cat.usps.com/oauth2/v3/token";
+    $token_url = "https://api.usps.com/oauth2/v3/token";
     $params = [
         "client_id" => $client_id,
         "client_secret" => $client_secret,
@@ -856,7 +861,7 @@ function generateLabelUsps($id, $project_id)
 
     // Payment API
     $token = $access_token;
-    $url = "https://api-cat.usps.com/payments/v3/payment-authorization";
+    $url = "https://api.usps.com/payments/v3/payment-authorization";
 
     $headers = array(
         "Authorization: Bearer $token",
@@ -867,21 +872,21 @@ function generateLabelUsps($id, $project_id)
         "roles": [
             {
                 "roleName": "PAYER",
-                "CRID": "94879959",
-                "MID": "901097701",
-                "manifestMID": "901097699",
+                "CRID": "46153809",
+                "MID": "903653576",
+                "manifestMID": "903653574",
                 "accountType": "EPS",
-                "accountNumber": "1000005549",
+                "accountNumber": "1000123621",
                 "permitNumber": "",
                 "permitZipCode": ""
             },
             {
                 "roleName": "LABEL_OWNER",
-                "CRID": "94879959",
-                "MID": "901097701",
-                "manifestMID": "901097699",
+                "CRID": "46153809",
+                "MID": "903653576",
+                "manifestMID": "903653574",
                 "accountType": "EPS",
-                "accountNumber": "1000005549",
+                "accountNumber": "1000123621",
                 "permitNumber": "",
                 "permitZipCode": ""
             }
@@ -900,7 +905,7 @@ function generateLabelUsps($id, $project_id)
     $response = json_decode($response, true);
     $payment_token = $response['paymentAuthorizationToken'];
 
-    // Domestic Label API
+    // International Label API
     $headers = [
         'X-locale' => 'en_US',
         'Content-Type' => 'application/json',
@@ -908,72 +913,223 @@ function generateLabelUsps($id, $project_id)
         'X-Payment-Authorization-Token' => $payment_token,
     ];
 
-    $body = [
-        "imageInfo" => [
-            "imageType" => "PDF",
-            "receiptOption" => "NONE",
-            "suppressPostage" => true,
-            "suppressMailDate" => true
-        ],
-        "toAddress" => [
-            "firstName" => "Leroy",
-            "lastName" => "Brown",
-            "streetAddress" => "1100 Wyoming",
-            "city" => "St. Louis",
-            "state" => "MO",
-            "ZIPCode" => "63118",
-            "ignoreBadAddress" => true
-        ],
-        "fromAddress" => [
-            "firstName" => "John",
-            "lastName" => "Smith",
-            "streetAddress" => "4120 Bingham",
-            "secondaryAddress" => "Apt 1",
-            "city" => "St. Louis",
-            "state" => "MO",
-            "ZIPCode" => "63116",
-            "ignoreBadAddress" => true
-        ],
-        "packageDescription" => [
-            "mailClass" => "PRIORITY_MAIL",
-            "rateIndicator" => "SP",
-            "weightUOM" => "lb",
-            "weight" => 20,
-            "dimensionsUOM" => "in",
-            "length" => 5.0,
-            "width" => 5.0,
-            "height" => 5.0,
-            "processingCategory" => "NON_MACHINABLE",
-            "mailingDate" => "2024-05-06",
-            "extraServices" => [
-                920
+    if ($package->pkg_ship_type == 'international') {
+        $body = [
+            "imageInfo" => [
+                "imageType" => "PDF",
+                "labelType" => "4X6LABEL",
+                "holdForManifest" => false
             ],
-            "packageOptions" => [
-                "packageValue" => 100
+            "toAddress" => [
+                "streetAddress" => "369 Ellis Street West",
+                "secondaryAddress" => "Windsor, ON, N8X 1B1, CANADA",
+                "city" => "Windsor",
+                "postalCode" => "N8X 1B1,",
+                "province" => "ON",
+                "country" => "CANADA",
+                "countryISOAlpha2Code" => "CA",
+                "firstName" => "Moiz",
+                "lastName" => "Chauhdry",
+                "firm" => "octalsol",
+                "phone" => "5199909222"
             ],
-            "destinationEntryFacilityType" => "NONE",
-            "destinationEntryFacilityAddress" => [
+            "fromAddress" => [
+                "streetAddress" => "3578 W savanna st",
+                "secondaryAddress" => "Anaheim, CA",
+                "city" => "Anaheim",
+                "state" => "CA",
+                "ZIPCode" => "92804",
+                "firstName" => "Habib",
+                "lastName" => "Haseeb",
+                "firm" => "Shipping XPS",
+                "phone" => "209717988",
+                "email" => "habib10@me.com"
+            ],
+            "senderAddress" => [
+                "streetAddress" => "3578 W savanna st",
+                "city" => "Anaheim",
+                "state" => "CA",
+                "ZIPCode" => "92804",
+                "firstName" => "Habib",
+                "lastName" => "Haseeb",
+                "firm" => "Shipping XPS",
+                "phone" => "2097517988",
+                "email" => "habib10@me.com"
+            ],
+            "packageDescription" => [
+                "weightUOM" => "lb",
+                "weight" => 1,
+                "dimensionsUOM" => "in",
+                "length" => 1,
+                "height" => 1,
+                "width" => 1,
+                "destinationEntryFacilityAddress" => [
+                    "streetAddress" => "3578 W savanna st",
+                    "secondaryAddress" => "Anaheim, CA",
+                    "city" => "Anaheim",
+                    "state" => "CA",
+                    "ZIPCode" => "92804",
+                    "ZIPPlus4" => "1234",
+                    "urbanization" => "string"
+                ],
+                "mailClass" => "PRIORITY_MAIL_INTERNATIONAL",
+                "rateIndicator" => "SP",
+                "diameter" => 0,
+                "shape" => "RECTANGLE",
+                "processingCategory" => "NON_MACHINABLE",
+                "destinationEntryFacilityType" => "NONE",
+                "mailingDate" => "2024-08-28",
+                "packageOptions" => [
+                    "packageValue" => 35,
+                    "nonDeliveryOption" => "RETURN",
+                    "redirectAddress" => [
+                        "streetAddress" => "3578 W savanna st",
+                        "secondaryAddress" => "Anaheim, CA",
+                        "city" => "Anaheim",
+                        "state" => "CA",
+                        "ZIPCode" => "92804",
+                        "urbanization" => "string",
+                        "firstName" => "Habib",
+                        "lastName" => "Haseeb",
+                        "firm" => "Shipping XPS",
+                        "phone" => "209717988",
+                        "email" => "habib10@me.com",
+                        "ignoreBadAddress" => true
+                    ]
+                ],
+                "customerReference" => [
+                    [
+                        "referenceNumber" => "string"
+                    ]
+                ]
+            ],
+            "customsForm" => [
+                "contentComments" => "string",
+                "restrictionType" => "QUARANTINE",
+                "restrictionComments" => "string",
+                "AESITN" => "string",
+                "invoiceNumber" => "string",
+                "licenseNumber" => "string",
+                "certificateNumber" => "string",
+                "customsContentType" => "MERCHANDISE",
+                "importersReference" => [
+                    "referenceType" => "TAX_CODE",
+                    "reference" => "string",
+                    "contact" => [
+                        "phone" => "209717988",
+                        "fax" => "12345678",
+                        "email" => "user@example.com"
+                    ]
+                ],
+                "contents" => [
+                    [
+                        "itemDescription" => "Policy guidelines document",
+                        "itemQuantity" => 1,
+                        "itemValue" => 1,
+                        "itemTotalValue" => 1,
+                        "weightUOM" => "lb",
+                        "itemWeight" => 1,
+                        "itemTotalWeight" => 1,
+                        "HSTariffNumber" => "string",
+                        "countryofOrigin" => "US",
+                        "itemCategory" => "Appliances, Parts & Accessories",
+                        "itemSubcategory" => "Bathroom Appliances"
+                    ]
+                ]
+            ]
+        ];
+    } else {
+        $body = [
+            "imageInfo" => [
+                "imageType" => "PDF",
+                "receiptOption" => "NONE",
+                "suppressPostage" => true,
+                "suppressMailDate" => true
+            ],
+            "toAddress" => [
+                "firstName" => "Leroy",
+                "lastName" => "Brown",
                 "streetAddress" => "1100 Wyoming",
                 "city" => "St. Louis",
                 "state" => "MO",
-                "ZIPCode" => "63116"
+                "ZIPCode" => "63118",
+                "ignoreBadAddress" => true
+            ],
+            "fromAddress" => [
+                "firstName" => "John",
+                "lastName" => "Smith",
+                "streetAddress" => "4120 Bingham",
+                "secondaryAddress" => "Apt 1",
+                "city" => "St. Louis",
+                "state" => "MO",
+                "ZIPCode" => "63116",
+                "ignoreBadAddress" => true
+            ],
+            "packageDescription" => [
+                "mailClass" => "PRIORITY_MAIL",
+                "rateIndicator" => "SP",
+                "weightUOM" => "lb",
+                "weight" => 20,
+                "dimensionsUOM" => "in",
+                "length" => 5.0,
+                "width" => 5.0,
+                "height" => 5.0,
+                "processingCategory" => "NON_MACHINABLE",
+                "mailingDate" => "2024-08-28",
+                "extraServices" => [
+                    920
+                ],
+                "packageOptions" => [
+                    "packageValue" => 100
+                ],
+                "destinationEntryFacilityType" => "NONE",
+                "destinationEntryFacilityAddress" => [
+                    "streetAddress" => "1100 Wyoming",
+                    "city" => "St. Louis",
+                    "state" => "MO",
+                    "ZIPCode" => "63116"
+                ]
             ]
-        ]
-    ];
+        ];
+    }
 
     $client = new Client();
-    $request = $client->post('https://api-cat.usps.com/labels/v3/label', [
-        'headers' => $headers,
-        'body' => json_encode($body)
-    ]);
+
+    if ($package->pkg_ship_type == 'international') {
+        $request = $client->post('https://api.usps.com/international-labels/v3/international-label', [
+            'headers' => $headers,
+            'body' => json_encode($body)
+        ]);
+    } else {
+        $request = $client->post('https://api.usps.com/labels/v3/label', [
+            'headers' => $headers,
+            'body' => json_encode($body)
+        ]);
+    }
 
     $response = $request->getBody()->getContents();
+    $code = explode("\r\n", $response);
 
-    $parts = explode("labelImage", $response);
-    $code = explode("\r\n", $parts[2]);
-    $code[2];
+    if ($package->pkg_ship_type == 'international') {
+        commercialInvoiceForLabel($package->id);
+    }
 
-    $filename = 'test.pdf';
-    Storage::disk('usps-labels')->put($filename, base64_decode($code[2]));
+    $oMerger = PDFMerger::init();
+    $filename1 = $package->label_access_code;
 
+    $filename2 = $filename1 . '.pdf';
+    Storage::disk('usps-labels')->put($filename2, base64_decode($code[9]));
+    $oMerger->addPDF('storage/usps-labels/' . $filename2, 'all');
+
+    if ($package->pkg_ship_type == 'international') {
+        $oMerger->addPDF('storage/commercial-invoices/' . $filename1 . '.pdf', 'all');
+    }
+
+    $oMerger->merge();
+    $label_url = 'storage/labels/' . $filename1 . '.pdf';
+    $oMerger->save($label_url);
+
+    // $code = explode("\r\n", $response);
+    // $filename = 'test.pdf';
+    // Storage::disk('usps-labels')->put($filename, base64_decode($code[9]));
 }

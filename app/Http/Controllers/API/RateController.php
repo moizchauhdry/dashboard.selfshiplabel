@@ -81,8 +81,9 @@ class RateController extends BaseController
             $fedex_rates = $this->fedex($data, 1);
             $dhl_rates = $this->dhl($data, 1);
             $ups_rates = $this->ups($data, 1);
+            $usps_rates = $this->usps($data, 1);
 
-            $rates = array_merge($fedex_rates, $dhl_rates, $ups_rates);
+            $rates = array_merge($fedex_rates, $dhl_rates, $ups_rates, $usps_rates);
 
             return response()->json([
                 'status' => true,
@@ -140,11 +141,11 @@ class RateController extends BaseController
                 'ship_from_country_code' => $request->ship_from_country_code,
                 'ship_from_city' => $request->ship_from_city,
                 'ship_from_state' => $request->ship_from_state,
-                
+
                 'ship_to_postal_code' => $request->ship_to_postal_code,
                 'ship_to_country_code' => $request->ship_to_country_code,
                 'ship_to_city' => $request->ship_to_city,
-                
+
                 'weight_units' => $weight_units,
                 'dimension_units' => $dimension_units,
                 'measurement_unit' => $measurement_unit,
@@ -601,5 +602,112 @@ class RateController extends BaseController
 
 
         return $name;
+    }
+
+    public function usps($data, $project_id)
+    {
+        $client_id = "IflzdSXAAtl33158BLidVum089HXVWR9";
+        $client_secret = "HAa6nqXQgP1zkNvS";
+
+        // Authorization API
+        $token_url = "https://api.usps.com/oauth2/v3/token";
+        $params = [
+            "client_id" => $client_id,
+            "client_secret" => $client_secret,
+            "grant_type" => "client_credentials"
+        ];
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $token_url);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($params));
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        $response = curl_exec($ch);
+        curl_close($ch);
+
+        $response = json_decode($response, true);
+        $access_token = $response['access_token'];
+
+        // Domestic Rates API
+        $headers = [
+            'X-locale' => 'en_US',
+            'Content-Type' => 'application/json',
+            'Authorization' => 'Bearer ' . $access_token,
+        ];
+
+        if ($data['ship_from_country_code'] == $data['ship_to_country_code']) {
+            $rates_url = "https://api.usps.com/prices/v3/total-rates/search";
+            $body = [
+                "originZIPCode" =>  $data['ship_from_postal_code'],
+                "destinationZIPCode" =>  $data['ship_to_postal_code'],
+                "weight" =>  1,
+                "length" =>  1,
+                "width" =>  1,
+                "height" =>  1,
+                "mailClass" =>  "PARCEL_SELECT",
+                "mailClasses" =>  [
+                    "ALL"
+                ],
+                "priceType" =>  "RETAIL",
+                "mailingDate" =>  Carbon::now()->format('Y-m-d'),
+                "accountType" =>  "EPS",
+                "accountNumber" =>  "1000123621",
+                "itemValue" =>  0,
+                "extraServices" =>  [
+                    415
+                ]
+            ];
+        } else {
+            $rates_url = "https://api.usps.com/international-prices/v3/total-rates/search";
+            $body = [
+                "originZIPCode" => $data['ship_from_postal_code'],
+                "weight" => 1,
+                "length" => 1,
+                "width" => 1,
+                "height" => 1,
+                "mailClass" => "ALL",
+                "processingCategory" => "FLATS",
+                "rateIndicator" => "E4",
+                "destinationEntryFacilityType" => "NONE",
+                "priceType" => "RETAIL",
+                "mailingDate" =>  Carbon::now()->format('Y-m-d'),
+                "foreignPostalCode" => $data['ship_to_postal_code'],
+                "destinationCountryCode" => "PK",
+                "accountType" => "EPS",
+                "accountNumber" => "1000123621"
+            ];
+        }
+
+        $client = new Client();
+
+        $request = $client->post($rates_url, [
+            'headers' => $headers,
+            'body' => json_encode($body)
+        ]);
+
+        $response = $request->getBody()->getContents();
+        $rating_response = json_decode($response);
+
+        $markup = SiteSetting::getByName('markup');
+        $rates = [];
+        foreach ($rating_response->rateOptions as $key => $usps) {
+            $price = $usps->rates[0]->price;
+            $markup = shipping_service_markup($usps->rates[0]->mailClass, $project_id);
+            $markup_amount = $price * ((int)$markup / 100);
+            $total = $price + $markup_amount;
+            $total = number_format((float)$total, 2, '.', '');
+
+            $rates[] = [
+                'code' => 'usps',
+                'type' => $usps->rates[0]->mailClass,
+                'name' => $usps->rates[0]->description,
+                'pkg_type' => 'YOUR_PACKAGING',
+                'price' => $price,
+                'markup' => $markup_amount,
+                'total' => $total,
+            ];
+        }
+        
+        return $rates;
     }
 }

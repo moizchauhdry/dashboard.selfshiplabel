@@ -8,6 +8,7 @@ use App\Models\Payment;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class SquarePaymentController extends Controller
@@ -49,6 +50,7 @@ class SquarePaymentController extends Controller
                 ];
 
 
+
                 if ($package->carrier_code == 'fedex') {
                     $data['fedex_label'] = generateLabelFedex($package->id, 1);
                 }
@@ -61,11 +63,20 @@ class SquarePaymentController extends Controller
                     $data['dhl_label'] = generateLabelDhl($package->id, 1);
                 }
 
+                if ($package->carrier_code == 'usps') {
+                    $data['usps_label'] = generateLabelUsps($package->id, 1);
+                }
+
                 return $this->sendResponse($data, 'success');
             } else {
                 // return $this->error('The value must be greater then 0',);
             }
         } catch (\Throwable $th) {
+
+            dd($th);
+
+            Log::info($th);
+
             $response = [
                 'success' => false,
                 'message' => $th->getMessage(),

@@ -141,36 +141,12 @@ class ShippingServiceSeeder extends Seeder
 
             // USPS
             [
-                "service_name" => 'USPS International First Class',
-                "service_code" => 'usps_international_first_class',
+                "service_name" => 'PRIORITY_MAIL',
+                "service_code" => 'PRIORITY_MAIL',
             ],
             [
-                "service_name" => 'USPS International Priority',
-                "service_code" => 'usps_international_priority',
-            ],
-            [
-                "service_name" => 'USPS International Express',
-                "service_code" => 'usps_international_express',
-            ],
-            [
-                "service_name" => 'USPS Priority (1-3 Days)',
-                "service_code" => 'usps_priority',
-            ],
-            [
-                "service_name" => 'USPS Priority Mail Express',
-                "service_code" => 'usps_express',
-            ],
-            [
-                "service_name" => 'USPS Parcel Select Ground',
-                "service_code" => 'usps_parcel_post',
-            ],
-            [
-                "service_name" => 'USPS First Class',
-                "service_code" => 'usps_first_class',
-            ],
-            [
-                "service_name" => 'USPS Ground Advantage',
-                "service_code" => 'usps_ground_advantage',
+                "service_name" => 'LIBRARY_MAIL',
+                "service_code" => 'LIBRARY_MAIL',
             ],
         ];
 
