@@ -33,13 +33,17 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::post('address/store', [AddressController::class, 'store']);
     
     Route::post('package/index', [PackageController::class, 'index']);
-    Route::post('package/create', [PackageController::class, 'createPackage']);
-    Route::post('package/get-package', [PackageController::class, 'getPackage']);
+    // Route::post('package/create', [PackageController::class, 'createPackage']);
+    Route::post('package/get-package/{id}', [PackageController::class, 'getPackage']);
     Route::post('package/set-rate', [PackageController::class, 'setRate']);
     Route::post('package/update-rate', [PackageController::class, 'updateRate']);
     Route::post('package/set-address', [PackageController::class, 'setAddress']);
     Route::post('package/set-custom', [PackageController::class, 'setCustom']);
     Route::post('package/update-signature', [PackageController::class, 'updateSignature']);
+    Route::post('package/save-as-draft', [PackageController::class, 'saveAsDraft']);
+    Route::post('package/pay-later', [PackageController::class, 'payLater']);
+    Route::post('package/edit-package', [PackageController::class, 'editPackage']);
+    Route::post('package/reship', [PackageController::class, 'reship']);
 
     Route::post('package/payment', [SquarePaymentController::class, 'payment']);
     Route::post('package/square-payment', [SquarePaymentController::class, 'index']);

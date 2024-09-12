@@ -37,19 +37,19 @@ class SquarePaymentController extends Controller
     public function payment(Request $request)
     {
         try {
+
             $package = Package::find($request->package_id);
             $this->paymentRules($package);
 
             if ($package->grand_total > 0) {
                 $data = [
                     'package_id' => $package->id,
+                    'package_status_id' => $request->package_status_id,
                     'customer_id' => $package->customer_id,
                     'payment_type' => 'stripe',
                     'charged_amount' => 0,
                     'transaction_id' => 0
                 ];
-
-
 
                 if ($package->carrier_code == 'fedex') {
                     $data['fedex_label'] = generateLabelFedex($package->id, 1);
@@ -72,8 +72,6 @@ class SquarePaymentController extends Controller
                 // return $this->error('The value must be greater then 0',);
             }
         } catch (\Throwable $th) {
-
-            dd($th);
 
             Log::info($th);
 

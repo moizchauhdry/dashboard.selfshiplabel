@@ -16,36 +16,54 @@ use Illuminate\Validation\Rule;
 
 class PackageController extends BaseController
 {
-    public function index()
+    public function index(Request $request)
     {
+        $package_status_id = $request->package_status_id;
+
         $user = Auth::user();
-        $data['packages'] = Package::with('boxes', 'payments')->where('project_id', 1)->where('customer_id', $user->id)->orderBy('id', 'desc')->paginate(100);
+
+        $packages = Package::query()
+            ->with('boxes', 'payments', 'shipFrom', 'shipTo')
+            ->where('project_id', 1)
+            ->where('customer_id', $user->id)
+            ->when($package_status_id, function ($query) use ($package_status_id) {
+                $query->whereIn('package_status_id', $package_status_id);
+            })
+            ->orderBy('id', 'desc')
+            ->paginate(100);
+
+        $data['packages'] = $packages;
+
         return $this->sendResponse($data, 'success');
     }
 
-    public function createPackage()
-    {
-        $user = Auth::user();
+    // public function createPackage()
+    // {
+    //     $customer = Auth::user();
 
-        $package = Package::where('customer_id', $user->id)->where('cart', 1)->first();
+    //     $package = Package::query()
+    //         ->where('customer_id', $customer->id)
+    //         ->where('package_status_id', 1)
+    //         ->first();
 
-        if ($package == NULL) {
-            $data = [
-                'customer_id' => $user->id,
-                'status' => 'open',
-                'pkg_type' => 'single',
-                'warehouse_id' => 1,
-                'currency' => "USD",
-                'pkg_dim_status' => "done",
-                'project_id' => 1,
-                'cart' => 1,
-            ];
+    //     if ($package == NULL) {
+    //         $data = [
+    //             'customer_id' => $customer->id,
+    //             'status' => 'open',
+    //             'pkg_type' => 'single',
+    //             'warehouse_id' => 1,
+    //             'currency' => "USD",
+    //             'pkg_dim_status' => "done",
+    //             'project_id' => 1,
+    //             'cart' => 1,
+    //             'package_status_id' => 1, // Create Shipment
+    //         ];
 
-            Package::create($data);
-        }
+    //         Package::create($data);
+    //     }
 
-        return $this->sendResponse($data, 'success');
-    }
+    //     return $this->sendResponse($data, 'success');
+    // }
 
     public function setRate(Request $request)
     {
@@ -71,7 +89,7 @@ class PackageController extends BaseController
             'insurance_amount' => $request->insurance_amount,
         ];
 
-        $package = Package::updateOrCreate(['customer_id' => $user->id, 'cart' => 1], $data);
+        $package = Package::updateOrCreate(['id' => $request->package_id, 'customer_id' => $user->id, 'cart' => 1], $data);
 
         PackageBox::where('package_id', $package->id)->delete();
         foreach ($request->dimensions as $key => $dimension) {
@@ -110,68 +128,69 @@ class PackageController extends BaseController
         return $this->sendResponse($data, 'success');
     }
 
-    public function getPackage()
+    public function getPackage($id)
     {
-        $data['package'] = Package::with('shipTo', 'shipFrom', 'boxes', 'packageItems')->cart()->first();
+        $package = Package::query()
+            ->where('id', $id)
+            ->with('shipTo', 'shipFrom', 'boxes', 'packageItems')
+            ->where('customer_id', auth()->id())
+            ->first();
+
+        $data['package'] = $package;
 
         return $this->sendResponse($data, 'success');
     }
 
     public function setAddress(Request $request)
     {
-        // dd($request->all());
-
         try {
-            $package = Package::cart()->first();
+            $customer = Auth::user();
+
+            $package = Package::query()
+                ->where('id', $request->package_id)
+                ->where('customer_id', $customer->id)
+                ->where('package_status_id', 1)
+                ->orderBy('id', 'desc')
+                ->first();
+
+            if ($package == NULL) {
+                $data = [
+                    'customer_id' => $customer->id,
+                    'status' => 'open',
+                    'pkg_type' => 'single',
+                    'warehouse_id' => 1,
+                    'currency' => "USD",
+                    'pkg_dim_status' => "done",
+                    'project_id' => 1,
+                    'cart' => 1,
+                    'package_status_id' => 1,
+                ];
+
+                $package = Package::create($data);
+            }
 
             if ($request->type == 'ship_from') {
                 $package->update(['ship_from' => $request->id]);
             }
 
             if ($request->type == 'ship_to') {
-                //     $ship_to_address = Address::find($request->id);
-                //     if ($ship_to_address) {
-                //         if ($ship_to_address->country_code != $request->selected_country_code) {
-                //             $package->update(['ship_to' => NULL]);
-                //             abort('403', 'The selected country is "' . $request->selected_country_code . '", and only shipping addresses for this country will be accepted.');
-                //         } else {
                 $package->update(['ship_to' => $request->id]);
-                //         }
-                //     } else {
-                //         $package->update(['ship_to' => NULL]);
-                //     }
             }
 
             $ship_from = Address::find($package->ship_from);
             $ship_to = Address::find($package->ship_to);
 
             if ($package->ship_from && $package->ship_to) {
-
                 if ($ship_from->country_id == $ship_to->country_id) {
                     $package->update(['pkg_ship_type' => 'domestic']);
                 } else {
                     $package->update(['pkg_ship_type' => 'international']);
                 }
-
-                // if ($package->pkg_ship_type == 'domestic') {
-
-                // if ($package->carrier_code == 'fedex') {
-                //     $data['fedex_label'] = generateLabelFedex($package->id);
-                // }
-
-                // if ($package->carrier_code == 'ups') {
-                //     $data['ups_label'] = generateLabelUps($package->id);
-                // }
-
-                // if ($package->carrier_code == 'dhl') {
-                //     $data['dhl_label'] = generateLabelDhl($package->id);
-                // }
-
-                // $package->update(['grand_total' => $package->shipping_charges]);
-                // }
             }
 
-            return $this->sendResponse('success', 'success');
+            return $this->sendResponse([
+                'package_id' => $package->id
+            ], 'success');
         } catch (\Throwable $th) {
             $package->update(['ship_to' => NULL]);
             return $this->error($th->getMessage());
@@ -530,8 +549,6 @@ class PackageController extends BaseController
 
     public function updateSignature(Request $request)
     {
-        // dd($request->all());
-        
         $package = Package::where('id', $request->package_id)->first();
 
         if ($package) {
@@ -543,6 +560,65 @@ class PackageController extends BaseController
         ];
 
         return $this->sendResponse($data, 'The signature updated successfully.');
+    }
 
+    public function saveAsDraft(Request $request)
+    {
+        $package = Package::where('id', $request->package_id)->first();
+        $package->update(['package_status_id' => 2]);
+        return $this->sendResponse([], 'The package saved as draft successfully.');
+    }
+
+    public function payLater(Request $request)
+    {
+        $package = Package::where('id', $request->package_id)->first();
+        $package->update(['package_status_id' => 3]);
+        return $this->sendResponse([], 'The package saved as draft successfully.');
+    }
+
+    public function editPackage(Request $request)
+    {
+        $package = Package::where('id', $request->package_id)->first();
+        $package->update(['package_status_id' => 1]);
+        return $this->sendResponse([
+            'package_id' => $package->id
+        ], 'The package edit successfully.');
+    }
+
+    public function reship(Request $request)
+    {
+        $existing_package = Package::query()
+            ->with(['boxes', 'shipTo', 'shipFrom'])
+            ->where('id', $request->package_id)
+            ->first();
+
+        if ($existing_package) {
+            $new_package = $existing_package->replicate();
+            $new_package->save();
+
+            if ($existing_package->shipTo) {
+                $newShipTo = $existing_package->shipTo->replicate();
+                $newShipTo->save();
+                $new_package->ship_to = $newShipTo->id;
+            }
+
+            if ($existing_package->shipFrom) {
+                $newShipFrom = $existing_package->shipFrom->replicate();
+                $newShipFrom->save();
+                $new_package->ship_from = $newShipFrom->id;
+            }
+
+            $new_package->save();
+
+            foreach ($existing_package->boxes as $box) {
+                $newBox = $box->replicate();
+                $newBox->package_id = $new_package->id;
+                $newBox->save();
+            }
+        }
+
+        return $this->sendResponse([
+            'package_id' => $new_package->id
+        ], 'The package edit successfully.');
     }
 }
