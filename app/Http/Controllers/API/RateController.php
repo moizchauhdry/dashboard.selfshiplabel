@@ -81,7 +81,8 @@ class RateController extends BaseController
             $fedex_rates = $this->fedex($data, 1);
             $dhl_rates = $this->dhl($data, 1);
             $ups_rates = $this->ups($data, 1);
-            $usps_rates = $this->usps($data, 1);
+            // $usps_rates = $this->usps($data, 1);
+            $usps_rates = [];
 
             $rates = array_merge($fedex_rates, $dhl_rates, $ups_rates, $usps_rates);
 
