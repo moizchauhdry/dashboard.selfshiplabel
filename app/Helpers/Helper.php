@@ -117,6 +117,10 @@ function generateLabelFedex($id, $project_id)
         $signature_type = "SERVICE_DEFAULT";
     }
 
+    if ($package->pkg_ship_type == 'international') {
+        $signature_type = "SERVICE_DEFAULT";
+    }
+
     $commodities = [];
     if ($package->pkg_ship_type == 'international') {
         $items = OrderItem::with('originCountry')->where('package_id', $package->id)->get();
