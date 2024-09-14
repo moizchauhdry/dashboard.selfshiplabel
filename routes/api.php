@@ -47,6 +47,8 @@ Route::group(['middleware' => 'auth:api'], function () {
 
     Route::post('package/payment', [SquarePaymentController::class, 'payment']);
     Route::post('package/square-payment', [SquarePaymentController::class, 'index']);
+    Route::post('package/bulk-payment', [SquarePaymentController::class, 'bulkPayment']);
+    // Route::get('package/square-bulk-payment', [SquarePaymentController::class, 'squareBulkPayment']);
 
     Route::post('inquiry/list', [InquiryController::class, 'list']);
     Route::post('inquiry/fetch', [InquiryController::class, 'fetch']);
