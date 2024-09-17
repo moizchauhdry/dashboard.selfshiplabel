@@ -324,14 +324,14 @@ class SquarePaymentController extends Controller
 
     public function squareBulkPayment()
     {
-        $grand_total = Package::where('package_status_id', 3)->get()->sum('grand_total');
+        $grand_total = Package::where('package_status_id', 3)->where('payment_status', 'Pending')->get()->sum('grand_total');
         return view('square.bulk-payment', compact('grand_total'));
     }
 
     public function squareBulkPaymentSuccess(Request $request)
     {
         try {
-            $packages = Package::where('package_status_id', 3)->get();
+            $packages = Package::where('package_status_id', 3)->where('payment_status', 'Pending')->get();
 
             foreach ($packages as $key => $package) {
                 $this->paymentRules($package);
@@ -421,28 +421,17 @@ class SquarePaymentController extends Controller
                             'payment_status' => 'Paid',
                             'cart' => 0,
                         ]);
-
-                        return response()->json([
-                            'status' => true,
-                            'code' => 200,
-                            'message' => 'success',
-                        ]);
-                    } else {
-                        // $package->update(['payment_status' => 'failed']);
-                        return response()->json([
-                            'status' => false,
-                            'code' => 403,
-                            'message' => $payment_response,
-                        ]);
                     }
                 } else {
-                    return response()->json([
-                        'status' => false,
-                        'code' => 403,
-                        'message' => 'already-paid',
-                    ]);
+                    abort(403, 'already-paid');
                 }
             }
+
+            return response()->json([
+                'status' => true,
+                'code' => 200,
+                'message' => 'success',
+            ]);
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => false,
