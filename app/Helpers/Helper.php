@@ -792,10 +792,17 @@ function generateLabelDhl($id, $project_id)
     $label_url = 'storage/labels/' . $filename1 . '.pdf';
     $oMerger->save($label_url);
 
+    // Master Tracking Number
+    $master_tracking_no = NULL;
+    if ($response->shipmentTrackingNumber) {
+        $master_tracking_no = $response->shipmentTrackingNumber;
+    }
+
     $package->update([
         'label_generated_at' => Carbon::now(),
         'label_generated_by' => auth()->id(),
         'label_url' => $label_url,
+        'tracking_number_out' => $master_tracking_no,
         'shipping_charges' => $package->shipping_charges - $package->markup_fee,
         'grand_total' => $package->shipping_charges,
     ]);
