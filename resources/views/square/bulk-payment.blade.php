@@ -4,12 +4,8 @@
     <link rel="stylesheet" href="{{asset('square/square.css')}}" preload>
     <link rel="stylesheet" href="{{asset('square/app.css')}}" preload>
     <link rel="stylesheet" href="{{asset('square/admin.css')}}" preload>
-
-    {{-- Sandbox --}}
-    {{-- <script src="https://web.squarecdn.com/v1/square.js"></script> --}}
-    
-    {{-- Production --}}
-    <script src="https://sandbox.web.squarecdn.com/v1/square.js"></script>
+    {{-- <script src="https://sandbox.web.squarecdn.com/v1/square.js"></script> --}}
+    <script src="https://web.squarecdn.com/v1/square.js"></script>
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800&display=swap');
@@ -129,21 +125,7 @@
                         </svg>
                     </div>
                 </div>
-                {{-- <table>
-                    <tr>
-                        <th>To</th>
-                        <td><b style="font-size: 18px !important">{{$package->shipTo->fullname ?? ''}}</b></td>
-                    </tr>
-                    <tr>
-                        <th>From</th>
-                        <td>{{$package->shipFrom->fullname ?? ''}}</td>
-                    </tr>
-                    <tr>
-                        <th>Service</th>
-                        <td>{{$package->service_label}}</td>
-                    </tr>
-                </table> --}}
-
+               
                 <div style="margin-top: 10px; font-size:12px">
                     I understand and agree to comply with the <a
                         href="https://selfshiplabel.com/terms-and-conditions">terms & conditions</a>.
@@ -170,22 +152,6 @@
         </div>
     </div>
 
-    {{-- <div class="container">
-        <div class="row">
-            <div class="text-center" style="margin-top: 50px">
-                <img src="http://127.0.0.1:8000/theme/img/logo.png" style="width: 150px;">
-                <h3>Please pay ${{$package->grand_total}} to complete your package order.</h3>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-6 offset-md-3">
-                <div id="payment-status-container"></div>
-                <div id="card-container"></div>
-                <button id="card-button" type="button">Pay ${{$package->grand_total}}</button>
-            </div>
-        </div>
-    </div> --}}
-
     <div class="livewire-loader hidden">
         <div class="lds-roller">
             <div></div>
@@ -201,8 +167,8 @@
     </div>
 
     <script type="module">
-        const payments = Square.payments('sandbox-sq0idb-jeE29DTw_SfJ52vT7ZM7IA', 'L8PVP5B7XVYDR'); // sandbox
-        //const payments = Square.payments('sq0idp-P9dzLXrd8KM4Zat_hu82RQ', 'LBYSV1XNZV0FX'); // production
+        // const payments = Square.payments('sandbox-sq0idb-jeE29DTw_SfJ52vT7ZM7IA', 'L8PVP5B7XVYDR'); // sandbox
+        const payments = Square.payments('sq0idp-P9dzLXrd8KM4Zat_hu82RQ', 'LBYSV1XNZV0FX'); // production
         
         const card = await payments.card();
         await card.attach('#card-container');
