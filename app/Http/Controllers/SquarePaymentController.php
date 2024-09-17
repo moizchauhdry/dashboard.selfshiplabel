@@ -334,7 +334,6 @@ class SquarePaymentController extends Controller
             $packages = Package::where('package_status_id', 3)->get();
 
             foreach ($packages as $key => $package) {
-                dd($package);
                 $this->paymentRules($package);
 
                 if ($package->payment_status == 'Pending') {
