@@ -419,6 +419,7 @@ class SquarePaymentController extends Controller
 
                         $package->update([
                             'payment_status' => 'Paid',
+                            'package_status_id' => 5,
                             'cart' => 0,
                         ]);
                     }
