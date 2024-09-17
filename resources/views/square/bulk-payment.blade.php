@@ -220,7 +220,7 @@
                         _token: $('meta[name="csrf-token"]').attr('content'),
                         'payment_token': result.token,
                     },
-                    url: '{{route('package.square-payment.success')}}',
+                    url: '{{route('package.square-bulk-payment.success')}}',
                     beforeSend: function(){
                         $(".livewire-loader").removeClass('hidden');
                     },
