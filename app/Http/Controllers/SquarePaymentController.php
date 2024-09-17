@@ -274,6 +274,7 @@ class SquarePaymentController extends Controller
     {
         try {
             $packages = Package::where('package_status_id', 3)->get();
+
             foreach ($packages as $key => $package) {
                 $this->paymentRules($package);
 
@@ -287,29 +288,31 @@ class SquarePaymentController extends Controller
                         'transaction_id' => 0
                     ];
 
-                    if ($package->carrier_code == 'fedex') {
-                        $data['fedex_label'] = generateLabelFedex($package->id, 1);
-                    }
-
-                    if ($package->carrier_code == 'ups') {
-                        $data['ups_label'] = generateLabelUps($package->id, 1);
-                    }
-
-                    if ($package->carrier_code == 'dhl') {
-                        $data['dhl_label'] = generateLabelDhl($package->id, 1);
-                    }
-
-                    if ($package->carrier_code == 'usps') {
-                        $data['usps_label'] = generateLabelUsps($package->id, 1);
-                    }
-
-                    return $this->sendResponse($data, 'success');
                 } else {
                     abort(403);
                 }
             }
 
-            return response()->json('success', 403);
+            foreach ($packages as $key => $package) {
+                
+                if ($package->carrier_code == 'fedex') {
+                    $data['fedex_label'] = generateLabelFedex($package->id, 1);
+                }
+
+                if ($package->carrier_code == 'ups') {
+                    $data['ups_label'] = generateLabelUps($package->id, 1);
+                }
+
+                if ($package->carrier_code == 'dhl') {
+                    $data['dhl_label'] = generateLabelDhl($package->id, 1);
+                }
+
+                if ($package->carrier_code == 'usps') {
+                    $data['usps_label'] = generateLabelUsps($package->id, 1);
+                }
+            }
+
+            return $this->sendResponse($data, 'success');
         } catch (\Throwable $th) {
             $response = [
                 'success' => false,
