@@ -224,7 +224,8 @@
                     success: function (response) {
                         console.log(response);
                         if (response.code == 200) {
-                            var url = "{{ route('square.complete') }}";
+                            // var url = "{{ route('square.complete') }}";
+                            var url = "https://selfshiplabel.com/history";
                             location.href = url;
                         } else {
                             alert('PAYMENT ERROR!');
