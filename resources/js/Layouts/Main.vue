@@ -1,5 +1,5 @@
 <template>
-	<header class="navbar navbar-light sticky-top bg-dark flex-md-nowrap p-0 shadow bg-light" style="" id="header2">
+	<header class="navbar navbar-dark sticky-top bg-dark shadow" style="" id="header2">
 		<a href="http://shippingxps.com" style="padding: 5px" target="_blank">
 			<img alt="Porto" style="height: 45px;" src="/images/logo-2.png" />
 		</a>
@@ -42,110 +42,93 @@
 			</breeze-dropdown>
 		</ul>
 	</header>
-	<div class="row">
-		<div class="container-fluid">
-			<div class="sidebar" id="main_sidebar" v-if="main_sidebar == 1">
-				<div class="sidebar-menu mt-sm-5 mt-md-0">
-					<inertia-link class="nav-link" :href="route('dashboard')"
-						:class="{ active: route().current('dashboard') }" :active="route().current('dashboard')">
-						<i class="fas fa-list"></i><span>Dashboard</span>
-					</inertia-link>
 
-					<div class="accordion-content">
-						<inertia-link class="nav-link" :href="route('manage-users')"
-							:class="{ active: route().current('manage-users') || route().current('create-users') }"
-							:active="route().current('manage-users')">
-							<i class="fas fa-list"></i><span>Users</span>
-						</inertia-link>
-
-						<inertia-link v-if="$page.props.auth.user.type != 'customer'" class="nav-link"
-							:href="route('customers.index')" :class="{
-								active: route().current('customers.index') || route().current('customers.edit') || route().current('customers.detail')
-							}" :active="route().current('customers.index')">
-							<i class="fas fa-list"></i><span>Customers</span>
-						</inertia-link>
-					</div>
-
-					<template>
-						<div class="accordion-content">
-							<inertia-link class="nav-link" :href="route('addresses')"
-								:class="{ active: route().current('addresses') || route().current('address.create') || route().current('address.edit'), }"
-								:active="route().current('addresses')">
-								<i class="fas fa-list"></i>
-								<span>Address</span>
-							</inertia-link>
-						</div>
-					</template>
-
-					<div class="accordion-content">
-						<inertia-link class="nav-link" :href="route('packages.index')"
-							:class="{ active: route().current('packages.index') || route().current('packages.show') || route().current('packages.custom') }"
-							:active="route().current('packages.index')">
-							<i class="fas fa-list"></i>
-							<span>Packages</span>
-						</inertia-link>
-
-						<inertia-link v-if="$page.props.auth.user.type != 'manager'" class="nav-link"
-							:href="route('payments.getPayments')"
-							:class="{ active: route().current('payments.getPayments') }"
-							:active="route().current('payments.getPayments')">
-							<i class="fas fa-list"></i>
-							<span>Payments</span>
-						</inertia-link>
-					</div>
-
-					<!-- <div class="accordion-content">
-						<inertia-link class="nav-link" :href="route('dashboard.shipping-calculator.index')"
-							:class="{ active: route().current('dashboard.shipping-calculator.index'), }"
-							:active="route().current('dashboard.shipping-calculator.index')">
-							<i class="fas fa-list"></i>
-							<span>Calculator</span>
-						</inertia-link>
-					</div> -->
-
-					<div class="accordion-content">
-						<inertia-link v-if="$page.props.auth.user.type == 'admin'" class="nav-link"
-							:href="route('project.index')" :class="{ active: route().current('project.index')  }"
-							:active="route().current('project.index')">
-							<i class="fas fa-list"></i>
-							<span>Projects</span>
-						</inertia-link>
-					</div>
-					<div class="accordion-content">
-						<inertia-link v-if="$page.props.auth.user.type == 'admin'" class="nav-link"
-							:href="route('inquirie.index')" :class="{ active: route().current('inquirie.fetch') || route().current('inquirie.index') }"
-							:active="route().current('inquirie.index')">
-							<i class="fas fa-list"></i>
-							<span>Inquiries</span>
-
-						</inertia-link>
-					</div>
-
-					<!-- <div class="accordion-content">
-						<inertia-link v-if="$page.props.auth.user.type == 'admin'" class="nav-link"
-							:href="route('settings')" :class="{ active: route().current('settings') }"
-							:active="route().current('settings')">
-							<i class="fas fa-list"></i>
-							<span>Settings</span>
-						</inertia-link>
-					</div> -->
-				</div>
-			</div>
-
-			<div class="toggle-side" @click="toggleSideBar()">
+	<div class="toggle-side" @click="toggleSideBar()">
 				<i class="fa fa-bars"></i>
 			</div>
 
-			<div role="main" class="main-section">
-				<div class="d-flex justify-content-center">
-					<FlashMessages />
-				</div>
-				<div class="col-md-12">
-					<slot />
-				</div>
+
+	<div class="sidebar" id="main_sidebar" v-if="main_sidebar == 1">
+		<div class="sidebar-menu mt-sm-5 mt-md-0">
+			<inertia-link class="nav-link" :href="route('dashboard')" :class="{ active: route().current('dashboard') }"
+				:active="route().current('dashboard')">
+				<i class="fas fa-list"></i><span>Dashboard</span>
+			</inertia-link>
+
+			<div class="accordion-content">
+				<inertia-link class="nav-link" :href="route('manage-users')"
+					:class="{ active: route().current('manage-users') || route().current('create-users') }"
+					:active="route().current('manage-users')">
+					<i class="fas fa-list"></i><span>Users</span>
+				</inertia-link>
+
+				<inertia-link v-if="$page.props.auth.user.type != 'customer'" class="nav-link"
+					:href="route('customers.index')" :class="{
+						active: route().current('customers.index') || route().current('customers.edit') || route().current('customers.detail')
+					}" :active="route().current('customers.index')">
+					<i class="fas fa-list"></i><span>Customers</span>
+				</inertia-link>
 			</div>
+
+			<template>
+				<div class="accordion-content">
+					<inertia-link class="nav-link" :href="route('addresses')"
+						:class="{ active: route().current('addresses') || route().current('address.create') || route().current('address.edit'), }"
+						:active="route().current('addresses')">
+						<i class="fas fa-list"></i>
+						<span>Address</span>
+					</inertia-link>
+				</div>
+			</template>
+
+			<div class="accordion-content">
+				<inertia-link class="nav-link" :href="route('packages.index')"
+					:class="{ active: route().current('packages.index') || route().current('packages.show') || route().current('packages.custom') }"
+					:active="route().current('packages.index')">
+					<i class="fas fa-list"></i>
+					<span>Packages</span>
+				</inertia-link>
+
+				<inertia-link v-if="$page.props.auth.user.type != 'manager'" class="nav-link"
+					:href="route('payments.getPayments')" :class="{ active: route().current('payments.getPayments') }"
+					:active="route().current('payments.getPayments')">
+					<i class="fas fa-list"></i>
+					<span>Payments</span>
+				</inertia-link>
+			</div>
+
+
+			<div class="accordion-content">
+				<inertia-link v-if="$page.props.auth.user.type == 'admin'" class="nav-link"
+					:href="route('project.index')" :class="{ active: route().current('project.index') }"
+					:active="route().current('project.index')">
+					<i class="fas fa-list"></i>
+					<span>Projects</span>
+				</inertia-link>
+			</div>
+			<div class="accordion-content">
+				<inertia-link v-if="$page.props.auth.user.type == 'admin'" class="nav-link"
+					:href="route('inquirie.index')"
+					:class="{ active: route().current('inquirie.fetch') || route().current('inquirie.index') }"
+					:active="route().current('inquirie.index')">
+					<i class="fas fa-list"></i>
+					<span>Inquiries</span>
+
+				</inertia-link>
+			</div>
+
 		</div>
 	</div>
+
+	<div role="main" class="main-section">
+		<div class="d-flex justify-content-center">
+			<FlashMessages />
+		</div>
+		<div class="col-md-12">
+			<slot />
+		</div>
+	</div>
+
 </template>
 
 <style scoped>
@@ -277,7 +260,7 @@
 
 /* SIDEBAR STYLE */
 .sidebar {
-	background-color: #272c33 !important;
+	background-color: black !important;
 	padding: 80px 12px 0;
 	position: fixed;
 	top: 0;
@@ -290,7 +273,7 @@
 }
 
 .sidebar .sidebar-menu a {
-	color: var(--text);
+	/* color: var(--text); */
 	display: block;
 	width: 100%;
 	line-height: 32px;
@@ -298,6 +281,7 @@
 	transition: 0.3s;
 	margin-bottom: 6px;
 	transition-property: background;
+	color:white
 }
 
 .sidebar .sidebar-menu .nav-link.active,
