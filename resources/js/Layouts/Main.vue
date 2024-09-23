@@ -1,6 +1,6 @@
 <template>
 	<header class="navbar navbar-dark sticky-top bg-dark shadow" style="" id="header2">
-		<a href="http://shippingxps.com" style="padding: 5px" target="_blank">
+		<a href="https://selfshiplabel.com" style="padding: 5px" target="_blank">
 			<img alt="Porto" style="height: 45px;" src="/images/logo-2.png" />
 		</a>
 		<ul class="flex-md-row inline-flex navbar-nav px-3">
