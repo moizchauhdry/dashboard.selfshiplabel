@@ -354,7 +354,7 @@ class HomeController extends Controller
             });
         }
 
-        $packages = $query->orderBy('id', 'desc')->paginate(25);
+        $packages = $query->orderBy('id', 'desc')->paginate(10);
 
         return Inertia::render('Dashboard', [
             'pkgs' => $packages,

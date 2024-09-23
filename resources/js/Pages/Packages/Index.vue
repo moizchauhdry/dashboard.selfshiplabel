@@ -1,56 +1,58 @@
 <template>
 	<MainLayout>
-		<div class="card mb-5">
-			<div class="card-header">
-				<b>Packages</b>
-			</div>
-			<div class="card-body">
-				<div class="row">
-					<div class="col-md-12">
-						<form @submit.prevent="submit">
-							<div class="d-flex search">
-								
-								<div class="form-group">
-									<label for="">Package Number</label>
-									<input type="number" name="number" v-model="form.pkg_id" class="form-control" />
-								</div>
-								<div class="form-group">
-									<label for="">Customer Number</label>
-									<input type="number" name="number" v-model="form.suit_no" class="form-control" />
-								</div>
-								<div class="form-group">
-									<label for="">Payment Status</label>
-									<select class="form-control custom-select" v-model="form.payment_status">
-										<option value="" selected>All</option>
-										<option value="Paid">Paid</option>
-										<option value="Pending">Pending</option>
-									</select>
-								</div>
-								<div class="form-group">
-									<label for="">Tracking Number</label>
-									<input type="text" v-model="form.tracking_out" class="form-control" />
-								</div>
-								<div class="form-group">
-									<label for="">Date Range</label>
-									<Datepicker v-model="date" range :format="format" :enableTimePicker="false">
-									</Datepicker>
-								</div>
-							</div>
-							<div class="row">
-								<div class="form-group col-md-12">
-									<button type="submit" class="btn btn-primary mr-1">Search</button>
-									<button type="button" class="btn btn-info" @click="clear()">Clear</button>
-								</div>
-							</div>
-						</form>
-					</div>
+		<div class="container">
+			<div class="card">
+				<div class="card-header">
+					<b>Packages</b>
 				</div>
+				<div class="card-body">
+					<div class="row">
+						<div class="col-md-12">
+							<form @submit.prevent="submit">
+								<div class="d-flex search">
 
-				<package-list-component v-bind="$props"></package-list-component>
-			</div>
-			<div class="card-footer">
-				<span class="float-left"><b>Showing Records: {{ packages_count }}</b></span>
-				<pagination :links="pkgs.links" class="float-right"></pagination>
+									<div class="form-group">
+										<label for="">Package Number</label>
+										<input type="number" name="number" v-model="form.pkg_id" class="form-control" />
+									</div>
+									<div class="form-group">
+										<label for="">Customer Number</label>
+										<input type="number" name="number" v-model="form.suit_no"
+											class="form-control" />
+									</div>
+									<div class="form-group">
+										<label for="">Payment Status</label>
+										<select class="form-control custom-select" v-model="form.payment_status">
+											<option value="" selected>All</option>
+											<option value="Paid">Paid</option>
+											<option value="Pending">Pending</option>
+										</select>
+									</div>
+									<div class="form-group">
+										<label for="">Tracking Number</label>
+										<input type="text" v-model="form.tracking_out" class="form-control" />
+									</div>
+									<div class="form-group">
+										<label for="">Date Range</label>
+										<Datepicker v-model="date" range :format="format" :enableTimePicker="false">
+										</Datepicker>
+									</div>
+								</div>
+								<div class="row">
+									<div class="form-group col-md-12">
+										<button type="submit" class="btn btn-primary mr-1">Search</button>
+										<button type="button" class="btn btn-info" @click="clear()">Clear</button>
+									</div>
+								</div>
+							</form>
+						</div>
+					</div>
+					<package-list-component v-bind="$props"></package-list-component>
+				</div>
+				<div class="card-footer">
+					<span class="float-left"><b>Showing Records: {{ packages_count }}</b></span>
+					<pagination :links="pkgs.links" class="float-right"></pagination>
+				</div>
 			</div>
 		</div>
 	</MainLayout>
