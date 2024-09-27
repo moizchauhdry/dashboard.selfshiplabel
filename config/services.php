@@ -43,4 +43,13 @@ return [
         'secretkey' => env('CAPTCHA_SECRET_KEY'),
     ],
 
+    'square' => [
+        'application_id' => env('SQUARE_APPLICATION_ID'),
+        'location_id' => env('SQUARE_LOCATION_ID'),
+        'access_token' => env('SQUARE_ACCESS_TOKEN'),
+        'api_url' => env('SQUARE_API_URL'),
+        'web_url' => env('SQUARE_WEB_URL'),
+        'redirect_url' => env('SQUARE_REDIRECT_URL'),
+    ],
+
 ];

@@ -4,8 +4,7 @@
     <link rel="stylesheet" href="{{asset('square/square.css')}}" preload>
     <link rel="stylesheet" href="{{asset('square/app.css')}}" preload>
     <link rel="stylesheet" href="{{asset('square/admin.css')}}" preload>
-    <script src="https://web.squarecdn.com/v1/square.js"></script>
-    {{-- <script src="https://sandbox.web.squarecdn.com/v1/square.js"></script> --}}
+    <script src="{{config('services.square.web_url')}}/square.js"></script>
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800&display=swap');
@@ -197,8 +196,7 @@
     </div>
 
     <script type="module">
-        // const payments = Square.payments('sandbox-sq0idb-jeE29DTw_SfJ52vT7ZM7IA', 'L8PVP5B7XVYDR'); // sandbox
-        const payments = Square.payments('sq0idp-P9dzLXrd8KM4Zat_hu82RQ', 'LBYSV1XNZV0FX'); // production
+        const payments = Square.payments("{{ config('services.square.application_id') }}","{{ config('services.square.location_id') }}");
         
         const card = await payments.card();
         await card.attach('#card-container');
@@ -222,11 +220,9 @@
                         $(".livewire-loader").removeClass('hidden');
                     },
                     success: function (response) {
-                        console.log(response);
                         if (response.code == 200) {
-                            // var url = "{{ route('square.complete') }}";
-                            var url = "https://selfshiplabel.com/history";
-                            location.href = url;
+                            var redirect_url = "{{ config('services.square.redirect_url') }}";
+                            location.href = redirect_url;
                         } else {
                             alert('PAYMENT ERROR!');
                             $(".livewire-loader").addClass('hidden');

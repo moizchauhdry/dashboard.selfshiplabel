@@ -133,7 +133,7 @@
                                                     }">{{ message.message }}</span>
                                             </div>
                                             <p class="text-xs sm:text-sm italic"><span>
-                                                    Test
+                                                {{ formatDate(message.created_at) }}
                                                 </span></p>
                                         </div>
 
@@ -241,30 +241,6 @@ export default {
                 this.form.message = '';
             }
         },
-        //  fetchInquiry() {
-        //     this.loading = true;
-        //     const url = "inquiry/fetch"
-
-        //     // const router = useRouter();
-        //     // const inquiry_id = router.currentRoute.value.params.slug;
-
-        //     var form = {
-        //         inquiry_id: this.inquiry.id,
-        //         user_id: this.inquiry.user_id
-        //     }
-
-        //     this.$axios
-        //         .post(this.route('inquirie.list-fetch'), form)
-        //         .then((response) => {
-        //             this.inquiry = response.data.data.inquiry;
-        //             this.inquiry_messages = response.data.data.inquiry_messages;
-        //             this.loading = false;
-        //         })
-        //         .catch((error) => {
-        //             console.error(error);
-        //             this.loading = false;
-        //         });
-        // },
         fetchInquiryMessages() {
             this.loading = true;
             this.form.inquiry_id = this.inquiry.id;
@@ -318,9 +294,9 @@ export default {
     watch: {
         'inquiry_messages.data': {
             handler() {
-                // this.$nextTick(() => {
-                //     this.scrollToBottom();
-                // });
+                this.$nextTick(() => {
+                    this.scrollToBottom();
+                });
             },
             deep: true
         }
@@ -346,7 +322,7 @@ export default {
         //         this.inquiry_messages.push(e.message);
         //     });
 
-        // this.scrollToBottom();
+        this.scrollToBottom();
     },
 }
 </script>
