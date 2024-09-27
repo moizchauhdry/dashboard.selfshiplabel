@@ -105,14 +105,14 @@ class SquarePaymentController extends Controller
                 $grand_total_array = explode(".", $grand_total);
                 $amount = (int) $grand_total_array[0];
 
+                $SQUARE_API_URL = config('services.square.api_url');
+
                 $headers = [
-                    // 'Authorization' => 'Bearer EAAAEPcP7wW7hp68oZHTLDGY4E7XjEAQWGFzLHVrIFpElBcX6CTDSSkk0UsEKx4e'
-                    'Authorization' => 'Bearer EAAAFIT1m3W_vYnBwzTr1M2OktU_vMDVT2tTm1OcNIcFSPa1X5oABXlHYx2P4kxN'
+                    'Authorization' => 'Bearer ' . config('services.square.access_token')
                 ];
 
                 // CREATE CUSTOMER
-                // $customer_url = 'https://connect.squareupsandbox.com/v2/customers';
-                $customer_url = 'https://connect.squareup.com/v2/customers';
+                $customer_url = $SQUARE_API_URL . '/customers';
 
                 $customer_body = [
                     "company_name" => $package->customer->name,
@@ -123,8 +123,7 @@ class SquarePaymentController extends Controller
                 $customer_response = json_decode($customer_response->getBody(), true);
 
                 // CREATE CARD
-                // $card_url = 'https://connect.squareupsandbox.com/v2/cards';
-                $card_url = 'https://connect.squareup.com/v2/cards';
+                $card_url =  $SQUARE_API_URL . '/cards';
 
                 $card_body = [
                     "card" => [
@@ -139,8 +138,7 @@ class SquarePaymentController extends Controller
                 $card_response = json_decode($card_response->getBody(), true);
 
                 // CREATE PAYMENT
-                // $payment_url = 'https://connect.squareupsandbox.com/v2/payments';
-                $payment_url = 'https://connect.squareup.com/v2/payments';
+                $payment_url =  $SQUARE_API_URL . '/payments';
 
                 $payment_body = [
                     'amount_money' => [
@@ -183,6 +181,7 @@ class SquarePaymentController extends Controller
 
                     $package->update([
                         'payment_status' => 'Paid',
+                        'package_status_id' => 5,
                         'cart' => 0,
                     ]);
 
@@ -287,14 +286,13 @@ class SquarePaymentController extends Controller
                         'charged_amount' => 0,
                         'transaction_id' => 0
                     ];
-
                 } else {
                     abort(403);
                 }
             }
 
             foreach ($packages as $key => $package) {
-                
+
                 if ($package->carrier_code == 'fedex') {
                     $data['fedex_label'] = generateLabelFedex($package->id, 1);
                 }
@@ -341,14 +339,14 @@ class SquarePaymentController extends Controller
             $grand_total_array = explode(".", $grand_total);
             $amount = (int) $grand_total_array[0];
 
+            $SQUARE_API_URL = config('services.square.api_url');
+
             $headers = [
-                // 'Authorization' => 'Bearer EAAAEPcP7wW7hp68oZHTLDGY4E7XjEAQWGFzLHVrIFpElBcX6CTDSSkk0UsEKx4e'
-                'Authorization' => 'Bearer EAAAFIT1m3W_vYnBwzTr1M2OktU_vMDVT2tTm1OcNIcFSPa1X5oABXlHYx2P4kxN'
+                'Authorization' => 'Bearer ' . config('services.square.access_token')
             ];
 
             // CREATE CUSTOMER
-            // $customer_url = 'https://connect.squareupsandbox.com/v2/customers';
-            $customer_url = 'https://connect.squareup.com/v2/customers';
+            $customer_url = $SQUARE_API_URL . '/customers';
 
             $customer_body = [
                 "company_name" => $packages[0]->customer->name,
@@ -359,8 +357,7 @@ class SquarePaymentController extends Controller
             $customer_response = json_decode($customer_response->getBody(), true);
 
             // CREATE CARD
-            // $card_url = 'https://connect.squareupsandbox.com/v2/cards';
-            $card_url = 'https://connect.squareup.com/v2/cards';
+            $card_url =  $SQUARE_API_URL . '/cards';
 
             $card_body = [
                 "card" => [
@@ -375,8 +372,7 @@ class SquarePaymentController extends Controller
             $card_response = json_decode($card_response->getBody(), true);
 
             // CREATE PAYMENT
-            // $payment_url = 'https://connect.squareupsandbox.com/v2/payments';
-            $payment_url = 'https://connect.squareup.com/v2/payments';
+            $payment_url =  $SQUARE_API_URL . '/payments';
 
             $payment_body = [
                 'amount_money' => [
