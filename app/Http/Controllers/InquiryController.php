@@ -2,21 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Events\SendMessage;
 use App\Models\Inquiry;
 use App\Models\InquiryMessage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 
 class InquiryController extends Controller
 {
-    //
     public function index()
     {
-        $inquiries = Inquiry::paginate(10);
+        $inquiries = Inquiry::orderBy('id','desc')->paginate(10);
 
         return Inertia::render('Inquiry/Index', [
             'inquiries' => $inquiries,

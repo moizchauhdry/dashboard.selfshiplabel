@@ -1,15 +1,10 @@
 <template>
     <MainLayout>
-        <div class="container-fluid d-flex justify-content-between align-items-center py-1 px-3 px-lg-5">
-            <div class="d-flex align-items-center w-100">
-                <div class="d-none d-lg-block py-2 py-sm-4 h-100" style="min-height: 90vh;">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
                     <div class="card shadow-sm">
                         <div class="card-header bg-light text-xl d-flex align-items-center">
-                            <svg class="mr-2" width="24" height="24" xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 576 512">
-                                <path
-                                    d="M64 64C28.7 64 0 92.7 0 128v64c0 8.8 7.4 15.7 15.7 18.6C34.5 217.1 48 235 48 256s-13.5 38.9-32.3 45.4C7.4 304.3 0 311.2 0 320v64c0 35.3 28.7 64 64 64H512c35.3 0 64-28.7 64-64V320c0-8.8-7.4-15.7-15.7-18.6C541.5 294.9 528 277 528 256s13.5-38.9 32.3-45.4c8.3-2.9 15.7-9.8 15.7-18.6V128c0-35.3-28.7-64-64-64H64zm64 112l0 160c0 8.8 7.2 16 16 16H432c8.8 0 16-7.2 16-16V176c0-8.8-7.2-16-16-16H144c-8.8 0-16 7.2-16 16zM96 160c0-17.7 14.3-32 32-32H448c17.7 0 32 14.3 32 32V352c0 17.7-14.3 32-32 32H128c-17.7 0-32-14.3-32-32V160z" />
-                            </svg>
                             <b>Ticket Information</b>
                         </div>
                         <div class="card-body">
@@ -26,8 +21,13 @@
                                 </li>
                                 <li
                                     class="list-group-item d-flex justify-content-between align-items-center border-bottom">
-                                    <div>Last Updated</div>
-                                    <div>{{ inquiry.updated_at }}</div>
+                                    <div>Created at</div>
+                                    <div>{{ formatDateTime(inquiry.created_at) }}</div>
+                                </li>
+                                <li
+                                    class="list-group-item d-flex justify-content-between align-items-center border-bottom">
+                                    <div>Updated at</div>
+                                    <div>{{ formatDateTime(inquiry.updated_at) }}</div>
                                 </li>
                                 <li
                                     class="list-group-item d-flex justify-content-between align-items-center border-bottom">
@@ -41,14 +41,15 @@
                         </div>
                     </div>
                 </div>
-                <div class="w-100 py-2 py-sm-4 h-100" style="min-height: 90vh;">
-                    <div class="d-flex flex-column justify-content-between card h-100 shadow-sm">
+
+                <div class="col-md-8">
+                    <div class="d-flex flex-column justify-content-between card shadow-sm">
                         <div class="card-header d-flex justify-content-between align-items-center bg-light">
                             <div class="d-flex align-items-center">
                                 <div class="d-flex flex-column">
                                     <div class="d-flex align-items-center">
                                         <p class="h4 mb-0"><strong>Ticket No#</strong> <span class="text-muted">{{
-                                                inquiry.id }}</span></p>
+                                            inquiry.id }}</span></p>
                                     </div>
                                     <p><strong>Subject:</strong> <span class="text-muted">{{ inquiry.subject }}</span>
                                     </p>
@@ -56,7 +57,7 @@
                             </div>
                             <div class="py-2">
                                 <a :href="route('inquirie.index')"
-                                    class="btn btn-light btn-block d-flex align-items-center justify-content-center">
+                                    class="btn btn-primary btn-block d-flex align-items-center justify-content-center">
                                     <i class="fa fa-arrow-left mr-2" aria-hidden="true"></i>
                                     Back
                                 </a>
@@ -70,9 +71,10 @@
                                         :class="{ 'justify-content-end': message.user_type === 'admin' }">
                                         <div :class="{ 'text-right': message.user_type === 'admin', 'text-left': message.user_type === 'customer' }"
                                             class="d-flex flex-column">
-                                            <div class="mb-2">
-                                                <span class="badge"
-                                                    :class="message.user_type === 'admin' ? 'badge-secondary' : 'badge-info'">
+                                            <div class="mt-2 mb-1" style="text-align: justify;">
+                                                <span class="badge p-3"
+                                                    :class="message.user_type === 'admin' ? 'badge-secondary' : 'badge-info'"
+                                                    style="font-size: 1rem; border-radius: 20px; white-space: pre-wrap;">
                                                     {{ message.message }}
                                                 </span>
                                             </div>
@@ -85,18 +87,11 @@
 
                         <div class="card-footer">
                             <div class="d-flex">
-                                <input type="text" placeholder="Write your message!" v-model="form.message"
+                                <input type="text" placeholder="Type a message" v-model="form.message"
                                     @keydown.enter.prevent="sendMessage" class="form-control bg-light border-warning"
                                     required :readonly="inquiry.status === 'close'">
                                 <button :disabled="inquiry.status === 'close'" type="button" @click="sendMessage"
-                                    class="btn btn-warning ml-2">
-                                    <span class="font-weight-bold">Send</span>
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
-                                        class="ml-2" width="20" height="20">
-                                        <path
-                                            d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z">
-                                        </path>
-                                    </svg>
+                                    class="btn btn-warning ml-2"> Send
                                 </button>
                             </div>
                         </div>
@@ -107,15 +102,13 @@
 
     </MainLayout>
 </template>
+
 <script>
 import MainLayout from '@/Layouts/Main'
 import BreezeAuthenticatedLayout from '@/Layouts/Authenticated'
 import Pagination from '@/Components/Pagination'
-import { format } from 'date-fns';
 import { db } from '@/bootstrap';
-
 import { collection, query, addDoc, where, orderBy, onSnapshot, serverTimestamp } from 'firebase/firestore';
-
 
 export default {
     data() {
@@ -126,7 +119,6 @@ export default {
             inquiry: "",
             inquiry_messages: [],
             form: this.$inertia.form({
-                // inquiry_messages: this.inquiry_messages,
                 inquiry: this.inquiry,
             }),
 
@@ -182,19 +174,9 @@ export default {
             this.loading = true;
             this.form.inquiry_id = this.inquiry.id;
             this.form.user_id = this.inquiry.user_id;
-
-
             axios
                 .post(this.route('inquirie.message-list'), this.form)
                 .then((response) => {
-
-                    // this.$inertia.replace(this.$page.url, {
-                    //     data: {
-                    //     inquiry_messages: response.data.data.inquiry_messages,
-                    //     inquiry : response.data.data.inquiry
-                    //     },
-                    //     // preserveState: true
-                    // });
                     this.loading = false;
                 })
                 .catch((error) => {
@@ -222,14 +204,26 @@ export default {
 
             // Format the date
             const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+            const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'June', 'July', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
             const dayName = dayNames[date.getDay()];
             const monthName = monthNames[date.getMonth()];
             const day = date.getDate();
 
             // Combine formatted parts
-            return `${formattedHours}:${formattedMinutes} ${ampm} ${dayName}, ${monthName} ${day}`;
+            return `${formattedHours}:${formattedMinutes} ${ampm}, ${monthName} ${day}`;
+        },
+        formatDateTime(date) {
+            const options = {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: false, // Set to true for 12-hour format with AM/PM
+            };
+            return new Date(date).toLocaleString(undefined, options);
         }
     },
     watch: {
@@ -256,20 +250,14 @@ export default {
             this.inquiry_messages = messages;
         });
 
-        // window.Echo.private('chat-channel')
-        //     .listen('SendMessage', (e) => {
-        //         console.log('ehoooee');
-        //         console.log(e);
-        //         this.inquiry_messages.push(e.message);
-        //     });
-
         this.scrollToBottom();
     },
 }
 </script>
+
 <style>
 #messages {
-    height: 300px;
+    height: 500px;
     overflow-y: scroll;
 }
 

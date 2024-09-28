@@ -1,6 +1,7 @@
 @import 'tailwindcss/base';
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
+
 .active{
 	background-color: aliceblue;
 	border: 2px solid whitesmoke;
