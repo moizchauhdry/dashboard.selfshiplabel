@@ -198,9 +198,17 @@ class PackageController extends BaseController
     }
 
     public function setCustom(Request $request)
-    {
+    {        
         try {
-            $package = Package::cart()->first();
+            $customer = Auth::user();
+
+            // $package = Package::cart()->first();
+            $package = Package::query()
+                ->where('id', $request->package_id)
+                ->where('customer_id', $customer->id)
+                ->where('package_status_id', 1)
+                ->orderBy('id', 'desc')
+                ->first();
 
             $validator = Validator::make($request->all(), [
                 'items.*.description' => 'required',
