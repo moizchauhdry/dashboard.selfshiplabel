@@ -93,16 +93,18 @@ class PackageController extends BaseController
 
         PackageBox::where('package_id', $package->id)->delete();
         foreach ($request->dimensions as $key => $dimension) {
-            PackageBox::create([
-                'package_id' => $package->id,
-                'pkg_type' => $package->pkg_type,
-                'weight_unit' => 'lb',
-                'dim_unit' => 'in',
-                'weight' => $dimension['weight'],
-                'length' => $dimension['length'],
-                'width' => $dimension['width'],
-                'height' => $dimension['height'],
-            ]);
+            for ($i = 1; $i <= $dimension['no_of_pkg']; $i++) {
+                PackageBox::create([
+                    'package_id' => $package->id,
+                    'pkg_type' => $package->pkg_type,
+                    'weight_unit' => 'lb',
+                    'dim_unit' => 'in',
+                    'weight' => $dimension['weight'],
+                    'length' => $dimension['length'],
+                    'width' => $dimension['width'],
+                    'height' => $dimension['height'],
+                ]);
+            }
         }
 
         $data['package'] = $package;
@@ -198,7 +200,7 @@ class PackageController extends BaseController
     }
 
     public function setCustom(Request $request)
-    {        
+    {
         try {
             $customer = Auth::user();
 
