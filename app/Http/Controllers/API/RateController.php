@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
@@ -15,6 +16,8 @@ class RateController extends BaseController
 {
     public function index(Request $request)
     {
+        // dd($request->dimensions);
+
         $validator = Validator::make(
             $request->all(),
             [
@@ -23,17 +26,20 @@ class RateController extends BaseController
                 'insurance_amount' => 'nullable',
                 'ship_from_postal_code' => 'nullable',
                 'ship_to_postal_code' => 'nullable',
+
                 'dimensions' => 'required|array',
+                'dimensions.*.no_of_pkg' => 'required',
                 'dimensions.*.weight' => 'required',
                 'dimensions.*.length' => 'required',
                 'dimensions.*.width' => 'required',
                 'dimensions.*.height' => 'required',
             ],
             [
-                'dimensions.*.weight.required' => 'The weight field is required.',
-                'dimensions.*.length.required' => 'The length field is required.',
-                'dimensions.*.width.required' => 'The width field is required.',
-                'dimensions.*.height.required' => 'The height field is required.',
+                'dimensions.*.no_of_pkg.required' => 'The field is required.',
+                'dimensions.*.weight.required' => 'The field is required.',
+                'dimensions.*.length.required' => 'The field is required.',
+                'dimensions.*.width.required' => 'The field is required.',
+                'dimensions.*.height.required' => 'The field is required.',
                 'ship_from_postal_code.required' => 'The field is required.',
                 'ship_to_postal_code.required' => 'The field is required.',
             ]
@@ -199,19 +205,23 @@ class RateController extends BaseController
 
         $requested_package_line_items = [];
         foreach ($data['dimensions'] as $key => $dimension) {
-            $requested_package_line_items[] =  [
-                "weight" => [
-                    "units" => $data['weight_units'],
-                    "value" => $dimension['weight']
-                ],
-                "dimensions" => [
-                    "length" => $dimension['length'],
-                    "width" => $dimension['width'],
-                    "height" => $dimension['height'],
-                    "units" => $data['dimension_units']
-                ]
-            ];
+            for ($i = 1; $i <= $dimension['no_of_pkg']; $i++) {
+                $requested_package_line_items[] =  [
+                    "weight" => [
+                        "units" => $data['weight_units'],
+                        "value" => $dimension['weight']
+                    ],
+                    "dimensions" => [
+                        "length" => $dimension['length'],
+                        "width" => $dimension['width'],
+                        "height" => $dimension['height'],
+                        "units" => $data['dimension_units']
+                    ]
+                ];
+            }
         }
+
+        // Log::info($requested_package_line_items);
 
         $body = [
             "accountNumber" => [
@@ -275,14 +285,16 @@ class RateController extends BaseController
         try {
             $packages = [];
             foreach ($data['dimensions'] as $key => $dimension) {
-                $packages[] =  [
-                    "weight" => (float) $dimension['weight'],
-                    "dimensions" => [
-                        "length" => (float) $dimension['length'],
-                        "width" => (float) $dimension['width'],
-                        "height" => (float) $dimension['height']
-                    ]
-                ];
+                for ($i = 1; $i <= $dimension['no_of_pkg']; $i++) {
+                    $packages[] =  [
+                        "weight" => (float) $dimension['weight'],
+                        "dimensions" => [
+                            "length" => (float) $dimension['length'],
+                            "width" => (float) $dimension['width'],
+                            "height" => (float) $dimension['height']
+                        ]
+                    ];
+                }
             }
 
             $client = new Client();
@@ -402,29 +414,31 @@ class RateController extends BaseController
 
             $packages = [];
             foreach ($data['dimensions'] as $key => $dimension) {
-                $packages[] =   [
-                    "PackagingType" => [
-                        "Code" => "02",
-                        "Description" => "Packaging"
-                    ],
-                    "Dimensions" => [
-                        "UnitOfMeasurement" => [
-                            "Code" => $data['dimension_units'],
+                for ($i = 1; $i <= $dimension['no_of_pkg']; $i++) {
+                    $packages[] =   [
+                        "PackagingType" => [
+                            "Code" => "02",
+                            "Description" => "Packaging"
                         ],
-                        "Length" => (string) $dimension['length'],
-                        "Width" => (string) $dimension['width'],
-                        "Height" => (string) $dimension['height']
-                    ],
-                    "PackageWeight" => [
-                        "UnitOfMeasurement" => [
-                            "Code" => "LBS",
-                            "Description" => "Ounces"
+                        "Dimensions" => [
+                            "UnitOfMeasurement" => [
+                                "Code" => $data['dimension_units'],
+                            ],
+                            "Length" => (string) $dimension['length'],
+                            "Width" => (string) $dimension['width'],
+                            "Height" => (string) $dimension['height']
                         ],
-                        "Weight" => (string) $dimension['weight']
-                    ],
-                    "OversizeIndicator" => "X",
-                    "MinimumBillableWeightIndicator" => "X"
-                ];
+                        "PackageWeight" => [
+                            "UnitOfMeasurement" => [
+                                "Code" => "LBS",
+                                "Description" => "Ounces"
+                            ],
+                            "Weight" => (string) $dimension['weight']
+                        ],
+                        "OversizeIndicator" => "X",
+                        "MinimumBillableWeightIndicator" => "X"
+                    ];
+                }
             }
 
             // Package Rating 
@@ -708,7 +722,7 @@ class RateController extends BaseController
                 'total' => $total,
             ];
         }
-        
+
         return $rates;
     }
 }
