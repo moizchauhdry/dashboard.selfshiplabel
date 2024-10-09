@@ -17,8 +17,6 @@ class RateController extends BaseController
 {
     public function index(Request $request)
     {
-        // dd($request->dimensions);
-
         $validator = Validator::make(
             $request->all(),
             [
@@ -91,12 +89,11 @@ class RateController extends BaseController
             $ups_rates = $this->ups($data, 1);
 
             $usps_rates = [];
-            // if (is_array($request->dimensions)) {
-            //     $dimension_count = count($request->dimensions);
-            //     if ($dimension_count == 1) {
-            //         $usps_rates = $this->usps($data, 1);
-            //     }
-            // }
+            if ($request->dimensions[0]['no_of_pkg'] == 1) {
+                $usps_rates = $this->usps($data, 1);
+            }
+
+            // Log::info($usps_rates);
 
             $rates = array_merge($fedex_rates, $dhl_rates, $ups_rates, $usps_rates);
 
@@ -151,6 +148,17 @@ class RateController extends BaseController
             $dimension_units = 'IN';
             $measurement_unit = 'imperial';
 
+            $dimension_array = [];
+            foreach ($request->dimensions as $key => $dimension) {
+                $dimension_array[] = [
+                    'no_of_pkg' => 1,
+                    'weight' => $dimension['weight'],
+                    'length' => $dimension['length'],
+                    'width' => $dimension['width'],
+                    'height' => $dimension['height'],
+                ];
+            }
+
             $data = [
                 'ship_from_postal_code' => $request->ship_from_postal_code,
                 'ship_from_country_code' => $request->ship_from_country_code,
@@ -164,7 +172,7 @@ class RateController extends BaseController
                 'weight_units' => $weight_units,
                 'dimension_units' => $dimension_units,
                 'measurement_unit' => $measurement_unit,
-                'dimensions' => $request->dimensions,
+                'dimensions' => $dimension_array,
                 'customs_value' => $request->customs_value,
                 'residential' => $request->is_residential,
                 'insurance_amount' => $request->insurance_amount,
@@ -653,36 +661,80 @@ class RateController extends BaseController
             $response = json_decode($response, true);
             $access_token = $response['access_token'];
 
-            // Domestic Rates API
             $headers = [
                 'X-locale' => 'en_US',
                 'Content-Type' => 'application/json',
                 'Authorization' => 'Bearer ' . $access_token,
             ];
 
+            $client = new Client();
+
+            // Domestic Rates
             if ($data['ship_from_country_code'] == $data['ship_to_country_code']) {
                 $rates_url = "https://api.usps.com/prices/v3/total-rates/search";
-                $body = [
-                    "originZIPCode" =>  $data['ship_from_postal_code'],
-                    "destinationZIPCode" =>  $data['ship_to_postal_code'],
-                    "weight" => (float) $data['dimensions'][0]['weight'],
-                    "length" => (float) $data['dimensions'][0]['length'],
-                    "width" => (float) $data['dimensions'][0]['width'],
-                    "height" => (float) $data['dimensions'][0]['height'],
-                    "mailClass" =>  "PARCEL_SELECT",
-                    "mailClasses" =>  [
-                        "ALL"
-                    ],
-                    "priceType" =>  "RETAIL",
-                    "mailingDate" =>  Carbon::now()->format('Y-m-d'),
-                    "accountType" =>  "EPS",
-                    "accountNumber" =>  "1000123621",
-                    "itemValue" =>  0,
-                    "extraServices" =>  [
-                        415
-                    ]
+
+                $all_rating_response = [];
+
+                $domestic_mail_classes = [
+                    "USPS_GROUND_ADVANTAGE",
+
+                    // "PRIORITY_MAIL_EXPRESS",
+                    // "PRIORITY_MAIL",
+                    // "FIRST-CLASS_PACKAGE_SERVICE",
+                    // "USPS_RETAIL_GROUND"
+
+                    // "PARCEL_SELECT",
+                    // "PARCEL_SELECT_LIGHTWEIGHT",
+                    // "LIBRARY_MAIL",
+                    // "MEDIA_MAIL",
+                    // "BOUND_PRINTED_MATTER",
+                    // "USPS_CONNECT_LOCAL",
+                    // "USPS_CONNECT_MAIL",
+                    // "USPS_CONNECT_NEXT_DAY",
+                    // "USPS_CONNECT_REGIONAL",
+                    // "USPS_CONNECT_SAME_DAY",
                 ];
-            } else {
+
+                foreach ($domestic_mail_classes as $key => $domestic_mail_class) {
+                    $body = [
+                        "originZIPCode" =>  $data['ship_from_postal_code'],
+                        "destinationZIPCode" =>  $data['ship_to_postal_code'],
+                        "weight" => (float) $data['dimensions'][0]['weight'],
+                        "length" => (float) $data['dimensions'][0]['length'],
+                        "width" => (float) $data['dimensions'][0]['width'],
+                        "height" => (float) $data['dimensions'][0]['height'],
+                        "mailClass" =>  $domestic_mail_class,
+                        // "mailClasses" =>  [
+                        //     "ALL"
+                        // ],
+                        "priceType" =>  "RETAIL",
+                        "mailingDate" =>  Carbon::now()->format('Y-m-d'),
+                        "accountType" =>  "EPS",
+                        "accountNumber" =>  "1000123621",
+                        "itemValue" =>  0,
+                        "extraServices" =>  [
+                            415
+                        ]
+                    ];
+
+                    try {
+                        $request = $client->post($rates_url, [
+                            'headers' => $headers,
+                            'body' => json_encode($body)
+                        ]);
+
+                        $response = $request->getBody()->getContents();
+                        $rating_response = json_decode($response, true);
+
+                        $all_rating_response[$domestic_mail_class] = $rating_response;
+                    } catch (\Throwable $th) {
+                        //throw $th;
+                    }
+                }
+            }
+
+            // International Rates
+            if ($data['ship_from_country_code'] != $data['ship_to_country_code']) {
 
                 $all_rating_response = [];
 
@@ -693,7 +745,6 @@ class RateController extends BaseController
                     "GLOBAL_EXPRESS_GUARANTEED"
                 ];
 
-                $client = new Client();
                 $rates_url = "https://api.usps.com/international-prices/v3/total-rates/search";
 
                 foreach ($international_mail_classes as $key => $international_mail_class) {
@@ -731,6 +782,8 @@ class RateController extends BaseController
                 }
             }
 
+            Log::info($all_rating_response);
+
             $markup = SiteSetting::getByName('markup');
             $rates = [];
 
@@ -744,9 +797,13 @@ class RateController extends BaseController
                     $total = $price + $markup_amount;
                     $total = number_format((float)$total, 2, '.', '');
 
+                    $cleaned_string = str_replace(['-', '_'], ' ', $usps['rates'][0]['mailClass']);
+                    $capitalized_string = ucwords(strtolower($cleaned_string));
+
                     $rates[] = [
                         'code' => 'usps',
                         'type' => $usps['rates'][0]['mailClass'],
+                        // 'name' => $capitalized_string,
                         'name' => $usps['rates'][0]['description'],
                         'pkg_type' => 'YOUR_PACKAGING',
                         'price' => $price,
