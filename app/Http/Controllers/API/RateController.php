@@ -6,6 +6,7 @@ use App\Http\Controllers\API\BaseController as BaseController;
 use App\Models\SiteSetting;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
+use Illuminate\Auth\Events\Login;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -84,11 +85,18 @@ class RateController extends BaseController
                 'dimensions' => $request->dimensions,
             ];
 
+            // $fedex_rates = $dhl_rates = $ups_rates = [];
             $fedex_rates = $this->fedex($data, 1);
             $dhl_rates = $this->dhl($data, 1);
             $ups_rates = $this->ups($data, 1);
-            // $usps_rates = $this->usps($data, 1);
+
             $usps_rates = [];
+            // if (is_array($request->dimensions)) {
+            //     $dimension_count = count($request->dimensions);
+            //     if ($dimension_count == 1) {
+            //         $usps_rates = $this->usps($data, 1);
+            //     }
+            // }
 
             $rates = array_merge($fedex_rates, $dhl_rates, $ups_rates, $usps_rates);
 
@@ -621,108 +629,137 @@ class RateController extends BaseController
 
     public function usps($data, $project_id)
     {
-        $client_id = "IflzdSXAAtl33158BLidVum089HXVWR9";
-        $client_secret = "HAa6nqXQgP1zkNvS";
+        try {
 
-        // Authorization API
-        $token_url = "https://api.usps.com/oauth2/v3/token";
-        $params = [
-            "client_id" => $client_id,
-            "client_secret" => $client_secret,
-            "grant_type" => "client_credentials"
-        ];
+            $client_id = "IflzdSXAAtl33158BLidVum089HXVWR9";
+            $client_secret = "HAa6nqXQgP1zkNvS";
 
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $token_url);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($params));
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        $response = curl_exec($ch);
-        curl_close($ch);
-
-        $response = json_decode($response, true);
-        $access_token = $response['access_token'];
-
-        // Domestic Rates API
-        $headers = [
-            'X-locale' => 'en_US',
-            'Content-Type' => 'application/json',
-            'Authorization' => 'Bearer ' . $access_token,
-        ];
-
-        if ($data['ship_from_country_code'] == $data['ship_to_country_code']) {
-            $rates_url = "https://api.usps.com/prices/v3/total-rates/search";
-            $body = [
-                "originZIPCode" =>  $data['ship_from_postal_code'],
-                "destinationZIPCode" =>  $data['ship_to_postal_code'],
-                "weight" =>  1,
-                "length" =>  1,
-                "width" =>  1,
-                "height" =>  1,
-                "mailClass" =>  "PARCEL_SELECT",
-                "mailClasses" =>  [
-                    "ALL"
-                ],
-                "priceType" =>  "RETAIL",
-                "mailingDate" =>  Carbon::now()->format('Y-m-d'),
-                "accountType" =>  "EPS",
-                "accountNumber" =>  "1000123621",
-                "itemValue" =>  0,
-                "extraServices" =>  [
-                    415
-                ]
+            // Authorization API
+            $token_url = "https://api.usps.com/oauth2/v3/token";
+            $params = [
+                "client_id" => $client_id,
+                "client_secret" => $client_secret,
+                "grant_type" => "client_credentials"
             ];
-        } else {
-            $rates_url = "https://api.usps.com/international-prices/v3/total-rates/search";
-            $body = [
-                "originZIPCode" => $data['ship_from_postal_code'],
-                "weight" => 1,
-                "length" => 1,
-                "width" => 1,
-                "height" => 1,
-                "mailClass" => "ALL",
-                "processingCategory" => "FLATS",
-                "rateIndicator" => "E4",
-                "destinationEntryFacilityType" => "NONE",
-                "priceType" => "RETAIL",
-                "mailingDate" =>  Carbon::now()->format('Y-m-d'),
-                "foreignPostalCode" => $data['ship_to_postal_code'],
-                "destinationCountryCode" => "PK",
-                "accountType" => "EPS",
-                "accountNumber" => "1000123621"
+
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $token_url);
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($params));
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            $response = curl_exec($ch);
+            curl_close($ch);
+
+            $response = json_decode($response, true);
+            $access_token = $response['access_token'];
+
+            // Domestic Rates API
+            $headers = [
+                'X-locale' => 'en_US',
+                'Content-Type' => 'application/json',
+                'Authorization' => 'Bearer ' . $access_token,
             ];
+
+            if ($data['ship_from_country_code'] == $data['ship_to_country_code']) {
+                $rates_url = "https://api.usps.com/prices/v3/total-rates/search";
+                $body = [
+                    "originZIPCode" =>  $data['ship_from_postal_code'],
+                    "destinationZIPCode" =>  $data['ship_to_postal_code'],
+                    "weight" => (float) $data['dimensions'][0]['weight'],
+                    "length" => (float) $data['dimensions'][0]['length'],
+                    "width" => (float) $data['dimensions'][0]['width'],
+                    "height" => (float) $data['dimensions'][0]['height'],
+                    "mailClass" =>  "PARCEL_SELECT",
+                    "mailClasses" =>  [
+                        "ALL"
+                    ],
+                    "priceType" =>  "RETAIL",
+                    "mailingDate" =>  Carbon::now()->format('Y-m-d'),
+                    "accountType" =>  "EPS",
+                    "accountNumber" =>  "1000123621",
+                    "itemValue" =>  0,
+                    "extraServices" =>  [
+                        415
+                    ]
+                ];
+            } else {
+
+                $all_rating_response = [];
+
+                $international_mail_classes = [
+                    "FIRST-CLASS_PACKAGE_INTERNATIONAL_SERVICE",
+                    "PRIORITY_MAIL_INTERNATIONAL",
+                    "PRIORITY_MAIL_EXPRESS_INTERNATIONAL",
+                    "GLOBAL_EXPRESS_GUARANTEED"
+                ];
+
+                $client = new Client();
+                $rates_url = "https://api.usps.com/international-prices/v3/total-rates/search";
+
+                foreach ($international_mail_classes as $key => $international_mail_class) {
+                    $body = [
+                        "originZIPCode" => $data['ship_from_postal_code'],
+                        "weight" =>  (float) $data['dimensions'][0]['weight'],
+                        "length" =>  (float) $data['dimensions'][0]['length'],
+                        "width" =>  (float) $data['dimensions'][0]['width'],
+                        "height" =>  (float) $data['dimensions'][0]['height'],
+                        "mailClass" => $international_mail_class,
+                        "processingCategory" => "FLATS",
+                        "rateIndicator" => "E4",
+                        "destinationEntryFacilityType" => "NONE",
+                        "priceType" => "RETAIL",
+                        "mailingDate" =>  Carbon::now()->format('Y-m-d'),
+                        "foreignPostalCode" => $data['ship_to_postal_code'],
+                        "destinationCountryCode" => $data['ship_to_country_code'],
+                        "accountType" => "EPS",
+                        "accountNumber" => "1000123621"
+                    ];
+
+                    try {
+                        $request = $client->post($rates_url, [
+                            'headers' => $headers,
+                            'body' => json_encode($body)
+                        ]);
+
+                        $response = $request->getBody()->getContents();
+                        $rating_response = json_decode($response, true);
+
+                        $all_rating_response[$international_mail_class] = $rating_response;
+                    } catch (\Throwable $th) {
+                        //throw $th;
+                    }
+                }
+            }
+
+            $markup = SiteSetting::getByName('markup');
+            $rates = [];
+
+            foreach ($all_rating_response as $key => $ars) {
+                foreach ($ars['rateOptions'] as $key => $usps) {
+                    Log::info($usps['rates'][0]['price']);
+
+                    $price = $usps['rates'][0]['price'];
+                    $markup = shipping_service_markup($usps['rates'][0]['mailClass'], $project_id);
+                    $markup_amount = $price * ((int)$markup / 100);
+                    $total = $price + $markup_amount;
+                    $total = number_format((float)$total, 2, '.', '');
+
+                    $rates[] = [
+                        'code' => 'usps',
+                        'type' => $usps['rates'][0]['mailClass'],
+                        'name' => $usps['rates'][0]['description'],
+                        'pkg_type' => 'YOUR_PACKAGING',
+                        'price' => $price,
+                        'markup' => $markup_amount,
+                        'total' => $total,
+                    ];
+                }
+            }
+
+            return $rates;
+        } catch (\Throwable $th) {
+            // Log::info($th);
+            return [];
         }
-
-        $client = new Client();
-
-        $request = $client->post($rates_url, [
-            'headers' => $headers,
-            'body' => json_encode($body)
-        ]);
-
-        $response = $request->getBody()->getContents();
-        $rating_response = json_decode($response);
-
-        $markup = SiteSetting::getByName('markup');
-        $rates = [];
-        foreach ($rating_response->rateOptions as $key => $usps) {
-            $price = $usps->rates[0]->price;
-            $markup = shipping_service_markup($usps->rates[0]->mailClass, $project_id);
-            $markup_amount = $price * ((int)$markup / 100);
-            $total = $price + $markup_amount;
-            $total = number_format((float)$total, 2, '.', '');
-
-            $rates[] = [
-                'code' => 'usps',
-                'type' => $usps->rates[0]->mailClass,
-                'name' => $usps->rates[0]->description,
-                'pkg_type' => 'YOUR_PACKAGING',
-                'price' => $price,
-                'markup' => $markup_amount,
-                'total' => $total,
-            ];
-        }
-
-        return $rates;
     }
 }
