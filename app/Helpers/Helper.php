@@ -11,6 +11,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Webklex\PDFMerger\Facades\PDFMergerFacade as PDFMerger;
 use GuzzleHttp\Client;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 function format_number($number)
@@ -924,87 +925,109 @@ function generateLabelUsps($id, $project_id)
         'X-Payment-Authorization-Token' => $payment_token,
     ];
 
+    $package_boxes = [];
+    foreach ($package->boxes as $key => $box) {
+        $package_boxes[] =    [
+            "description" => 'Items',
+            "weight" => $box->weight,
+            "dimensions" => [
+                "length" => $box->length,
+                "width" => $box->width,
+                "height" => $box->height
+            ]
+        ];
+    }
+
     if ($package->pkg_ship_type == 'international') {
+
+        $custom_form_contents = [];
+        $items = OrderItem::with('originCountry')->where('package_id', $package->id)->get();
+        foreach ($items as $key => $item) {
+            $custom_form_contents[] = [
+                "itemDescription" => $item->description,
+                "itemQuantity" => $item->quantity,
+                "itemValue" => $item->unit_price,
+                "itemTotalValue" => $item->unit_price * $item->unit_price,
+                "weightUOM" => "lb",
+                "itemTotalWeight" => 1,
+                "HSTariffNumber" => "string",
+                "countryofOrigin" => $item->originCountry->iso
+            ];
+        }
+
         $body = [
             "imageInfo" => [
                 "imageType" => "PDF",
                 "labelType" => "4X6LABEL",
                 "holdForManifest" => false
             ],
-            "toAddress" => [
-                "streetAddress" => "369 Ellis Street West",
-                "secondaryAddress" => "Windsor, ON, N8X 1B1, CANADA",
-                "city" => "Windsor",
-                "postalCode" => "N8X 1B1,",
-                "province" => "ON",
-                "country" => "CANADA",
-                "countryISOAlpha2Code" => "CA",
-                "firstName" => "Moiz",
-                "lastName" => "Chauhdry",
-                "firm" => "octalsol",
-                "phone" => "5199909222"
-            ],
             "fromAddress" => [
-                "streetAddress" => "3578 W savanna st",
-                "secondaryAddress" => "Anaheim, CA",
-                "city" => "Anaheim",
-                "state" => "CA",
-                "ZIPCode" => "92804",
-                "firstName" => "Habib",
-                "lastName" => "Haseeb",
-                "firm" => "Shipping XPS",
-                "phone" => "209717988",
-                "email" => "habib10@me.com"
+                "streetAddress" => $ship_from->address,
+                // "secondaryAddress" => $ship_from->address_2,
+                "city" => $ship_from->city,
+                "state" => $ship_from->state,
+                "ZIPCode" => $ship_from->zip_code,
+                "firstName" => $ship_from->fullname,
+                // "lastName" => $ship_from->fullname,
+                "firm" => $ship_from->company_name,
+                "phone" => $ship_from->phone,
+                "email" => $ship_from->email
             ],
             "senderAddress" => [
-                "streetAddress" => "3578 W savanna st",
-                "city" => "Anaheim",
-                "state" => "CA",
-                "ZIPCode" => "92804",
-                "firstName" => "Habib",
-                "lastName" => "Haseeb",
-                "firm" => "Shipping XPS",
-                "phone" => "2097517988",
-                "email" => "habib10@me.com"
+                "streetAddress" => $ship_from->address,
+                "city" => $ship_from->city,
+                "state" => $ship_from->state,
+                "ZIPCode" => $ship_from->zip_code,
+                "firstName" => $ship_from->fullname,
+                // "lastName" => $ship_from->fullname,
+                "firm" => $ship_from->company_name ?? "",
+                "phone" => $ship_from->phone,
+                "email" => $ship_from->email
+            ],
+            "toAddress" => [
+                "streetAddress" => $ship_to->address,
+                // "secondaryAddress" => $ship_to->address_2,
+                "city" => $ship_to->city,
+                "postalCode" => $ship_to->zip_code,
+                "province" => $ship_to->state,
+                "country" => $ship_to->country_code,
+                "countryISOAlpha2Code" => $ship_to->country_code,
+                "firstName" => $ship_to->fullname,
+                "lastName" => $ship_to->fullname,
+                "firm" => $ship_to->company ?? "",
+                "phone" => $ship_to->phone
             ],
             "packageDescription" => [
                 "weightUOM" => "lb",
-                "weight" => 1,
+                "weight" => $package_boxes[0]['weight'],
                 "dimensionsUOM" => "in",
-                "length" => 1,
-                "height" => 1,
-                "width" => 1,
-                "destinationEntryFacilityAddress" => [
-                    "streetAddress" => "3578 W savanna st",
-                    "secondaryAddress" => "Anaheim, CA",
-                    "city" => "Anaheim",
-                    "state" => "CA",
-                    "ZIPCode" => "92804",
-                    "ZIPPlus4" => "1234",
-                    "urbanization" => "string"
-                ],
-                "mailClass" => "PRIORITY_MAIL_INTERNATIONAL",
+                "length" => $package_boxes[0]['dimensions']['length'],
+                "height" => $package_boxes[0]['dimensions']['height'],
+                "width" => $package_boxes[0]['dimensions']['width'],
+
+                "mailClass" => $package->service_code,
                 "rateIndicator" => "SP",
                 "diameter" => 0,
                 "shape" => "RECTANGLE",
                 "processingCategory" => "NON_MACHINABLE",
                 "destinationEntryFacilityType" => "NONE",
-                "mailingDate" => "2024-08-28",
+                "mailingDate" => Carbon::now()->format('Y-m-d'),
+
                 "packageOptions" => [
                     "packageValue" => 35,
                     "nonDeliveryOption" => "RETURN",
                     "redirectAddress" => [
-                        "streetAddress" => "3578 W savanna st",
-                        "secondaryAddress" => "Anaheim, CA",
-                        "city" => "Anaheim",
-                        "state" => "CA",
-                        "ZIPCode" => "92804",
+                        "streetAddress" => $ship_from->address,
+                        "secondaryAddress" => $ship_from->address_2 ?? "",
+                        "city" => $ship_from->city,
+                        "state" => $ship_from->state,
+                        "ZIPCode" => $ship_from->zip_code,
                         "urbanization" => "string",
-                        "firstName" => "Habib",
-                        "lastName" => "Haseeb",
-                        "firm" => "Shipping XPS",
-                        "phone" => "209717988",
-                        "email" => "habib10@me.com",
+                        "firstName" => $ship_from->fullname,
+                        "lastName" => $ship_from->fullname,
+                        "firm" => $ship_from->company_name,
+                        "phone" => $ship_from->phone,
+                        "email" => $ship_from->email,
                         "ignoreBadAddress" => true
                     ]
                 ],
@@ -1032,21 +1055,7 @@ function generateLabelUsps($id, $project_id)
                         "email" => "user@example.com"
                     ]
                 ],
-                "contents" => [
-                    [
-                        "itemDescription" => "Policy guidelines document",
-                        "itemQuantity" => 1,
-                        "itemValue" => 1,
-                        "itemTotalValue" => 1,
-                        "weightUOM" => "lb",
-                        "itemWeight" => 1,
-                        "itemTotalWeight" => 1,
-                        "HSTariffNumber" => "string",
-                        "countryofOrigin" => "US",
-                        "itemCategory" => "Appliances, Parts & Accessories",
-                        "itemSubcategory" => "Bathroom Appliances"
-                    ]
-                ]
+                "contents" => $custom_form_contents
             ]
         ];
     } else {
@@ -1057,36 +1066,36 @@ function generateLabelUsps($id, $project_id)
                 "suppressPostage" => true,
                 "suppressMailDate" => true
             ],
-            "toAddress" => [
-                "firstName" => "Leroy",
-                "lastName" => "Brown",
-                "streetAddress" => "1100 Wyoming",
-                "city" => "St. Louis",
-                "state" => "MO",
-                "ZIPCode" => "63118",
+            "fromAddress" => [
+                "firstName" => $ship_from->fullname,
+                "lastName" => $ship_from->fullname,
+                "streetAddress" => $ship_from->address,
+                "secondaryAddress" => $ship_from->address_2 ?? "",
+                "city" => $ship_from->city,
+                "state" => $ship_from->state,
+                "ZIPCode" => $ship_from->zip_code,
                 "ignoreBadAddress" => true
             ],
-            "fromAddress" => [
-                "firstName" => "John",
-                "lastName" => "Smith",
-                "streetAddress" => "4120 Bingham",
-                "secondaryAddress" => "Apt 1",
-                "city" => "St. Louis",
-                "state" => "MO",
-                "ZIPCode" => "63116",
+            "toAddress" => [
+                "firstName" => $ship_to->fullname,
+                "lastName" => $ship_to->fullname,
+                "streetAddress" => $ship_to->address,
+                "city" => $ship_to->city,
+                "state" => $ship_to->state,
+                "ZIPCode" => $ship_to->zip_code,
                 "ignoreBadAddress" => true
             ],
             "packageDescription" => [
-                "mailClass" => "PRIORITY_MAIL",
+                "mailClass" => $package->service_code,
                 "rateIndicator" => "SP",
                 "weightUOM" => "lb",
-                "weight" => 20,
+                "weight" => $package_boxes[0]['weight'],
                 "dimensionsUOM" => "in",
-                "length" => 5.0,
-                "width" => 5.0,
-                "height" => 5.0,
+                "length" => $package_boxes[0]['dimensions']['length'],
+                "width" => $package_boxes[0]['dimensions']['width'],
+                "height" => $package_boxes[0]['dimensions']['height'],
                 "processingCategory" => "NON_MACHINABLE",
-                "mailingDate" => "2024-08-28",
+                "mailingDate" => Carbon::now()->format('Y-m-d'),
                 "extraServices" => [
                     920
                 ],
@@ -1104,6 +1113,8 @@ function generateLabelUsps($id, $project_id)
         ];
     }
 
+    Log::info($body);
+
     $client = new Client();
 
     if ($package->pkg_ship_type == 'international') {
@@ -1119,6 +1130,8 @@ function generateLabelUsps($id, $project_id)
     }
 
     $response = $request->getBody()->getContents();
+
+
     $code = explode("\r\n", $response);
 
     if ($package->pkg_ship_type == 'international') {
