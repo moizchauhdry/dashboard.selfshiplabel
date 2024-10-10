@@ -63,9 +63,9 @@ class SquarePaymentController extends Controller
                     $data['dhl_label'] = generateLabelDhl($package->id, 1);
                 }
 
-                if ($package->carrier_code == 'usps') {
-                    $data['usps_label'] = generateLabelUsps($package->id, 1);
-                }
+                // if ($package->carrier_code == 'usps') {
+                //     $data['usps_label'] = generateLabelUsps($package->id, 1);
+                // }
 
                 return $this->sendResponse($data, 'success');
             } else {
