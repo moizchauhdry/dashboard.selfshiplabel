@@ -71,7 +71,7 @@ class RateController extends BaseController
                 'ship_from_country_code' => $request->ship_from_country_code,
                 'insurance_amount' => $request->insurance_amount,
                 'ship_from_city' => "Anaheim",
-                'ship_from_state' => "CA",
+                'ship_from_state' => $request->ship_from_state,
                 'ship_to_postal_code' => $ship_to_postal_code,
                 'ship_to_country_code' => $request->ship_to_country_code,
                 'ship_to_city' => $request->ship_to_city,
