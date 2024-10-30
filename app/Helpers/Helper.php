@@ -1118,7 +1118,10 @@ function generateLabelUsps($id, $project_id)
         ];
     }
 
-    Log::info($body);
+    Log::info([
+        'package_id' => $package->id,
+        'usps_body' => $body
+    ]);
 
     $client = new Client();
 

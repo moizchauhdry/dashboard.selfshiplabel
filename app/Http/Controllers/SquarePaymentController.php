@@ -208,7 +208,10 @@ class SquarePaymentController extends Controller
             }
         } catch (\Throwable $th) {
 
-            Log::error($th->getMessage());
+            Log::error([
+                'package_id' => $package->id,
+                'error' => $th->getMessage()
+            ]);
             abort(403);
 
             // return response()->json([

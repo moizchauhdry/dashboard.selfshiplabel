@@ -17,6 +17,7 @@ return [
     'stripe_secret_key' => env('STRIPE_SECRET_KEY', null),
     'stripe_publish_key' => env('STRIPE_PUBLISH_KEY', null),
     'stripe_confirm_url' => env('STRIPE_CONFIRM_URL', null),
+    'log_channel' => env('LOG_CHANNEL', 'database'),
 
     /*
     |--------------------------------------------------------------------------
