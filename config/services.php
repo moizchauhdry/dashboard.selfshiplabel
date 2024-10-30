@@ -52,4 +52,14 @@ return [
         'redirect_url' => env('SQUARE_REDIRECT_URL'),
     ],
 
+    'usps' => [
+        'client_id' => env('USPS_CLIENT_ID'),
+        'client_secret' => env('USPS_CLIENT_SECRET'),
+        'api_url' => env('USPS_API_URL'),
+        'crid' => env('USPS_CRID'),
+        'mid' => env('USPS_MID'),
+        'manifest_mid' => env('USPS_MANIFEST_MID'),
+        'account_no' => env('USPS_ACCOUNT_NO'),
+    ],
+
 ];

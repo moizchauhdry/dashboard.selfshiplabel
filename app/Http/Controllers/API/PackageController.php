@@ -89,7 +89,14 @@ class PackageController extends BaseController
             'insurance_amount' => $request->insurance_amount,
         ];
 
-        $package = Package::updateOrCreate(['id' => $request->package_id, 'customer_id' => $user->id, 'cart' => 1], $data);
+        $package = Package::where('id', $request->package_id)->where('customer_id', $user->id)->first();
+        if ($package) {
+            $package->update($data);
+        } else {
+            Package::create($data);
+        }
+
+        // $package = Package::updateOrCreate(['id' => $request->package_id, 'customer_id' => $user->id, 'cart' => 1], $data);
 
         PackageBox::where('package_id', $package->id)->delete();
         foreach ($request->dimensions as $key => $dimension) {
@@ -517,16 +524,6 @@ class PackageController extends BaseController
                 ];
             }
 
-            if ($package->carrier_code == 'usps') {
-                $usps = generateLabelUsps($package->id, 2);  // Package ID, Project ID
-                dd($usps);
-                // $data['usps_label'] = [
-                //     'label_url' => config('app.url') . '/' . $usps['label_url'],
-                //     'package_id' => $usps['id'],
-                //     'grand_total' => $usps['grand_total']
-                // ];
-            }
-
             DB::commit();
             return $this->sendResponse($data, 'SUCCESS');
         } catch (\Throwable $th) {
@@ -606,17 +603,17 @@ class PackageController extends BaseController
             $new_package = $existing_package->replicate();
             $new_package->save();
 
-            if ($existing_package->shipTo) {
-                $newShipTo = $existing_package->shipTo->replicate();
-                $newShipTo->save();
-                $new_package->ship_to = $newShipTo->id;
-            }
+            // if ($existing_package->shipTo) {
+            //     $newShipTo = $existing_package->shipTo->replicate();
+            //     $newShipTo->save();
+            //     $new_package->ship_to = $newShipTo->id;
+            // }
 
-            if ($existing_package->shipFrom) {
-                $newShipFrom = $existing_package->shipFrom->replicate();
-                $newShipFrom->save();
-                $new_package->ship_from = $newShipFrom->id;
-            }
+            // if ($existing_package->shipFrom) {
+            //     $newShipFrom = $existing_package->shipFrom->replicate();
+            //     $newShipFrom->save();
+            //     $new_package->ship_from = $newShipFrom->id;
+            // }
 
             $new_package->save();
 
@@ -625,6 +622,12 @@ class PackageController extends BaseController
                 $newBox->package_id = $new_package->id;
                 $newBox->save();
             }
+
+            $new_package->update([
+                'package_status_id' => 1,
+                'payment_status' => "Pending",
+                'label_access_code' => NULL,
+            ]);
         }
 
         return $this->sendResponse([
