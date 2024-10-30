@@ -63,10 +63,6 @@ class SquarePaymentController extends Controller
                     $data['dhl_label'] = generateLabelDhl($package->id, 1);
                 }
 
-                // if ($package->carrier_code == 'usps') {
-                //     $data['usps_label'] = generateLabelUsps($package->id, 1);
-                // }
-
                 return $this->sendResponse($data, 'success');
             } else {
                 // return $this->error('The value must be greater then 0',);
@@ -185,6 +181,11 @@ class SquarePaymentController extends Controller
                         'cart' => 0,
                     ]);
 
+
+                    if ($package->carrier_code == 'usps' && $package->payment_status == 'Paid') {
+                        $data['usps_label'] = generateLabelUsps($package->id, 1);
+                    }
+
                     return response()->json([
                         'status' => true,
                         'code' => 200,
@@ -206,11 +207,18 @@ class SquarePaymentController extends Controller
                 ]);
             }
         } catch (\Throwable $th) {
-            return response()->json([
-                'status' => false,
-                'code' => 403,
-                'message' => $th->getMessage(),
+
+            Log::error([
+                'package_id' => $package->id,
+                'error' => $th->getMessage()
             ]);
+            abort(403);
+
+            // return response()->json([
+            //     'status' => false,
+            //     'code' => 403,
+            //     'message' => $th->getMessage(),
+            // ]);
         }
     }
 
@@ -303,10 +311,6 @@ class SquarePaymentController extends Controller
 
                 if ($package->carrier_code == 'dhl') {
                     $data['dhl_label'] = generateLabelDhl($package->id, 1);
-                }
-
-                if ($package->carrier_code == 'usps') {
-                    $data['usps_label'] = generateLabelUsps($package->id, 1);
                 }
             }
 

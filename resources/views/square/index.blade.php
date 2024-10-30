@@ -229,7 +229,6 @@
                         }
                     },
                     error : function (errors) {
-                        console.log(errors);
                         alert('SYSTEM ERROR!');
                         $(".livewire-loader").addClass('hidden');
                     }

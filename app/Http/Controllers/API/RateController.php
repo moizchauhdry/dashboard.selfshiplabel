@@ -89,9 +89,9 @@ class RateController extends BaseController
             $ups_rates = $this->ups($data, 1);
 
             $usps_rates = [];
-            // if ($request->dimensions[0]['no_of_pkg'] == 1) {
-            //     $usps_rates = $this->usps($data, 1);
-            // }
+            if ($request->dimensions[0]['no_of_pkg'] == 1) {
+                $usps_rates = $this->usps($data, 1);
+            }
 
             // Log::info($usps_rates);
 

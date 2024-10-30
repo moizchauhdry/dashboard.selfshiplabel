@@ -849,11 +849,16 @@ function generateLabelUsps($id, $project_id)
     $ship_to = Address::where('id', $package->ship_to)->first();
     $package->update(['label_access_code' => Str::uuid() . '-' . $package->id]);
 
-    $client_id = "IflzdSXAAtl33158BLidVum089HXVWR9";
-    $client_secret = "HAa6nqXQgP1zkNvS";
+    $client_id = config('services.usps.client_id');
+    $client_secret = config('services.usps.client_secret');
+    $api_url = config('services.usps.api_url');
+    $crid = config('services.usps.crid');
+    $mid = config('services.usps.mid');
+    $manifest_mid = config('services.usps.manifest_mid');
+    $account_no = config('services.usps.account_no');
 
     // Authorization API
-    $token_url = "https://api.usps.com/oauth2/v3/token";
+    $token_url = $api_url . "/oauth2/v3/token";
     $params = [
         "client_id" => $client_id,
         "client_secret" => $client_secret,
@@ -873,7 +878,7 @@ function generateLabelUsps($id, $project_id)
 
     // Payment API
     $token = $access_token;
-    $url = "https://api.usps.com/payments/v3/payment-authorization";
+    $url = $api_url . "/payments/v3/payment-authorization";
 
     $headers = array(
         "Authorization: Bearer $token",
@@ -884,21 +889,21 @@ function generateLabelUsps($id, $project_id)
         "roles": [
             {
                 "roleName": "PAYER",
-                "CRID": "46153809",
-                "MID": "903653576",
-                "manifestMID": "903653574",
+                "CRID": "' . $crid . '",
+                "MID": "' . $mid . '",
+                "manifestMID": "' . $manifest_mid . '",
                 "accountType": "EPS",
-                "accountNumber": "1000123621",
+                "accountNumber": "' . $account_no . '",
                 "permitNumber": "",
                 "permitZipCode": ""
             },
             {
                 "roleName": "LABEL_OWNER",
-                "CRID": "46153809",
-                "MID": "903653576",
-                "manifestMID": "903653574",
+                "CRID": "' . $crid . '",
+                "MID": "' . $mid . '",
+                "manifestMID": "' . $manifest_mid . '",
                 "accountType": "EPS",
-                "accountNumber": "1000123621",
+                "accountNumber": "' . $account_no . '",
                 "permitNumber": "",
                 "permitZipCode": ""
             }
@@ -1113,24 +1118,27 @@ function generateLabelUsps($id, $project_id)
         ];
     }
 
-    Log::info($body);
+    Log::info([
+        'package_id' => $package->id,
+        'usps_body' => $body
+    ]);
 
     $client = new Client();
 
     if ($package->pkg_ship_type == 'international') {
-        $request = $client->post('https://api.usps.com/international-labels/v3/international-label', [
+        $request = $client->post($api_url . '/international-labels/v3/international-label', [
             'headers' => $headers,
             'body' => json_encode($body)
         ]);
     } else {
-        $request = $client->post('https://api.usps.com/labels/v3/label', [
+        $request = $client->post($api_url . '/labels/v3/label', [
             'headers' => $headers,
             'body' => json_encode($body)
         ]);
     }
 
     $response = $request->getBody()->getContents();
-
+    // Log::info($response);
 
     $code = explode("\r\n", $response);
 
