@@ -101,7 +101,6 @@ class Package extends Model implements Auditable
     public function getServiceChargesAttribute()
     {
         $serviceCharges = $this->serviceRequests;
-        \Log::info($serviceCharges);
         $sum = 0;
         foreach ($serviceCharges as $service) {
             $sum += $service->price;

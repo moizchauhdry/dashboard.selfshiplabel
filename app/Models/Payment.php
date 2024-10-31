@@ -4,9 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use OwenIt\Auditing\Contracts\Auditable;
 
-class Payment extends Model
+class Payment extends Model implements Auditable
 {
+    use \OwenIt\Auditing\Auditable;
     use HasFactory;
     protected $guarded = [];
 
@@ -19,11 +21,6 @@ class Payment extends Model
     {
         return $this->belongsTo(Order::class, 'order_id');
     }
-
-    // public function package()
-    // {
-    //     return $this->belongsTo(Package::class, 'package_id');
-    // }
 
     public function additionalRequest()
     {
