@@ -153,12 +153,13 @@ class CustomerController extends Controller
             ->through(fn ($customer) => [
                 'id' => $customer->id,
                 'suite_no' => $customer->id,
-                'name' => $customer->name ?? '-',
-                'email' => $customer->email ?? '-',
-                'city' => $customer->city ?? '-',
-                'country' => $customer->country ?? '-',
-                'phone' => $customer->phone_no ?? '-',
+                'name' => $customer->name,
+                'email' => $customer->email,
+                'city' => $customer->city,
+                'country' => $customer->country,
+                'phone' => $customer->phone_no,
                 'status' => $customer->status,
+                'account_type' => $customer->account_type,
                 'created_at' => isset($customer->created_at) ? $customer->created_at->format('F d, Y') : NULL,
                 'updated_at' => isset($customer->created_at) ? $customer->updated_at->format('F d, Y') : NULL,
             ]);
@@ -239,6 +240,7 @@ class CustomerController extends Controller
             'email' => $request->email,
             'phone_no' => $request->phone_no,
             'status' => $request->status,
+            'account_type' => $request->account_type,
         ];
 
         $user = User::findOrFail($id);

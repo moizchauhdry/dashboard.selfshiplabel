@@ -28,6 +28,7 @@
 								<th class="px-3 py-2">Phone</th>
 								<th class="px-3 py-2">Register Date</th>
 								<th class="px-3 py-2">Status</th>
+								<th class="px-3 py-2">Account Type</th>
 								<th class="px-3 py-2" colspan="2"></th>
 							</tr>
 						</thead>
@@ -40,6 +41,7 @@
 								<td>{{ customer.phone }}</td>
 								<td>{{ customer.created_at }}</td>
 								<td>{{ customer.status == 1 ? 'Active' : 'Inactive' }}</td>
+								<td>{{ customer.account_type == 2 ? "Business" : "Individual" }}</td>
 								<td>
 									<template v-if="$page.props.auth.user.type == 'admin' || $page.props.auth.user.type == 'manager'">
 										<!-- <inertia-link class="btn btn-success btn-xs m-1"

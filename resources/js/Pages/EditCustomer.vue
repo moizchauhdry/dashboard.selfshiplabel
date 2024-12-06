@@ -36,6 +36,15 @@
                   </select>
                 </div>
               </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label>Account Type</label>
+                  <select v-model="form.account_type" class="form-control">
+                    <option value="1">Individual</option>
+                    <option value="2">Business</option>
+                  </select>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -77,6 +86,7 @@ export default {
         email: this.customer.email,
         phone_no: this.customer.phone_no,
         status: this.customer.status,
+        account_type: this.customer.account_type,
       }),
       currentYear: new Date().getFullYear(),
       Years: [],
