@@ -15,7 +15,7 @@
                             <thead>
                                 <tr>
                                     <th colspan="3">Customer #{{ customer_id }}</th>
-                                    <th> 
+                                    <th>
                                         <input type="submit" value="Update Settings"
                                             class="btn btn-success btn-sm float-right" />
                                     </th>
@@ -28,13 +28,14 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="(record, index) in records" :key="record.id">
-                                    <td>{{ ++index }}</td>
+                                <tr v-for="(record, i) in records" :key="record.id">
+                                    <td>{{ i + 1 }}</td>
                                     <td>{{ record.s_name }}</td>
                                     <td>{{ record.us_service_id }}</td>
                                     <td>
                                         <input type="text" class="form-control" placeholder="Markup Percentage"
-                                            v-model="record.us_percentage" required />
+                                            :value="record.us_percentage"
+                                            @input="updatePercentage(i, $event.target.value)" />
                                     </td>
                                 </tr>
                             </tbody>
@@ -69,6 +70,9 @@ export default {
         customer_id: Object,
     },
     methods: {
+        updatePercentage(index, value) {
+            this.form.records[index].us_percentage = value;
+        },
         submit() {
             this.form.post(this.route('customers.markup-update'))
         }

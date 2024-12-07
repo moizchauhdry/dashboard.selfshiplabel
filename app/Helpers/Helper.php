@@ -6,6 +6,7 @@ use App\Models\Package;
 use App\Models\Payment;
 use App\Models\ShippingService;
 use App\Models\SiteSetting;
+use App\Models\UserShippingService;
 use App\Models\Warehouse;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
@@ -62,6 +63,29 @@ function shipping_service_markup($type, $project_id)
         $percentage = $service->markup_percentage;
     }
 
+    return $percentage;
+}
+
+function user_shipping_service_markup($type, $user_id)
+{
+    $percentage = 0;
+    $record = UserShippingService::query()
+        ->from('user_shipping_services as us')
+        ->select(
+            'us.user_id as us_user_id',
+            'us.shipping_service_id as us_service_id',
+            'us.markup_percentage as us_percentage',
+            's.service_name as s_name',
+        )
+        ->join('shipping_services as s', 's.id', 'us.shipping_service_id')
+        ->where('user_id', $user_id)
+        ->where('s.service_code', $type)
+        ->first();
+
+    if ($record) {
+        $percentage = $record->us_percentage;
+    }
+    
     return $percentage;
 }
 

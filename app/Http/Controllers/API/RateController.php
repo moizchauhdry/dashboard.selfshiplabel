@@ -84,16 +84,15 @@ class RateController extends BaseController
             ];
 
             // $fedex_rates = $dhl_rates = $ups_rates = [];
-            $fedex_rates = $this->fedex($data, 1);
-            $dhl_rates = $this->dhl($data, 1);
-            $ups_rates = $this->ups($data, 1);
+
+            $fedex_rates = $this->fedex($data, $request->user_id);
+            $dhl_rates = $this->dhl($data, $request->user_id);
+            $ups_rates = $this->ups($data, $request->user_id);
 
             $usps_rates = [];
             if ($request->dimensions[0]['no_of_pkg'] == 1) {
-                $usps_rates = $this->usps($data, 1);
+                $usps_rates = $this->usps($data, $request->user_id);
             }
-
-            // Log::info($usps_rates);
 
             $rates = array_merge($fedex_rates, $dhl_rates, $ups_rates, $usps_rates);
 
@@ -178,9 +177,9 @@ class RateController extends BaseController
                 'insurance_amount' => $request->insurance_amount,
             ];
 
-            $fedex_rates = $this->fedex($data, 2);
-            $dhl_rates = $this->dhl($data, 2);
-            $ups_rates = $this->ups($data, 2);
+            $fedex_rates = $this->fedex($data, 3);
+            $dhl_rates = $this->dhl($data, 3);
+            $ups_rates = $this->ups($data, 3);
 
             $rates = array_merge($fedex_rates, $dhl_rates, $ups_rates);
 
@@ -198,7 +197,7 @@ class RateController extends BaseController
         }
     }
 
-    public function fedex($data, $project_id)
+    public function fedex($data, $user_id)
     {
         $client = new Client();
 
@@ -276,7 +275,7 @@ class RateController extends BaseController
         $rates = [];
         foreach ($response->output->rateReplyDetails as $key => $fedex) {
             $price = $fedex->ratedShipmentDetails[0]->totalNetFedExCharge;
-            $markup = shipping_service_markup($fedex->serviceType, $project_id);
+            $markup = user_shipping_service_markup($fedex->serviceType, $user_id);
             $markup_amount = $price * ((float)$markup / 100);
 
             $total = $price + $markup_amount;
@@ -287,8 +286,8 @@ class RateController extends BaseController
                 'type' => $fedex->serviceType,
                 'name' => $fedex->serviceName,
                 'pkg_type' => $fedex->packagingType,
-                'price' => $price,
-                'markup' => $markup_amount,
+                // 'price' => $price,
+                // 'markup' => $markup_amount,
                 'total' => $total,
             ];
         }
@@ -296,7 +295,7 @@ class RateController extends BaseController
         return $rates;
     }
 
-    public function dhl($data, $project_id)
+    public function dhl($data, $user_id)
     {
         try {
             $packages = [];
@@ -380,7 +379,7 @@ class RateController extends BaseController
             $response = $request->getBody()->getContents();
             $response = json_decode($response);
 
-            $markup = shipping_service_markup('EXPRESS_WORLDWIDE', $project_id);
+            $markup = user_shipping_service_markup('EXPRESS_WORLDWIDE', $user_id);
             $price = $response->products[0]->totalPrice[0]->price;
             $markup_amount = $response->products[0]->totalPrice[0]->price * ((int)$markup / 100);
             $total = $price + $markup_amount;
@@ -392,8 +391,8 @@ class RateController extends BaseController
                 'type' => 'EXPRESS_WORLDWIDE',
                 'name' => 'DHL Express Worldwide',
                 'pkg_type' => 'YOUR_PACKAGING',
-                'price' => $price,
-                'markup' => $markup_amount,
+                // 'price' => $price,
+                // 'markup' => $markup_amount,
                 'total' => $total,
             ];
 
@@ -403,7 +402,7 @@ class RateController extends BaseController
         }
     }
 
-    public function ups($data, $project_id)
+    public function ups($data, $user_id)
     {
         try {
 
@@ -543,7 +542,7 @@ class RateController extends BaseController
             $rates = [];
             foreach ($rating_response->RateResponse->RatedShipment as $key => $ups) {
                 $price = $ups->NegotiatedRateCharges->TotalCharge->MonetaryValue;
-                $markup = shipping_service_markup($ups->Service->Code, $project_id);
+                $markup = user_shipping_service_markup($ups->Service->Code, $user_id);
                 $markup_amount = $price * ((int)$markup / 100);
                 $total = $price + $markup_amount;
                 $total = number_format((float)$total, 2, '.', '');
@@ -553,8 +552,8 @@ class RateController extends BaseController
                     'type' => $ups->Service->Code,
                     'name' => $this->upsServiceCode($ups->Service->Code),
                     'pkg_type' => 'YOUR_PACKAGING',
-                    'price' => $price,
-                    'markup' => $markup_amount,
+                    // 'price' => $price,
+                    // 'markup' => $markup_amount,
                     'total' => $total,
                 ];
             }
@@ -635,7 +634,7 @@ class RateController extends BaseController
         return $name;
     }
 
-    public function usps($data, $project_id)
+    public function usps($data, $user_id)
     {
         try {
 
@@ -792,7 +791,7 @@ class RateController extends BaseController
                     Log::info($usps['rates'][0]['price']);
 
                     $price = $usps['rates'][0]['price'];
-                    $markup = shipping_service_markup($usps['rates'][0]['mailClass'], $project_id);
+                    $markup = user_shipping_service_markup($usps['rates'][0]['mailClass'], $user_id);
                     $markup_amount = $price * ((int)$markup / 100);
                     $total = $price + $markup_amount;
                     $total = number_format((float)$total, 2, '.', '');
@@ -806,8 +805,8 @@ class RateController extends BaseController
                         // 'name' => $capitalized_string,
                         'name' => $usps['rates'][0]['description'],
                         'pkg_type' => 'YOUR_PACKAGING',
-                        'price' => $price,
-                        'markup' => $markup_amount,
+                        // 'price' => $price,
+                        // 'markup' => $markup_amount,
                         'total' => $total,
                     ];
                 }

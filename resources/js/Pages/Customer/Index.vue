@@ -53,8 +53,9 @@
 											<i class="fa fa-list mr-1"></i>Detail</inertia-link>
 
 										<inertia-link :href="route('customers.markup', { customer_id: customer.id })"
-											class="btn btn-info btn-sm"><i class="fas fa-dollar"></i>
-											Markup</inertia-link>
+											class="btn btn-info btn-sm" v-if="customer.account_type == 2">
+											<i class="fas fa-dollar"></i> Markup
+										</inertia-link>
 									</template>
 								</td>
 							</tr>

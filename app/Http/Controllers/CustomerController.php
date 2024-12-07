@@ -211,22 +211,28 @@ class CustomerController extends Controller
 
     public function markup($customer_id)
     {
-        $records = UserShippingService::query()
-            ->from('user_shipping_services as us')
-            ->select(
-                'us.user_id as us_user_id',
-                'us.shipping_service_id as us_service_id',
-                'us.markup_percentage as us_percentage',
-                's.service_name as s_name',
-            )
-            ->join('shipping_services as s', 's.id', 'us.shipping_service_id')
-            ->where('user_id', $customer_id)
-            ->get();
+        $user = User::find($customer_id);
+     
+        if ($user->account_type == 2) {
+            $records = UserShippingService::query()
+                ->from('user_shipping_services as us')
+                ->select(
+                    'us.user_id as us_user_id',
+                    'us.shipping_service_id as us_service_id',
+                    'us.markup_percentage as us_percentage',
+                    's.service_name as s_name',
+                )
+                ->join('shipping_services as s', 's.id', 'us.shipping_service_id')
+                ->where('user_id', $customer_id)
+                ->get();
 
-        return Inertia::render('Customer/Markup', [
-            'records' => $records,
-            'customer_id' => $customer_id,
-        ]);
+            return Inertia::render('Customer/Markup', [
+                'records' => $records,
+                'customer_id' => $customer_id,
+            ]);
+        } else {
+            abort(403);
+        }
     }
 
     public function updateMarkup(Request $request)
