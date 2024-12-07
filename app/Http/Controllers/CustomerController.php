@@ -10,24 +10,21 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Models\Lead;
+use App\Models\ShippingService;
 use App\Models\User;
+use App\Models\UserShippingService;
 use PDF;
 
 class CustomerController extends Controller
 {
 
-    public function showPDF(Request $request)
-    {
-        $data = array('idd' => 'balack');
-        $pdf = PDF::loadView('pdf.invoice', $data);
-        return $pdf->download('invoice.pdf');
-    }
+    // public function showPDF(Request $request)
+    // {
+    //     $data = array('idd' => 'balack');
+    //     $pdf = PDF::loadView('pdf.invoice', $data);
+    //     return $pdf->download('invoice.pdf');
+    // }
 
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function users(Request $request)
     {
         $users = User::where('type', '!=', 'customer');
@@ -38,21 +35,12 @@ class CustomerController extends Controller
         $users = $users->paginate(25);
         return Inertia::render('Users/Users', compact('users'));
     }
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+
     public function createUser(Request $request)
     {
         return Inertia::render('Users/Create');
     }
 
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function editUser(Request $request, $id)
     {
         $user = User::findOrfail($id);
@@ -125,22 +113,18 @@ class CustomerController extends Controller
             return redirect('manage-users')->with('success', 'User Created Successfully');
     }
 
-    public function deleteUser($id)
-    {
+    // public function deleteUser($id)
+    // {
+    //     $user = User::find($id);
+    //     $user->delete();
 
-        $user = User::find($id);
-        $user->delete();
+    //     return redirect('manage-users')->with('success', 'User Deleted Successfully');
+    // }
 
-        return redirect('manage-users')->with('success', 'User Deleted Successfully');
-    }
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index(Request $request)
     {
         // dd($request->all());
+
         $page = $request->has('page') ? $request->page : 10;
         $query = User::where('type', 'customer');
 
@@ -150,7 +134,7 @@ class CustomerController extends Controller
         }
 
         $customers = $query->orderBy('id', 'desc')->paginate(10)
-            ->through(fn ($customer) => [
+            ->through(fn($customer) => [
                 'id' => $customer->id,
                 'suite_no' => $customer->id,
                 'name' => $customer->name,
@@ -164,7 +148,7 @@ class CustomerController extends Controller
                 'updated_at' => isset($customer->created_at) ? $customer->updated_at->format('F d, Y') : NULL,
             ]);
 
-        return Inertia::render('Customers', [
+        return Inertia::render('Customer/Index', [
             'customers' => $customers,
             'filter' => [
                 'page' => $page,
@@ -173,66 +157,35 @@ class CustomerController extends Controller
         ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        return Inertia::render('CreateLead');
-    }
+    // public function create()
+    // {
+    //     return Inertia::render('CreateLead');
+    // }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        $request->validate([
-            'first_name' => 'required|string|max:255'
-        ]);
+    // public function store(Request $request)
+    // {
+    //     $request->validate([
+    //         'first_name' => 'required|string|max:255'
+    //     ]);
 
-        $user = Lead::create([
-            'first_name' => $request->first_name
-        ]);
-        return redirect('leads');
-    }
+    //     $user = Lead::create([
+    //         'first_name' => $request->first_name
+    //     ]);
+    //     return redirect('leads');
+    // }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function show($id)
     {
         $customer = User::find($id);
         return Inertia::render('CustomerDetail', ['customer' => $customer]);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function edit($id)
     {
         $customer = User::find($id);
         return Inertia::render('EditCustomer', ['customer' => $customer]);
     }
 
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function update(Request $request, $id)
     {
         $data = [
@@ -249,16 +202,48 @@ class CustomerController extends Controller
         return redirect()->route('customers.index')->with('success', 'The customer data have been updated successfully.');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function destroy($id)
     {
         $lead = User::find($id);
         $lead->delete();
         return redirect('customers.index')->with('success', 'Customer Deleted Successfully.');
+    }
+
+    public function markup($customer_id)
+    {
+        $records = UserShippingService::query()
+            ->from('user_shipping_services as us')
+            ->select(
+                'us.user_id as us_user_id',
+                'us.shipping_service_id as us_service_id',
+                'us.markup_percentage as us_percentage',
+                's.service_name as s_name',
+            )
+            ->join('shipping_services as s', 's.id', 'us.shipping_service_id')
+            ->where('user_id', $customer_id)
+            ->get();
+
+        return Inertia::render('Customer/Markup', [
+            'records' => $records,
+            'customer_id' => $customer_id,
+        ]);
+    }
+
+    public function updateMarkup(Request $request)
+    {
+        $services = $request->input('records');
+        $customer_id = $request->input('customer_id');
+
+        UserShippingService::where('user_id', $customer_id)->delete();
+
+        foreach ($services as $service) {
+            UserShippingService::create([
+                'user_id' => $service['us_user_id'],
+                'shipping_service_id' => $service['us_service_id'],
+                'markup_percentage' => $service['us_percentage'],
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'The markup percentage update successfully.');
     }
 }

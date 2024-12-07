@@ -23,4 +23,11 @@ class User extends Authenticatable implements Auditable
     {
         return $this->hasMany(Address::class, 'user_id');
     }
+
+    public function shippingServices()
+    {
+        return $this->belongsToMany(ShippingService::class, 'user_shipping_services')
+            ->withPivot('markup_percentage')
+            ->withTimestamps();
+    }
 }
