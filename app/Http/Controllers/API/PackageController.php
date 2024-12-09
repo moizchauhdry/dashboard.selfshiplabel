@@ -37,34 +37,6 @@ class PackageController extends BaseController
         return $this->sendResponse($data, 'success');
     }
 
-    // public function createPackage()
-    // {
-    //     $customer = Auth::user();
-
-    //     $package = Package::query()
-    //         ->where('customer_id', $customer->id)
-    //         ->where('package_status_id', 1)
-    //         ->first();
-
-    //     if ($package == NULL) {
-    //         $data = [
-    //             'customer_id' => $customer->id,
-    //             'status' => 'open',
-    //             'pkg_type' => 'single',
-    //             'warehouse_id' => 1,
-    //             'currency' => "USD",
-    //             'pkg_dim_status' => "done",
-    //             'project_id' => 1,
-    //             'cart' => 1,
-    //             'package_status_id' => 1, // Create Shipment
-    //         ];
-
-    //         Package::create($data);
-    //     }
-
-    //     return $this->sendResponse($data, 'success');
-    // }
-
     public function setRate(Request $request)
     {
         $user = Auth::user();

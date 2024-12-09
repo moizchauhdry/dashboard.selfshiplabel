@@ -38,7 +38,7 @@ class DataController extends BaseController
         $countries = Country::select('id', 'iso', 'name')->orderBy('name', 'asc')->get();
         $states = State::select('id', 'name', 'country_id')->where('country_id', 226)->orderBy('name', 'asc')->get();
         $signature_types = SignatureType::select('id', 'name')->orderBy('id', 'asc')->get();
-        $shipping_services = ShippingService::select('id', 'service_name', 'service_code', 'project_id')->where('project_id', 2)->orderBy('id', 'asc')->get();
+        $shipping_services = ShippingService::select('id', 'service_name', 'service_code')->orderBy('id', 'asc')->get();
 
         $data = [
             'countries' => $countries,

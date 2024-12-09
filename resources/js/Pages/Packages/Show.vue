@@ -7,21 +7,6 @@
 					<child-package-component v-bind="$props"></child-package-component>
 					<SelfServiceComponent v-bind="$props"></SelfServiceComponent>
 
-					<!-- <notification-component v-bind="$props"></notification-component> -->
-					<!-- <template v-if="packag.project_id == 1">
-						<return-component v-bind="$props"></return-component>
-						<shipping-address-component v-bind="$props"></shipping-address-component>
-						<package-box-component v-bind="$props"></package-box-component>
-						<shipping-rate-component v-bind="$props"></shipping-rate-component>
-						<consolidation-component v-bind="$props"></consolidation-component>
-						<service-component v-bind="$props"></service-component>
-						<storage-component v-bind="$props"></storage-component>
-						<mailout-component v-bind="$props"></mailout-component>
-						<package-image-component v-bind="$props"></package-image-component>
-						<payment-component v-bind="$props"></payment-component>
-						<package-delete-component v-bind="$props"></package-delete-component>
-					</template> -->
-
 					<div v-show="overlay === true" class="overlay">
 						<div class="overlay__inner">
 							<div class="overlay__content"><span class="spinner"></span></div>

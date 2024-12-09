@@ -56,17 +56,6 @@ function calulate_storage($package)
     return true;
 }
 
-function shipping_service_markup($type, $project_id)
-{
-    $percentage = 0;
-    $service = ShippingService::where('project_id', $project_id)->where('service_code', $type)->first();
-    if ($service) {
-        $percentage = $service->markup_percentage;
-    }
-
-    return $percentage;
-}
-
 function user_shipping_service_markup($type, $user_id)
 {
     $percentage = 0;
@@ -74,7 +63,7 @@ function user_shipping_service_markup($type, $user_id)
 
     if ($user) {
         if ($user->account_type == 1) {
-            $record = ShippingService::where('project_id', 1)->where('service_code', $type)->first();
+            $record = ShippingService::where('service_code', $type)->first();
             $percentage = $record->markup_percentage;
         }
 
@@ -95,7 +84,7 @@ function user_shipping_service_markup($type, $user_id)
             $percentage = $record->us_markup_percentage;
         }
     } else {
-        $record = ShippingService::where('project_id', 1)->where('service_code', $type)->first();
+        $record = ShippingService::where('service_code', $type)->first();
         $percentage = $record->markup_percentage;
     }
 
@@ -129,7 +118,7 @@ function commercialInvoiceForLabel($id)
     return response()->download('storage/commercial-invoices/' . $filename);
 }
 
-function generateLabelFedex($id, $project_id)
+function generateLabelFedex($id, $user_id)
 {
     $package = Package::where('id', $id)->first();
     $ship_from = Address::where('id', $package->ship_from)->first();
@@ -359,7 +348,7 @@ function generateLabelFedex($id, $project_id)
     // Label Shipping Charges
     $final_shipping_charges = $response->output->transactionShipments[0]->completedShipmentDetail->shipmentRating->shipmentRateDetails[0]->totalNetCharge;
     $service_type = $response->output->transactionShipments[0]->serviceType;
-    $markup = shipping_service_markup($service_type, $project_id);
+    $markup = user_shipping_service_markup($service_type, $user_id);
     $markup_amount = $final_shipping_charges * ((float)$markup / 100);
     $total_shipping_charges = $final_shipping_charges + $markup_amount;
     $total_shipping_charges = number_format((float)$total_shipping_charges, 2, '.', '');
@@ -386,7 +375,7 @@ function generateLabelFedex($id, $project_id)
     return $package;
 }
 
-function generateLabelUps($id, $project_id)
+function generateLabelUps($id, $user_id)
 {
     $package = Package::where('id', $id)->first();
     $ship_from = Address::where('id', $package->ship_from)->first();
@@ -594,7 +583,7 @@ function generateLabelUps($id, $project_id)
     // Label Shipping Charges
     $final_shipping_charges = $response->ShipmentResponse->ShipmentResults->ShipmentCharges->TotalCharges->MonetaryValue;
     $service_type = $package->service_code;
-    $markup = shipping_service_markup($service_type, $project_id);
+    $markup = user_shipping_service_markup($service_type, $user_id);
     $markup_amount = $final_shipping_charges * ((float)$markup / 100);
     $total_shipping_charges = $final_shipping_charges + $markup_amount;
     $total_shipping_charges = number_format((float)$total_shipping_charges, 2, '.', '');
@@ -622,7 +611,7 @@ function generateLabelUps($id, $project_id)
     return $package;
 }
 
-function generateLabelDhl($id, $project_id)
+function generateLabelDhl($id, $user_id)
 {
     $package = Package::where('id', $id)->first();
     $ship_from = Address::where('id', $package->ship_from)->first();
@@ -857,29 +846,7 @@ function generateLabelDhl($id, $project_id)
     return $package;
 }
 
-function paymentInvoiceForLabel($id)
-{
-    $payment = Payment::find($id);
-    $package = Package::where('id', $payment->payment_module_id)->first();
-    $ship_from = Address::find($package->ship_from);
-    $ship_to = Address::find($package->ship_to);
-
-    view()->share([
-        'payment' => $payment,
-        'package' => $package,
-        'ship_from' => $ship_from,
-        'ship_to' => $ship_to
-    ]);
-
-    $pdf = PDF::loadView('pdfs.payment-invoice');
-    $pdf->setPaper('A4', 'portrait');
-
-    $filename = $payment->id . '.pdf';
-    Storage::disk('payment-invoices')->put($filename, $pdf->output());
-    return response()->download('storage/payment-invoices/' . $filename);
-}
-
-function generateLabelUsps($id, $project_id)
+function generateLabelUsps($id, $user_id)
 {
     $package = Package::where('id', $id)->first();
     $ship_from = Address::where('id', $package->ship_from)->first();
@@ -1201,4 +1168,26 @@ function generateLabelUsps($id, $project_id)
     // $code = explode("\r\n", $response);
     // $filename = 'test.pdf';
     // Storage::disk('usps-labels')->put($filename, base64_decode($code[9]));
+}
+
+function paymentInvoiceForLabel($id)
+{
+    $payment = Payment::find($id);
+    $package = Package::where('id', $payment->payment_module_id)->first();
+    $ship_from = Address::find($package->ship_from);
+    $ship_to = Address::find($package->ship_to);
+
+    view()->share([
+        'payment' => $payment,
+        'package' => $package,
+        'ship_from' => $ship_from,
+        'ship_to' => $ship_to
+    ]);
+
+    $pdf = PDF::loadView('pdfs.payment-invoice');
+    $pdf->setPaper('A4', 'portrait');
+
+    $filename = $payment->id . '.pdf';
+    Storage::disk('payment-invoices')->put($filename, $pdf->output());
+    return response()->download('storage/payment-invoices/' . $filename);
 }

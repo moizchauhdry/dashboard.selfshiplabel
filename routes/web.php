@@ -96,12 +96,6 @@ Route::group(['prefix' => 'auctions-a', 'middleware' => 'auth', 'as' => 'auction
 Route::get('/settings', 'SettingsController@index')->name('settings')->middleware('auth');
 Route::post('/settings', 'SettingsController@update')->name('settings.update')->middleware('auth');
 
-// Route::group(['prefix' => 'project', 'middleware' => 'auth', 'as' => 'project.'], function () {
-//     Route::get('/', [ProjectController::class, 'index'])->name('index');
-//     Route::get('/markup/{project_id}', [ProjectController::class, 'markup'])->name('markup');
-//     Route::post('/markup/update', [ProjectController::class, 'updateMarkup'])->name('markup-update');
-// });
-
 Route::group(['prefix' => 'shipping-services', 'middleware' => 'auth', 'as' => 'shipping-services.'], function () {
     Route::get('/', [ShippingServiceController::class, 'index'])->name('index');
     Route::get('/edit/{id}', [ShippingServiceController::class, 'edit'])->name('edit');
