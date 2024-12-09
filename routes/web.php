@@ -133,13 +133,10 @@ Route::delete('/delete-users/{id}', [CustomerController::class, 'deleteUser'])->
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::prefix('customer')->group(function () {
         Route::any('/', [CustomerController::class, 'index'])->name('customers.index');
-        // Route::get('create', [CustomerController::class, 'create'])->name('customers.create');
-        // Route::post('store', [CustomerController::class, 'store'])->name('customers.store');
         Route::get('edit/{id}', [CustomerController::class, 'edit'])->name('customers.edit');
         Route::post('update/{id}', [CustomerController::class, 'update'])->name('customers.update');
         Route::get('show/{id}', [CustomerController::class, 'show'])->name('customers.show');
-        // Route::delete('destroy/{id}', [CustomerController::class, 'destroy'])->name('customers.destroy');
-        Route::delete('destroy/{id}', [CustomerController::class, 'destroy'])->name('customers.destroy');
+        Route::post('account-type/update', [CustomerController::class, 'updateAccountType'])->name('customers.account-type.update');
 
         Route::get('/markup/{customer_id}', [CustomerController::class, 'markup'])->name('customers.markup');
         Route::post('/markup/update', [CustomerController::class, 'updateMarkup'])->name('customers.markup-update');

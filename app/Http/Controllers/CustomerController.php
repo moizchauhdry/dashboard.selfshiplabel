@@ -123,14 +123,21 @@ class CustomerController extends Controller
 
     public function index(Request $request)
     {
-        // dd($request->all());
-
         $page = $request->has('page') ? $request->page : 10;
         $query = User::where('type', 'customer');
 
-        if (!empty($request->suite_no)) {
-            $suite_no = intval($request->suite_no) - 4000;
-            $query->where('id', $suite_no);
+        if (!empty($request->search)) {
+            $search = intval($request->search) - 4000;
+            $query->where(function($query) use ($search, $request) {
+                $query->orWhere('id', $search)
+                      ->orWhere('name', 'like', '%' . $request->search . '%')
+                      ->orWhere('email', 'like', '%' . $request->search . '%')
+                      ->orWhere('phone_no', 'like', '%' . $request->search . '%');
+            });
+        }
+        
+        if (!empty($request->account_type)) {
+            $query->where('account_type', $request->account_type);
         }
 
         $customers = $query->orderBy('id', 'desc')->paginate(10)
@@ -183,7 +190,7 @@ class CustomerController extends Controller
     public function edit($id)
     {
         $customer = User::find($id);
-        return Inertia::render('EditCustomer', ['customer' => $customer]);
+        return Inertia::render('Customer/Edit', ['customer' => $customer]);
     }
 
     public function update(Request $request, $id)
@@ -195,23 +202,9 @@ class CustomerController extends Controller
             'email' => $request->email,
             'phone_no' => $request->phone_no,
             'status' => $request->status,
-            'account_type' => $request->account_type,
         ];
 
         $user->update($data);
-
-        if ($user->account_type == 2) {
-            UserShippingService::where('user_id', $user->id)->delete();
-
-            $shipping_services = ShippingService::get();
-            foreach ($shipping_services as $key => $service) {
-                UserShippingService::create([
-                    'user_id' => $user->id,
-                    'shipping_service_id' => $service->id,
-                    'markup_percentage' => $service->markup_percentage,
-                ]);
-            }
-        }
 
         return redirect()->route('customers.index')->with('success', 'The customer data have been updated successfully.');
     }
@@ -265,5 +258,30 @@ class CustomerController extends Controller
         }
 
         return redirect()->back()->with('success', 'The markup percentage update successfully.');
+    }
+
+    public function updateAccountType(Request $request)
+    {
+        $request->validate([
+            'account_type' => 'required|in:1,2',
+        ]);
+
+        $user = User::find($request->customer_id);
+        $user->update(['account_type' => $request->account_type]);
+
+        if ($user->account_type == 2) {
+            UserShippingService::where('user_id', $user->id)->delete();
+
+            $shipping_services = ShippingService::get();
+            foreach ($shipping_services as $key => $service) {
+                UserShippingService::create([
+                    'user_id' => $user->id,
+                    'shipping_service_id' => $service->id,
+                    'markup_percentage' => $service->markup_percentage,
+                ]);
+            }
+        }
+
+        return redirect()->back()->with('success', 'The account type update successfully.');
     }
 }
