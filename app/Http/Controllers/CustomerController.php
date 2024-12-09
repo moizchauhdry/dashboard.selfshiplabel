@@ -188,6 +188,8 @@ class CustomerController extends Controller
 
     public function update(Request $request, $id)
     {
+        $user = User::findOrFail($id);
+
         $data = [
             'name' => $request->name,
             'email' => $request->email,
@@ -196,8 +198,19 @@ class CustomerController extends Controller
             'account_type' => $request->account_type,
         ];
 
-        $user = User::findOrFail($id);
         $user->update($data);
+
+        if ($user->account_type == 2) {
+
+            $shipping_services = ShippingService::get();
+            foreach ($shipping_services as $key => $service) {
+                UserShippingService::create([
+                    'user_id' => $user->id,
+                    'shipping_service_id' => $service->id,
+                    'markup_percentage' => $service->markup_percentage,
+                ]);
+            }
+        }
 
         return redirect()->route('customers.index')->with('success', 'The customer data have been updated successfully.');
     }
@@ -212,7 +225,7 @@ class CustomerController extends Controller
     public function markup($customer_id)
     {
         $user = User::find($customer_id);
-     
+
         if ($user->account_type == 2) {
             $records = UserShippingService::query()
                 ->from('user_shipping_services as us')

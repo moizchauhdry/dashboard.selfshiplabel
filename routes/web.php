@@ -10,6 +10,7 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ShippingCalculatorController;
 use App\Http\Controllers\ShippingRatesController;
+use App\Http\Controllers\ShippingServiceController;
 use App\Http\Controllers\SquarePaymentController;
 use Inertia\Inertia;
 
@@ -95,11 +96,18 @@ Route::group(['prefix' => 'auctions-a', 'middleware' => 'auth', 'as' => 'auction
 Route::get('/settings', 'SettingsController@index')->name('settings')->middleware('auth');
 Route::post('/settings', 'SettingsController@update')->name('settings.update')->middleware('auth');
 
-Route::group(['prefix' => 'project', 'middleware' => 'auth', 'as' => 'project.'], function () {
-    Route::get('/', [ProjectController::class, 'index'])->name('index');
-    Route::get('/markup/{project_id}', [ProjectController::class, 'markup'])->name('markup');
-    Route::post('/markup/update', [ProjectController::class, 'updateMarkup'])->name('markup-update');
+// Route::group(['prefix' => 'project', 'middleware' => 'auth', 'as' => 'project.'], function () {
+//     Route::get('/', [ProjectController::class, 'index'])->name('index');
+//     Route::get('/markup/{project_id}', [ProjectController::class, 'markup'])->name('markup');
+//     Route::post('/markup/update', [ProjectController::class, 'updateMarkup'])->name('markup-update');
+// });
+
+Route::group(['prefix' => 'shipping-services', 'middleware' => 'auth', 'as' => 'shipping-services.'], function () {
+    Route::get('/', [ShippingServiceController::class, 'index'])->name('index');
+    Route::get('/edit/{id}', [ShippingServiceController::class, 'edit'])->name('edit');
+    Route::post('/update', [ShippingServiceController::class, 'update'])->name('update');
 });
+
 Route::group(['prefix' => 'inquirie', 'middleware' => 'auth', 'as' => 'inquirie.'], function () {
     Route::get('/', [InquiryController::class, 'index'])->name('index');
     Route::get('/fetch/{user_id}/{track_id}', [InquiryController::class, 'fetch'])->name('fetch');

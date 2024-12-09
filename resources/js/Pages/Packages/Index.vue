@@ -88,7 +88,7 @@ export default {
 			active: "packages",
 			date: "",
 			form: {
-				project_id: this.filters.project_id,
+				// project_id: this.filters.project_id,
 				pkg_id: this.filters.pkg_id,
 				suit_no: this.filters.suit_no,
 				pkg_status: this.filters.pkg_status,

@@ -44,8 +44,8 @@
 	</header>
 
 	<div class="toggle-side" @click="toggleSideBar()">
-				<i class="fa fa-bars"></i>
-			</div>
+		<i class="fa fa-bars"></i>
+	</div>
 
 
 	<div class="sidebar" id="main_sidebar" v-if="main_sidebar == 1">
@@ -98,14 +98,15 @@
 			</div>
 
 
-			<div class="accordion-content">
+			<!-- <div class="accordion-content">
 				<inertia-link v-if="$page.props.auth.user.type == 'admin'" class="nav-link"
 					:href="route('project.index')" :class="{ active: route().current('project.index') }"
 					:active="route().current('project.index')">
 					<i class="fas fa-list"></i>
 					<span>Projects</span>
 				</inertia-link>
-			</div>
+			</div> -->
+
 			<div class="accordion-content">
 				<inertia-link v-if="$page.props.auth.user.type == 'admin'" class="nav-link"
 					:href="route('inquirie.index')"
@@ -114,6 +115,15 @@
 					<i class="fas fa-list"></i>
 					<span>Inquiries</span>
 
+				</inertia-link>
+			</div>
+
+			<div class="accordion-content">
+				<inertia-link v-if="$page.props.auth.user.type == 'admin'" class="nav-link"
+					:href="route('shipping-services.index')" :class="{ active: route().current('shipping-services.index') }"
+					:active="route().current('shipping-services.index')">
+					<i class="fas fa-list"></i>
+					<span>Services</span>
 				</inertia-link>
 			</div>
 
@@ -281,7 +291,7 @@
 	transition: 0.3s;
 	margin-bottom: 6px;
 	transition-property: background;
-	color:white
+	color: white
 }
 
 .sidebar .sidebar-menu .nav-link.active,

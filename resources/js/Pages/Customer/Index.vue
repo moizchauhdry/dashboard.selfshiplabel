@@ -29,7 +29,7 @@
 								<th class="px-3 py-2">Register Date</th>
 								<th class="px-3 py-2">Status</th>
 								<th class="px-3 py-2">Account Type</th>
-								<th class="px-3 py-2" colspan="2"></th>
+								<th class="px-3 py-2">Action</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -45,17 +45,15 @@
 								<td>
 									<template
 										v-if="$page.props.auth.user.type == 'admin' || $page.props.auth.user.type == 'manager'">
+										
 										<inertia-link :href="route('customers.edit', customer.id)"
-											class="btn btn-primary btn-xs m-1">
-											<i class="fa fa-pencil-alt mr-1"></i>Edit</inertia-link>
+											class="btn btn-primary btn-sm mr-1"><i class="fa fa-pencil-alt"></i></inertia-link>
+
 										<inertia-link :href="route('customers.show', customer.id)"
-											class="btn btn-info btn-xs m-1">
-											<i class="fa fa-list mr-1"></i>Detail</inertia-link>
+											class="btn btn-info btn-sm mr-1"><i class="fa fa-list"></i></inertia-link>
 
 										<inertia-link :href="route('customers.markup', { customer_id: customer.id })"
-											class="btn btn-info btn-sm" v-if="customer.account_type == 2">
-											<i class="fas fa-dollar"></i> Markup
-										</inertia-link>
+											class="btn btn-warning btn-sm mr-1" v-if="customer.account_type == 2"><i class="fas fa-dollar"></i></inertia-link>
 									</template>
 								</td>
 							</tr>

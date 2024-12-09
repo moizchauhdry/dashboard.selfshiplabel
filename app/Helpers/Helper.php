@@ -6,6 +6,7 @@ use App\Models\Package;
 use App\Models\Payment;
 use App\Models\ShippingService;
 use App\Models\SiteSetting;
+use App\Models\User;
 use App\Models\UserShippingService;
 use App\Models\Warehouse;
 use Carbon\Carbon;
@@ -69,23 +70,35 @@ function shipping_service_markup($type, $project_id)
 function user_shipping_service_markup($type, $user_id)
 {
     $percentage = 0;
-    $record = UserShippingService::query()
-        ->from('user_shipping_services as us')
-        ->select(
-            'us.user_id as us_user_id',
-            'us.shipping_service_id as us_service_id',
-            'us.markup_percentage as us_percentage',
-            's.service_name as s_name',
-        )
-        ->join('shipping_services as s', 's.id', 'us.shipping_service_id')
-        ->where('user_id', $user_id)
-        ->where('s.service_code', $type)
-        ->first();
+    $user = User::find($user_id);
 
-    if ($record) {
-        $percentage = $record->us_percentage;
+    if ($user) {
+        if ($user->account_type == 1) {
+            $record = ShippingService::where('project_id', 1)->where('service_code', $type)->first();
+            $percentage = $record->markup_percentage;
+        }
+
+        if ($user->account_type == 2) {
+            $record = UserShippingService::query()
+                ->from('user_shipping_services as us')
+                ->select(
+                    'us.user_id as us_user_id',
+                    'us.shipping_service_id as us_service_id',
+                    'us.markup_percentage as us_markup_percentage',
+                    's.service_name as s_name',
+                )
+                ->join('shipping_services as s', 's.id', 'us.shipping_service_id')
+                ->where('user_id', $user->id)
+                ->where('s.service_code', $type)
+                ->first();
+
+            $percentage = $record->us_markup_percentage;
+        }
+    } else {
+        $record = ShippingService::where('project_id', 1)->where('service_code', $type)->first();
+        $percentage = $record->markup_percentage;
     }
-    
+
     return $percentage;
 }
 

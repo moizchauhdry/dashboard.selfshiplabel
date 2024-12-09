@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Shipping;
 use App\Models\ShippingService;
 use App\Models\User;
 use Illuminate\Console\Command;
@@ -38,6 +39,13 @@ class UserShippingServiceCommand extends Command
      *
      * @return int
      */
+
+    public function getDefaultPercentage($id)
+    {
+        $service = ShippingService::where('id', $id)->first();
+        return $service->markup_percentage;
+    }
+
     public function handle()
     {
         $existingServiceIds = ShippingService::orderBy('id')->pluck('id')->toArray();
@@ -53,11 +61,11 @@ class UserShippingServiceCommand extends Command
             return;
         }
 
-        $users = User::all();
+        $users = User::where('account_type', 2)->get();
         foreach ($users as $user) {
             $assignments = [];
             foreach ($newServiceIds as $serviceId) {
-                $assignments[$serviceId] = ['markup_percentage' => 20];
+                $assignments[$serviceId] = ['markup_percentage' => $this->getDefaultPercentage($serviceId)];
             }
             $user->shippingServices()->syncWithoutDetaching($assignments);
         }
