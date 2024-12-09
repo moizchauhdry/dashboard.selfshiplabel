@@ -21,10 +21,13 @@ class RateController extends BaseController
             $request->all(),
             [
                 'ship_from_country_code' => 'required',
+                'ship_from_postal_code' => 'required',
+                'ship_from_state' => 'required',
+
                 'ship_to_country_code' => 'required',
-                'insurance_amount' => 'nullable',
-                'ship_from_postal_code' => 'nullable',
                 'ship_to_postal_code' => 'nullable',
+
+                'insurance_amount' => 'nullable',
 
                 'dimensions' => 'required|array',
                 'dimensions.*.no_of_pkg' => 'required',
@@ -69,29 +72,33 @@ class RateController extends BaseController
             $data = [
                 'ship_from_postal_code' => $ship_from_postal_code,
                 'ship_from_country_code' => $request->ship_from_country_code,
-                'insurance_amount' => $request->insurance_amount,
                 'ship_from_city' => "Anaheim",
                 'ship_from_state' => $request->ship_from_state,
+
                 'ship_to_postal_code' => $ship_to_postal_code,
                 'ship_to_country_code' => $request->ship_to_country_code,
                 'ship_to_city' => $request->ship_to_city,
+                'residential' => $request->is_residential,
+                'insurance_amount' => $request->insurance_amount,
+
                 'weight_units' => $weight_units,
                 'dimension_units' => $dimension_units,
                 'measurement_unit' => $measurement_unit,
                 'customs_value' => $request->customs_value,
-                'residential' => $request->is_residential,
                 'dimensions' => $request->dimensions,
             ];
 
             // $fedex_rates = $dhl_rates = $ups_rates = [];
 
-            $fedex_rates = $this->fedex($data, $request->user_id);
-            $dhl_rates = $this->dhl($data, $request->user_id);
-            $ups_rates = $this->ups($data, $request->user_id);
+            $markup_in_response = true;
+
+            $fedex_rates = $this->fedex($data, $request->user_id, $markup_in_response);
+            $dhl_rates = $this->dhl($data, $request->user_id, $markup_in_response);
+            $ups_rates = $this->ups($data, $request->user_id, $markup_in_response);
 
             $usps_rates = [];
             if ($request->dimensions[0]['no_of_pkg'] == 1) {
-                $usps_rates = $this->usps($data, $request->user_id);
+                $usps_rates = $this->usps($data, $request->user_id, $markup_in_response);
             }
 
             $rates = array_merge($fedex_rates, $dhl_rates, $ups_rates, $usps_rates);
@@ -177,9 +184,11 @@ class RateController extends BaseController
                 'insurance_amount' => $request->insurance_amount,
             ];
 
-            $fedex_rates = $this->fedex($data, 3);
-            $dhl_rates = $this->dhl($data, 3);
-            $ups_rates = $this->ups($data, 3);
+            $markup_in_response = false;
+
+            $fedex_rates = $this->fedex($data, 3, $markup_in_response);
+            $dhl_rates = $this->dhl($data, 3, $markup_in_response);
+            $ups_rates = $this->ups($data, 3, $markup_in_response);
 
             $rates = array_merge($fedex_rates, $dhl_rates, $ups_rates);
 
@@ -197,7 +206,7 @@ class RateController extends BaseController
         }
     }
 
-    public function fedex($data, $user_id)
+    public function fedex($data, $user_id, $markup_in_response)
     {
         $client = new Client();
 
@@ -236,8 +245,6 @@ class RateController extends BaseController
             }
         }
 
-        // Log::info($requested_package_line_items);
-
         $body = [
             "accountNumber" => [
                 "value" => "695684150"
@@ -272,7 +279,7 @@ class RateController extends BaseController
 
         $response = $request->getBody()->getContents();
         $response = json_decode($response);
-        $rates = [];
+
         foreach ($response->output->rateReplyDetails as $key => $fedex) {
             $price = $fedex->ratedShipmentDetails[0]->totalNetFedExCharge;
             $markup = user_shipping_service_markup($fedex->serviceType, $user_id);
@@ -281,21 +288,26 @@ class RateController extends BaseController
             $total = $price + $markup_amount;
             $total = number_format((float)$total, 2, '.', '');
 
-            $rates[] = [
+            $rate = [
                 'code' => 'fedex',
                 'type' => $fedex->serviceType,
                 'name' => $fedex->serviceName,
                 'pkg_type' => $fedex->packagingType,
-                // 'price' => $price,
-                // 'markup' => $markup_amount,
                 'total' => $total,
             ];
+            
+            if ($markup_in_response) {
+                $rate['price'] = $price;
+                $rate['markup'] = $markup_amount;
+            }
+            
+            $rates[] = $rate;
         }
 
         return $rates;
     }
 
-    public function dhl($data, $user_id)
+    public function dhl($data, $user_id, $markup_in_response)
     {
         try {
             $packages = [];
@@ -385,16 +397,20 @@ class RateController extends BaseController
             $total = $price + $markup_amount;
             $total = number_format((float)$total, 2, '.', '');
 
-            $rates = [];
-            $rates[] = [
+            $rate = [
                 'code' => 'dhl',
                 'type' => 'EXPRESS_WORLDWIDE',
                 'name' => 'DHL Express Worldwide',
                 'pkg_type' => 'YOUR_PACKAGING',
-                // 'price' => $price,
-                // 'markup' => $markup_amount,
                 'total' => $total,
             ];
+
+            if ($markup_in_response) {
+                $rate['price'] = $price;
+                $rate['markup'] = $markup_amount;
+            }
+            
+            $rates[] = $rate;
 
             return $rates;
         } catch (\Throwable $th) {
@@ -402,7 +418,7 @@ class RateController extends BaseController
         }
     }
 
-    public function ups($data, $user_id)
+    public function ups($data, $user_id, $markup_in_response)
     {
         try {
 
@@ -535,11 +551,12 @@ class RateController extends BaseController
             ]);
 
             $rating_response = curl_exec($curl);
+
             $rating_response = json_decode($rating_response);
             $error = curl_error($curl);
 
             $markup = SiteSetting::getByName('markup');
-            $rates = [];
+            
             foreach ($rating_response->RateResponse->RatedShipment as $key => $ups) {
                 $price = $ups->NegotiatedRateCharges->TotalCharge->MonetaryValue;
                 $markup = user_shipping_service_markup($ups->Service->Code, $user_id);
@@ -547,15 +564,21 @@ class RateController extends BaseController
                 $total = $price + $markup_amount;
                 $total = number_format((float)$total, 2, '.', '');
 
-                $rates[] = [
+                $rate = [
                     'code' => 'ups',
                     'type' => $ups->Service->Code,
                     'name' => $this->upsServiceCode($ups->Service->Code),
                     'pkg_type' => 'YOUR_PACKAGING',
-                    // 'price' => $price,
-                    // 'markup' => $markup_amount,
                     'total' => $total,
                 ];
+
+                if ($markup_in_response) {
+                    $rate['price'] = $price;
+                    $rate['markup'] = $markup_amount;
+                }
+                
+                $rates[] = $rate;
+    
             }
 
             curl_close($curl);
@@ -566,75 +589,7 @@ class RateController extends BaseController
         }
     }
 
-    private function upsServiceCode($code)
-    {
-        switch ($code) {
-            case $code == '01':
-                $name = 'UPS Next Day Air';
-                break;
-
-            case $code == '02':
-                $name = 'UPS 2nd Day Air';
-                break;
-
-            case $code == '03':
-                $name = 'UPS Ground';
-                break;
-
-            case $code == '12':
-                $name = 'UPS 3 Day Select';
-                break;
-
-            case $code == '13':
-                $name = 'UPS Next Day Air Saver';
-                break;
-
-            case $code == '14':
-                $name = 'UPS UPS Next Day Air Early';
-                break;
-
-            case $code == '59':
-                $name = 'UPS 2nd Day Air A.M. Valid international values';
-                break;
-
-            case $code == '07':
-                $name = 'UPS Worldwide Express';
-                break;
-
-            case $code == '08':
-                $name = 'UPS Worldwide Expedited';
-                break;
-
-            case $code == '11':
-                $name = 'UPS Standard';
-                break;
-
-            case $code == '54':
-                $name = 'UPS Worldwide Express Plus';
-                break;
-
-            case $code == '65':
-                $name = 'UPS Worldwide Saver';
-                break;
-
-            case $code == '96':
-                $name = 'UPS UPS Worldwide Express Freight';
-                break;
-
-            case $code == '71':
-                $name = 'UPS UPS Worldwide Express Freight Midday Required for Rating and ignored for Shopping';
-                break;
-
-            default:
-                $name = 'UPS Default';
-                break;
-        }
-
-
-        return $name;
-    }
-
-    public function usps($data, $user_id)
+    public function usps($data, $user_id, $markup_in_response)
     {
         try {
 
@@ -784,7 +739,6 @@ class RateController extends BaseController
             Log::info($all_rating_response);
 
             $markup = SiteSetting::getByName('markup');
-            $rates = [];
 
             foreach ($all_rating_response as $key => $ars) {
                 foreach ($ars['rateOptions'] as $key => $usps) {
@@ -799,16 +753,20 @@ class RateController extends BaseController
                     $cleaned_string = str_replace(['-', '_'], ' ', $usps['rates'][0]['mailClass']);
                     $capitalized_string = ucwords(strtolower($cleaned_string));
 
-                    $rates[] = [
+                    $rate = [
                         'code' => 'usps',
                         'type' => $usps['rates'][0]['mailClass'],
-                        // 'name' => $capitalized_string,
                         'name' => $usps['rates'][0]['description'],
                         'pkg_type' => 'YOUR_PACKAGING',
-                        // 'price' => $price,
-                        // 'markup' => $markup_amount,
                         'total' => $total,
                     ];
+
+                    if ($markup_in_response) {
+                        $rate['price'] = $price;
+                        $rate['markup'] = $markup_amount;
+                    }
+                    
+                    $rates[] = $rate;
                 }
             }
 
@@ -817,5 +775,73 @@ class RateController extends BaseController
             // Log::info($th);
             return [];
         }
+    }
+
+    private function upsServiceCode($code)
+    {
+        switch ($code) {
+            case $code == '01':
+                $name = 'UPS Next Day Air';
+                break;
+
+            case $code == '02':
+                $name = 'UPS 2nd Day Air';
+                break;
+
+            case $code == '03':
+                $name = 'UPS Ground';
+                break;
+
+            case $code == '12':
+                $name = 'UPS 3 Day Select';
+                break;
+
+            case $code == '13':
+                $name = 'UPS Next Day Air Saver';
+                break;
+
+            case $code == '14':
+                $name = 'UPS UPS Next Day Air Early';
+                break;
+
+            case $code == '59':
+                $name = 'UPS 2nd Day Air A.M. Valid international values';
+                break;
+
+            case $code == '07':
+                $name = 'UPS Worldwide Express';
+                break;
+
+            case $code == '08':
+                $name = 'UPS Worldwide Expedited';
+                break;
+
+            case $code == '11':
+                $name = 'UPS Standard';
+                break;
+
+            case $code == '54':
+                $name = 'UPS Worldwide Express Plus';
+                break;
+
+            case $code == '65':
+                $name = 'UPS Worldwide Saver';
+                break;
+
+            case $code == '96':
+                $name = 'UPS UPS Worldwide Express Freight';
+                break;
+
+            case $code == '71':
+                $name = 'UPS UPS Worldwide Express Freight Midday Required for Rating and ignored for Shopping';
+                break;
+
+            default:
+                $name = 'UPS Default';
+                break;
+        }
+
+
+        return $name;
     }
 }
