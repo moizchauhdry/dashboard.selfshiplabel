@@ -201,6 +201,7 @@ class CustomerController extends Controller
         $user->update($data);
 
         if ($user->account_type == 2) {
+            UserShippingService::where('user_id', $user->id)->delete();
 
             $shipping_services = ShippingService::get();
             foreach ($shipping_services as $key => $service) {
