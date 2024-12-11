@@ -3,7 +3,7 @@
         <div class="card">
             <div class="card-header">
                 <div class="float-left">
-                    <h5><b>Manage Projects - Markup</b></h5>
+                    <h5><b>Manage Customers - Markup</b></h5>
                 </div>
             </div>
             <div class="card-body">
@@ -14,8 +14,8 @@
                         <table class="table table-bordered table-striped table-sm">
                             <thead>
                                 <tr>
-                                    <th colspan="3">PROJECT #{{ project_id }}</th>
-                                    <th> 
+                                    <th colspan="3">Customer #{{ customer_id }}</th>
+                                    <th>
                                         <input type="submit" value="Update Settings"
                                             class="btn btn-success btn-sm float-right" />
                                     </th>
@@ -28,13 +28,14 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="(service, index) in shipping_services" :key="service.id">
-                                    <td>{{ ++index }}</td>
-                                    <td>{{ service.service_name }}</td>
-                                    <td>{{ service.service_code }}</td>
+                                <tr v-for="(record, i) in records" :key="record.id">
+                                    <td>{{ i + 1 }}</td>
+                                    <td>{{ record.s_name }}</td>
+                                    <td>{{ record.us_service_id }}</td>
                                     <td>
                                         <input type="text" class="form-control" placeholder="Markup Percentage"
-                                            v-model="service.markup_percentage" required />
+                                            :value="record.us_percentage"
+                                            @input="updatePercentage(i, $event.target.value)" />
                                     </td>
                                 </tr>
                             </tbody>
@@ -55,8 +56,8 @@ export default {
     data() {
         return {
             form: this.$inertia.form({
-                shipping_services: this.shipping_services,
-                project_id: this.project_id,
+                records: this.records,
+                customer_id: this.customer_id,
             })
         }
     },
@@ -65,12 +66,15 @@ export default {
         MainLayout,
     },
     props: {
-        shipping_services: Object,
-        project_id: Object,
+        records: Object,
+        customer_id: Object,
     },
     methods: {
+        updatePercentage(index, value) {
+            this.form.records[index].us_percentage = value;
+        },
         submit() {
-            this.form.post(this.route('project.markup-update'))
+            this.form.post(this.route('customers.markup-update'))
         }
     }
 }

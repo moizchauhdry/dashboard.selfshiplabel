@@ -10,6 +10,7 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ShippingCalculatorController;
 use App\Http\Controllers\ShippingRatesController;
+use App\Http\Controllers\ShippingServiceController;
 use App\Http\Controllers\SquarePaymentController;
 use Inertia\Inertia;
 
@@ -95,11 +96,12 @@ Route::group(['prefix' => 'auctions-a', 'middleware' => 'auth', 'as' => 'auction
 Route::get('/settings', 'SettingsController@index')->name('settings')->middleware('auth');
 Route::post('/settings', 'SettingsController@update')->name('settings.update')->middleware('auth');
 
-Route::group(['prefix' => 'project', 'middleware' => 'auth', 'as' => 'project.'], function () {
-    Route::get('/', [ProjectController::class, 'index'])->name('index');
-    Route::get('/markup/{project_id}', [ProjectController::class, 'markup'])->name('markup');
-    Route::post('/markup/update', [ProjectController::class, 'updateMarkup'])->name('markup-update');
+Route::group(['prefix' => 'shipping-services', 'middleware' => 'auth', 'as' => 'shipping-services.'], function () {
+    Route::get('/', [ShippingServiceController::class, 'index'])->name('index');
+    Route::get('/edit/{id}', [ShippingServiceController::class, 'edit'])->name('edit');
+    Route::post('/update', [ShippingServiceController::class, 'update'])->name('update');
 });
+
 Route::group(['prefix' => 'inquirie', 'middleware' => 'auth', 'as' => 'inquirie.'], function () {
     Route::get('/', [InquiryController::class, 'index'])->name('index');
     Route::get('/fetch/{user_id}/{track_id}', [InquiryController::class, 'fetch'])->name('fetch');
@@ -131,12 +133,13 @@ Route::delete('/delete-users/{id}', [CustomerController::class, 'deleteUser'])->
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::prefix('customer')->group(function () {
         Route::any('/', [CustomerController::class, 'index'])->name('customers.index');
-        // Route::get('create', [CustomerController::class, 'create'])->name('customers.create');
-        // Route::post('store', [CustomerController::class, 'store'])->name('customers.store');
         Route::get('edit/{id}', [CustomerController::class, 'edit'])->name('customers.edit');
         Route::post('update/{id}', [CustomerController::class, 'update'])->name('customers.update');
         Route::get('show/{id}', [CustomerController::class, 'show'])->name('customers.show');
-        // Route::delete('destroy/{id}', [CustomerController::class, 'destroy'])->name('customers.destroy');
+        Route::post('account-type/update', [CustomerController::class, 'updateAccountType'])->name('customers.account-type.update');
+
+        Route::get('/markup/{customer_id}', [CustomerController::class, 'markup'])->name('customers.markup');
+        Route::post('/markup/update', [CustomerController::class, 'updateMarkup'])->name('customers.markup-update');
     });
 });
 

@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class ChangeInShippingServicesTable extends Migration
+class Change02InUsersTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,8 @@ class ChangeInShippingServicesTable extends Migration
      */
     public function up()
     {
-        Schema::table('shipping_services', function (Blueprint $table) {
-            $table->bigInteger('project_id')->nullable()->after('id');
+        Schema::table('users', function (Blueprint $table) {
+            $table->integer('account_type')->unsigned()->default(1); // individual, business
         });
     }
 
@@ -25,8 +25,8 @@ class ChangeInShippingServicesTable extends Migration
      */
     public function down()
     {
-        Schema::table('shipping_services', function (Blueprint $table) {
-            $table->dropColumn('project_id');
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropColumn('account_type');
         });
     }
 }
