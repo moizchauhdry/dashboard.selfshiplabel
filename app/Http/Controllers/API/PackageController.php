@@ -8,11 +8,14 @@ use App\Models\Country;
 use App\Models\OrderItem;
 use App\Models\Package;
 use App\Models\PackageBox;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+use Stripe\Issuing\Card;
 
 class PackageController extends BaseController
 {
@@ -499,9 +502,44 @@ class PackageController extends BaseController
             DB::commit();
             return $this->sendResponse($data, 'SUCCESS');
         } catch (\Throwable $th) {
+            dd($th);
             DB::rollBack();
             return $this->error($th->getMessage());
         }
+    }
+
+    public function cancelPackageForExternal(Request $request)
+    {
+        $package = Package::where('customer_id', 3)->find($request->package_id);
+
+        if (!$package) {
+            return $this->error("Invalid Package ID");
+        }
+
+        if ($package) {
+            $package->update([
+                'cancelled' => true,
+                'cancelled_at' => Carbon::now(),
+                'cancelled_by' => 3,
+                'cancelled_reason' => $request->reason,
+            ]);
+
+            $file_path = $package->label_access_code . '.pdf';;
+
+            if ($file_path) {
+                if (Storage::disk('labels')->exists($file_path)) {
+                    Storage::disk('labels')->delete($file_path);
+                }
+            }
+        }
+
+        $data = [
+            'package_id' => $package->id,
+            'cancelled' => $package->cancelled,
+            'cancelled_at' => Carbon::parse($package->cancelled_at)->format('Y-m-d H:i:s'),
+        ];
+
+        return $this->sendResponse($data, 'Package Cancelled');
     }
 
     public function processLabel(Request $request)
