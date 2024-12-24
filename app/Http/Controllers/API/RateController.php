@@ -208,103 +208,107 @@ class RateController extends BaseController
 
     public function fedex($data, $user_id, $markup_in_response)
     {
-        $client = new Client();
+        try {
+            $client = new Client();
 
-        $result = $client->post('https://apis.fedex.com/oauth/token', [
-            'form_params' => [
-                'grant_type' => 'client_credentials',
-                'client_id' => 'l7ef7275cc94544aaabf802ef4308bb66a',
-                'client_secret' => '48b51793-fd0d-426d-8bf0-3ecc62d9c876',
-            ]
-        ]);
+            $result = $client->post('https://apis.fedex.com/oauth/token', [
+                'form_params' => [
+                    'grant_type' => 'client_credentials',
+                    'client_id' => 'l7ef7275cc94544aaabf802ef4308bb66a',
+                    'client_secret' => '48b51793-fd0d-426d-8bf0-3ecc62d9c876',
+                ]
+            ]);
 
-        $authorization = $result->getBody()->getContents();
-        $authorization = json_decode($authorization);
+            $authorization = $result->getBody()->getContents();
+            $authorization = json_decode($authorization);
 
-        $headers = [
-            'X-locale' => 'en_US',
-            'Content-Type' => 'application/json',
-            'Authorization' => 'Bearer ' . $authorization->access_token
-        ];
-
-        $requested_package_line_items = [];
-        foreach ($data['dimensions'] as $key => $dimension) {
-            for ($i = 1; $i <= $dimension['no_of_pkg']; $i++) {
-                $requested_package_line_items[] =  [
-                    "weight" => [
-                        "units" => $data['weight_units'],
-                        "value" => $dimension['weight']
-                    ],
-                    "dimensions" => [
-                        "length" => $dimension['length'],
-                        "width" => $dimension['width'],
-                        "height" => $dimension['height'],
-                        "units" => $data['dimension_units']
-                    ]
-                ];
-            }
-        }
-
-        $body = [
-            "accountNumber" => [
-                "value" => "695684150"
-            ],
-            "requestedShipment" => [
-                "shipper" => [
-                    "address" => [
-                        "postalCode" => $data['ship_from_postal_code'],
-                        "countryCode" => $data['ship_from_country_code'],
-                        "residential" => false
-                    ]
-                ],
-                "recipient" => [
-                    "address" => [
-                        "postalCode" => $data['ship_to_postal_code'],
-                        "countryCode" => $data['ship_to_country_code'],
-                        "residential" => $data['residential']
-                    ]
-                ],
-                "pickupType" => "DROPOFF_AT_FEDEX_LOCATION",
-                "rateRequestType" => [
-                    "ACCOUNT"
-                ],
-                "requestedPackageLineItems" => $requested_package_line_items
-            ]
-        ];
-
-        $request = $client->post('https://apis.fedex.com/rate/v1/rates/quotes', [
-            'headers' => $headers,
-            'body' => json_encode($body)
-        ]);
-
-        $response = $request->getBody()->getContents();
-        $response = json_decode($response);
-
-        foreach ($response->output->rateReplyDetails as $key => $fedex) {
-            $price = $fedex->ratedShipmentDetails[0]->totalNetFedExCharge;
-            $markup = user_shipping_service_markup($fedex->serviceType, $user_id);
-            $markup_amount = $price * ((float)$markup / 100);
-
-            $total = $price + $markup_amount;
-            $total = number_format((float)$total, 2, '.', '');
-
-            $rate = [
-                'code' => 'fedex',
-                'type' => $fedex->serviceType,
-                'name' => $fedex->serviceName,
-                'pkg_type' => $fedex->packagingType,
-                'total' => $total,
+            $headers = [
+                'X-locale' => 'en_US',
+                'Content-Type' => 'application/json',
+                'Authorization' => 'Bearer ' . $authorization->access_token
             ];
-            
-            if ($markup_in_response) {
-                $rate['price'] = $price;
-                $rate['markup'] = $markup_amount;
-            }
-            
-            $rates[] = $rate;
-        }
 
-        return $rates;
+            $requested_package_line_items = [];
+            foreach ($data['dimensions'] as $key => $dimension) {
+                for ($i = 1; $i <= $dimension['no_of_pkg']; $i++) {
+                    $requested_package_line_items[] =  [
+                        "weight" => [
+                            "units" => $data['weight_units'],
+                            "value" => $dimension['weight']
+                        ],
+                        "dimensions" => [
+                            "length" => $dimension['length'],
+                            "width" => $dimension['width'],
+                            "height" => $dimension['height'],
+                            "units" => $data['dimension_units']
+                        ]
+                    ];
+                }
+            }
+
+            $body = [
+                "accountNumber" => [
+                    "value" => "695684150"
+                ],
+                "requestedShipment" => [
+                    "shipper" => [
+                        "address" => [
+                            "postalCode" => $data['ship_from_postal_code'],
+                            "countryCode" => $data['ship_from_country_code'],
+                            "residential" => false
+                        ]
+                    ],
+                    "recipient" => [
+                        "address" => [
+                            "postalCode" => $data['ship_to_postal_code'],
+                            "countryCode" => $data['ship_to_country_code'],
+                            "residential" => $data['residential']
+                        ]
+                    ],
+                    "pickupType" => "DROPOFF_AT_FEDEX_LOCATION",
+                    "rateRequestType" => [
+                        "ACCOUNT"
+                    ],
+                    "requestedPackageLineItems" => $requested_package_line_items
+                ]
+            ];
+
+            $request = $client->post('https://apis.fedex.com/rate/v1/rates/quotes', [
+                'headers' => $headers,
+                'body' => json_encode($body)
+            ]);
+
+            $response = $request->getBody()->getContents();
+            $response = json_decode($response);
+
+            foreach ($response->output->rateReplyDetails as $key => $fedex) {
+                $price = $fedex->ratedShipmentDetails[0]->totalNetFedExCharge;
+                $markup = user_shipping_service_markup($fedex->serviceType, $user_id);
+                $markup_amount = $price * ((float)$markup / 100);
+
+                $total = $price + $markup_amount;
+                $total = number_format((float)$total, 2, '.', '');
+
+                $rate = [
+                    'code' => 'fedex',
+                    'type' => $fedex->serviceType,
+                    'name' => $fedex->serviceName,
+                    'pkg_type' => $fedex->packagingType,
+                    'total' => $total,
+                ];
+
+                if ($markup_in_response) {
+                    $rate['price'] = $price;
+                    $rate['markup'] = $markup_amount;
+                }
+
+                $rates[] = $rate;
+            }
+
+            return $rates;
+        } catch (\Throwable $th) {
+            return [];
+        }
     }
 
     public function dhl($data, $user_id, $markup_in_response)
@@ -409,7 +413,7 @@ class RateController extends BaseController
                 $rate['price'] = $price;
                 $rate['markup'] = $markup_amount;
             }
-            
+
             $rates[] = $rate;
 
             return $rates;
@@ -556,7 +560,7 @@ class RateController extends BaseController
             $error = curl_error($curl);
 
             $markup = SiteSetting::getByName('markup');
-            
+
             foreach ($rating_response->RateResponse->RatedShipment as $key => $ups) {
                 $price = $ups->NegotiatedRateCharges->TotalCharge->MonetaryValue;
                 $markup = user_shipping_service_markup($ups->Service->Code, $user_id);
@@ -576,9 +580,8 @@ class RateController extends BaseController
                     $rate['price'] = $price;
                     $rate['markup'] = $markup_amount;
                 }
-                
+
                 $rates[] = $rate;
-    
             }
 
             curl_close($curl);
@@ -765,7 +768,7 @@ class RateController extends BaseController
                         $rate['price'] = $price;
                         $rate['markup'] = $markup_amount;
                     }
-                    
+
                     $rates[] = $rate;
                 }
             }
