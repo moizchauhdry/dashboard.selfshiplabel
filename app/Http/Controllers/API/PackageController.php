@@ -426,7 +426,10 @@ class PackageController extends BaseController
             $package = Package::create($package_data);
 
             if ($ship_from_country->id == $ship_to_country->id) {
-                $package->update(['pkg_ship_type' => 'domestic']);
+                $package->update([
+                    'pkg_ship_type' => 'domestic',
+                    'signature_type_id' => $ship_to_address->signature_type_id,
+                ]);
             } else {
                 $package->update(['pkg_ship_type' => 'international']);
             }
@@ -477,7 +480,8 @@ class PackageController extends BaseController
                 $data['fedex_label'] = [
                     'label_url' => config('app.url') . '/' . $fedex['label_url'],
                     'package_id' => $fedex['id'],
-                    'grand_total' => $fedex['grand_total']
+                    'grand_total' => $fedex['grand_total'],
+                    'tracking_number' => $fedex['tracking_number_out']
                 ];
             }
 
@@ -486,7 +490,8 @@ class PackageController extends BaseController
                 $data['ups_label'] = [
                     'label_url' => config('app.url') . '/' . $ups['label_url'],
                     'package_id' => $ups['id'],
-                    'grand_total' => $ups['grand_total']
+                    'grand_total' => $ups['grand_total'],
+                    'tracking_number' => $ups['tracking_number_out']
                 ];
             }
 
@@ -495,14 +500,14 @@ class PackageController extends BaseController
                 $data['dhl_label'] = [
                     'label_url' => config('app.url') . '/' . $dhl['label_url'],
                     'package_id' => $dhl['id'],
-                    'grand_total' => $dhl['grand_total']
+                    'grand_total' => $dhl['grand_total'],
+                    'tracking_number' => $dhl['tracking_number_out']
                 ];
             }
 
             DB::commit();
             return $this->sendResponse($data, 'SUCCESS');
         } catch (\Throwable $th) {
-            dd($th);
             DB::rollBack();
             return $this->error($th->getMessage());
         }
