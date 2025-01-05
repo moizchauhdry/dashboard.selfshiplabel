@@ -522,6 +522,17 @@ class PackageController extends BaseController
         }
 
         if ($package) {
+
+            if ($package->cancelled) {
+                $data = [
+                    'package_id' => $package->id,
+                    'cancelled' => $package->cancelled,
+                    'cancelled_at' => Carbon::parse($package->cancelled_at)->format('Y-m-d H:i:s'),
+                ];
+                return $this->sendResponse($data, 'Package already Cancelled');
+            }
+
+
             $package->update([
                 'cancelled' => true,
                 'cancelled_at' => Carbon::now(),
