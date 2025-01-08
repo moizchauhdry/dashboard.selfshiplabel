@@ -135,7 +135,7 @@
             <td style="width:15%">${{ format_number($payment->charged_amount) }}</td>
             @else
             <td style="width:85%">Shipping Service - {{ $package->service_label }}</td>
-            <td style="width:15%">${{ format_number($package->shipping_charges) }}</td>
+            {{-- <td style="width:15%">${{ format_number($package->shipping_charges) }}</td> --}}
             @endif
         </tr>
         @endif
