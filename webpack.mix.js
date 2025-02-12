@@ -26,6 +26,6 @@ if (mix.inProduction()) {
 }
 
 mix.browserSync({
-    proxy: 'http://self-service-backend.test',
+    proxy: 'https://dashboard.selfshiplabel.test',
 
 });
