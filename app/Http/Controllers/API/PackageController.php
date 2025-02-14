@@ -523,6 +523,18 @@ class PackageController extends BaseController
 
         if ($package) {
 
+            if ($package->carrier_code == 'fedex') {
+                $fedex_response = fedexLabelCancellation($package->tracking_number_out);
+
+                if ($fedex_response->output->cancelledShipment == false) {
+                    return $this->sendResponse([], $fedex_response->output->message);
+                }
+            }
+
+            if ($package->carrier_code == 'ups') {
+                upsLabelCancellation($package->tracking_number_out);
+            }
+
             if ($package->cancelled) {
                 $data = [
                     'package_id' => $package->id,
@@ -531,7 +543,6 @@ class PackageController extends BaseController
                 ];
                 return $this->sendResponse($data, 'Package already Cancelled');
             }
-
 
             $package->update([
                 'cancelled' => true,

@@ -1191,3 +1191,92 @@ function paymentInvoiceForLabel($id)
     Storage::disk('payment-invoices')->put($filename, $pdf->output());
     return response()->download('storage/payment-invoices/' . $filename);
 }
+
+function fedexLabelCancellation($tracking_number_out)
+{
+    $client = new Client();
+
+    $result = $client->post('https://apis.fedex.com/oauth/token', [
+        'form_params' => [
+            'grant_type' => 'client_credentials',
+            'client_id' => 'l7ef7275cc94544aaabf802ef4308bb66a',
+            'client_secret' => '48b51793-fd0d-426d-8bf0-3ecc62d9c876',
+        ]
+    ]);
+
+    $authorization = $result->getBody()->getContents();
+    $authorization = json_decode($authorization);
+
+
+    $headers = [
+        'X-locale' => 'en_US',
+        'Content-Type' => 'application/json',
+        'Authorization' => 'Bearer ' . $authorization->access_token
+    ];
+
+    $body = [
+        "accountNumber" => [
+            "value" => "695684150"
+        ],
+        "shipAction" => "CONFIRM",
+        "emailShipment" => "false",
+        "senderCountryCode" => "US",
+        "deletionControl" => "DELETE_ALL_PACKAGES",
+        "trackingNumber" => $tracking_number_out
+    ];
+    
+    $request = $client->put('https://apis.fedex.com/ship/v1/shipments/cancel', [
+        'headers' => $headers,
+        'body' => json_encode($body)
+    ]);
+
+    $response = $request->getBody()->getContents();
+    $response = json_decode($response);
+
+    return $response;
+}
+
+
+function upsLabelCancellation()
+{
+    $client = new Client();
+
+    $result = $client->post('https://apis.fedex.com/oauth/token', [
+        'form_params' => [
+            'grant_type' => 'client_credentials',
+            'client_id' => 'l7ef7275cc94544aaabf802ef4308bb66a',
+            'client_secret' => '48b51793-fd0d-426d-8bf0-3ecc62d9c876',
+        ]
+    ]);
+
+    $authorization = $result->getBody()->getContents();
+    $authorization = json_decode($authorization);
+
+
+    $headers = [
+        'X-locale' => 'en_US',
+        'Content-Type' => 'application/json',
+        'Authorization' => 'Bearer ' . $authorization->access_token
+    ];
+
+    $body = [
+        "accountNumber" => [
+            "value" => "695684150"
+        ],
+        "shipAction" => "CONFIRM",
+        "emailShipment" => "false",
+        "senderCountryCode" => "US",
+        "deletionControl" => "DELETE_ALL_PACKAGES",
+        "trackingNumber" => "772043996491"
+    ];
+    
+    $request = $client->put('https://apis.fedex.com/ship/v1/shipments/cancel', [
+        'headers' => $headers,
+        'body' => json_encode($body)
+    ]);
+
+    $response = $request->getBody()->getContents();
+    $response = json_decode($response);
+
+    return $response;
+}
