@@ -401,10 +401,20 @@ function generateLabelUps($id, $user_id)
     $authorization_response = json_decode($authorization_response);
     $access_token = $authorization_response->access_token;
 
+    if (in_array($package->signature_type_id, [3, 4, 5])) {
+        $signature_type = "2";
+    } else {
+        $signature_type = "1";
+    }
 
     $package_boxes = [];
     foreach ($package->boxes as $key => $box) {
         $package_boxes[] = [
+            "PackageServiceOptions" => [
+                "DeliveryConfirmation" => [
+                    "DCISType" => $signature_type
+                ]
+            ],
             "Description" => " ",
             "Packaging" => [
                 "Code" => "02",
@@ -525,7 +535,8 @@ function generateLabelUps($id, $user_id)
             "transactionSrc: testing"
         ],
         CURLOPT_POSTFIELDS => json_encode($body),
-        CURLOPT_URL => "https://onlinetools.ups.com/api/shipments/v1/ship",
+        // CURLOPT_URL => "https://onlinetools.ups.com/api/shipments/v1/ship",
+        CURLOPT_URL => "https://onlinetools.ups.com/api/shipments/v2409/ship",
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_CUSTOMREQUEST => "POST",
     ]);
@@ -557,7 +568,7 @@ function generateLabelUps($id, $user_id)
     } else {
         $count = 1;
         $filename2 = $filename1 . '-' . $count . '.png';
-        Storage::disk('labels')->put($filename2, base64_decode($results->ShippingLabel->GraphicImage));
+        Storage::disk('labels')->put($filename2, base64_decode($results[0]->ShippingLabel->GraphicImage));
         $pdf = PDF::loadView('pdfs.label', ['imagePath' => 'storage/labels/' . $filename2]);
         $pdf->setPaper('A4', 'portrait');
         $filename2_pdf = $filename1 . '-' . $count . '.pdf';
@@ -577,8 +588,7 @@ function generateLabelUps($id, $user_id)
 
     // Master Tracking Number
     $master_tracking_no = NULL;
-    // $master_tracking_no = $response->ShipmentResponse->ShipmentResults->PackageResults->TrackingNumber;
-    // $master_tracking_no = $response->ShipmentResponse;
+    $master_tracking_no = $response->ShipmentResponse->ShipmentResults->ShipmentIdentificationNumber;
 
     // Label Shipping Charges
     $final_shipping_charges = $response->ShipmentResponse->ShipmentResults->ShipmentCharges->TotalCharges->MonetaryValue;
@@ -1224,7 +1234,7 @@ function fedexLabelCancellation($tracking_number_out)
         "deletionControl" => "DELETE_ALL_PACKAGES",
         "trackingNumber" => $tracking_number_out
     ];
-    
+
     $request = $client->put('https://apis.fedex.com/ship/v1/shipments/cancel', [
         'headers' => $headers,
         'body' => json_encode($body)
@@ -1269,7 +1279,7 @@ function upsLabelCancellation()
         "deletionControl" => "DELETE_ALL_PACKAGES",
         "trackingNumber" => "772043996491"
     ];
-    
+
     $request = $client->put('https://apis.fedex.com/ship/v1/shipments/cancel', [
         'headers' => $headers,
         'body' => json_encode($body)
