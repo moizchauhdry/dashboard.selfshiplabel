@@ -507,6 +507,10 @@ function generateLabelUps($id, $user_id)
                         ]
                     ]
                 ],
+                "ShipmentRatingOptions" => [
+                    "TPFCNegotiatedRatesIndicator" => "Y",
+                    "NegotiatedRatesIndicator" => "Y"
+                ],
                 "Service" => [
                     "Code" => $package->service_code,
                     "Description" => $package->service_label
@@ -591,7 +595,8 @@ function generateLabelUps($id, $user_id)
     $master_tracking_no = $response->ShipmentResponse->ShipmentResults->ShipmentIdentificationNumber;
 
     // Label Shipping Charges
-    $final_shipping_charges = $response->ShipmentResponse->ShipmentResults->ShipmentCharges->TotalCharges->MonetaryValue;
+    // $final_shipping_charges = $response->ShipmentResponse->ShipmentResults->ShipmentCharges->TotalCharges->MonetaryValue;
+    $final_shipping_charges = $response->ShipmentResponse->ShipmentResults->NegotiatedRateCharges->TotalCharge->MonetaryValue;
     $service_type = $package->service_code;
     $markup = user_shipping_service_markup($service_type, $user_id);
     $markup_amount = $final_shipping_charges * ((float)$markup / 100);
